@@ -25,7 +25,7 @@ export default function Brand(props: Props) {
       <Image
         priority
         alt={SITE_CONFIG.name}
-        src={SITE_CONFIG.logo.secondary}
+        src={SITE_CONFIG.logo.main}
 
         className={cn('h-auto w-14', imageClassName)}
       />

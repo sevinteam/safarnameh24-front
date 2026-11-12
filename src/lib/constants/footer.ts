@@ -15,22 +15,22 @@ export const content = {
       {
         label: 'نماد اعتماد الکترونیکی',
         href: '#',
-        image: SITE_CONFIG.logo.secondary,
+        image: SITE_CONFIG.logo.main,
       },
       {
         label: 'نماد اعتماد الکترونیکی',
         href: '#',
-        image: SITE_CONFIG.logo.secondary,
+        image: SITE_CONFIG.logo.main,
       },
       {
         label: 'نماد اعتماد الکترونیکی',
         href: '#',
-        image: SITE_CONFIG.logo.secondary,
+        image: SITE_CONFIG.logo.main,
       },
       {
         label: 'نماد اعتماد الکترونیکی',
         href: '#',
-        image: SITE_CONFIG.logo.secondary,
+        image: SITE_CONFIG.logo.main,
       },
     ],
   },

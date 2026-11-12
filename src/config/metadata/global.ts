@@ -10,7 +10,7 @@ export const metadataConfig: Metadata = {
   },
 
   icons: {
-    icon: SITE_CONFIG.logo.main.src,
+    icon: SITE_CONFIG.logo.icon.src,
   },
 
   description: SITE_CONFIG.sloganEn,
