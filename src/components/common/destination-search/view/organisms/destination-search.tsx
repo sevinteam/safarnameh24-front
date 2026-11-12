@@ -32,7 +32,7 @@ type Props = {};
 
 // ------------------------------
 
-export default function DestinationSearch(props: Props) {
+export function DestinationSearch(props: Props) {
   const {} = props;
 
   const { isOpen, setIsOpen } = useDestination();

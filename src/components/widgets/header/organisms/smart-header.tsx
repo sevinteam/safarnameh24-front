@@ -1,11 +1,11 @@
 'use client';
 
-import { SearchStickyBar } from './sticky-search-bar';
+import { SearchStickyBar } from '../../sticky-search-bar/sticky-search-bar';
 
-import Menu from '@/components/common/header/menu';
-import Navbar from '@/components/common/header/navbar';
+import Menu from '../molecules/menu';
+import Navbar from '../molecules/navbar';
 
-import AuthHandler from '@/components/common/header/auth-handler';
+import AuthHandler from '../molecules/auth-handler';
 import Brand from '@/components/common/brand';
 import { Button } from '@/components/ui/button';
 

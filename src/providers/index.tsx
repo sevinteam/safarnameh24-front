@@ -9,9 +9,9 @@ import { DirectionProvider } from '@/components/ui/direction';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthModalProvider } from '@/features/auth/model/auth-modal-context';
 import { AuthModal } from '@/features/auth/view/auth-modal';
-import { DatePickerProvider } from '@/features/date-picker/model/date-picker-context';
+import { DatePickerProvider } from '@/components/common/date-picker';
 import { Suspense } from 'react';
-import { DestinationProvider } from '@/features/destination-search/model/destination-search-context';
+import { DestinationProvider } from '@/components/common/destination-search';
 
 // ------------------------------
 

@@ -11,12 +11,9 @@ import {
   RefObject,
 } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { HOTEL_QUERY_KEYS } from '../model/constants';
-import {
-  parseUrlDateToCalendar,
-  formatToGregorianUrlString,
-} from '../model/helpers';
-import { useCalendar, DateRange } from '../model/use-calendar';
+import { HOTEL_QUERY_KEYS } from './constants';
+import { parseUrlDateToCalendar, formatToGregorianUrlString } from './helpers';
+import { useCalendar, DateRange } from './use-date-picker';
 import { CalendarRef, DateObject } from 'react-multi-date-picker';
 
 // ------------------------------

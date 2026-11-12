@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/sheet';
 
 import Link from 'next/link';
-import Brand from '../brand';
+import Brand from '@/components/common/brand';
 
 import { usePathname } from 'next/navigation';
 

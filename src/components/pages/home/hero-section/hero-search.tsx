@@ -3,9 +3,9 @@
 import { cn } from 'cn';
 
 import SubmitButton from './submit-button';
-import { DatePicker } from '@/features/date-picker';
+import { DatePicker } from '@/components/common/date-picker';
 
-import DestinationSearch from '@/features/destination-search/view/organisms/destination-search';
+import { DestinationSearch } from '@/components/common/destination-search';
 
 // ------------------------------
 

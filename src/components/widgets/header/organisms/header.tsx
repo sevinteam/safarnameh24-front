@@ -1,7 +1,7 @@
-import Menu from './menu';
-import Navbar from './navbar';
+import Menu from '../molecules/menu';
+import Navbar from '../molecules/navbar';
 
-import AuthHandler from './auth-handler';
+import AuthHandler from '../molecules/auth-handler';
 import Brand from '@/components/common/brand';
 import { Button } from '@/components/ui/button';
 

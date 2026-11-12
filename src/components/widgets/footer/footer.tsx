@@ -10,7 +10,8 @@ import { Newsletter } from './newsletter';
 import { AccessLinks } from './access-links';
 import { SocialMedia } from './social-media';
 import Brand from '@/components/common/brand';
-import { ScrollToTop } from '../scroll-to-top';
+
+import { ScrollToTop } from '@/components/common/scroll-to-top';
 
 // ------------------------------
 

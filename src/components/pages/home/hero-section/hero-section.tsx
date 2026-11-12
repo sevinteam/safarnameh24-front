@@ -41,11 +41,10 @@ export function HeroSection() {
               <Image
                 fill
                 src={slide}
-                // sizes="100vw"
-                sizes="(min-width: 1280px) 1280px, (min-width: 640px) 100vw, 0px"
                 alt="hotel-pictures"
                 priority={index === 0}
                 className="object-cover object-center"
+                sizes="(min-width: 1280px) 1280px, (min-width: 640px) 100vw, 0px"
               />
             </SwiperSlide>
           ))}

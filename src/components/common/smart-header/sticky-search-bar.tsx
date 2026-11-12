@@ -1,6 +1,5 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import DestinationSearch from '../destination-search/view/organisms/destination-search';
 import { DatePicker } from '../date-picker';
 import SubmitButton from '@/components/pages/home/hero-section/submit-button';
 import { Calendar, CalendarRange, Hotel, Search } from 'lucide-react';
@@ -26,11 +25,6 @@ export const SearchStickyBar: React.FC = () => {
       <Button size={'icon'}>
         <Search />
       </Button>
-
-      {/* <DestinationSearch />
-      <DatePicker />
-
-      <SubmitButton /> */}
     </div>
   );
 };
