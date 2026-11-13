@@ -27,7 +27,7 @@ export function Footer() {
       >
         <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <Brand showTitle imageClassName="w-20" />
+            <Brand showTitle imageClassName="w-20" className="gap-3" />
 
             <ScrollToTop />
           </div>
