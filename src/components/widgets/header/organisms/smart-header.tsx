@@ -1,6 +1,6 @@
 'use client';
 
-import { SearchStickyBar } from '../../sticky-search-bar/sticky-search-bar';
+// import { StickySearchBar } from '../../sticky-search-bar/sticky-search-bar';
 
 import Menu from '../molecules/menu';
 import Navbar from '../molecules/navbar';
@@ -13,6 +13,19 @@ import { ClipboardCheck, Headphones } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/common/theme-switcher';
 
 import { useSmartScrollHeader } from '@/lib/hooks/use-smart-scroll-header';
+
+import dynamic from 'next/dynamic';
+
+const StickySearchBar = dynamic(
+  () => import('../../sticky-search-bar/sticky-search-bar'),
+  {
+    ssr: false,
+    // loader:'',
+    loading: () => null,
+  },
+);
+
+// ------------------------------
 
 export const SmartHeader: React.FC = () => {
   const { isCollapsed } = useSmartScrollHeader({
@@ -53,7 +66,7 @@ export const SmartHeader: React.FC = () => {
           </div>
         </div>
 
-        <SearchStickyBar />
+        <StickySearchBar />
       </div>
     </header>
   );

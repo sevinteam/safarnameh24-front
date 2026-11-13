@@ -4,9 +4,9 @@ import React from 'react';
 export default function HotelList() {
   return (
     <div className="bg-sidebar h-[300vh]">
-      {Array.from({ length: 2 }).map((_, i) => (
+      {/* {Array.from({ length: 2 }).map((_, i) => (
         <HotelCard />
-      ))}
+      ))} */}
     </div>
   );
 }

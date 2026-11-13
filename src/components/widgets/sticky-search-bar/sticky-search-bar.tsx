@@ -1,35 +1,40 @@
-import React from 'react';
+import { useState } from 'react';
+
+import SheetWrapper from './sheet-wrapper';
 import { usePathname } from 'next/navigation';
+import SearchBarTrigger from './search-bar-trigger';
 
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { DatePicker } from '@/components/common/date-picker';
+
+import { DestinationSearch } from '@/components/common/destination-search';
 import SubmitButton from '@/components/pages/home/hero-section/submit-button';
-import { Calendar, CalendarRange, Hotel, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
-export const SearchStickyBar: React.FC = () => {
+// ------------------------------
+
+export default function StickySearchBar() {
+  const [isOpen, setOpen] = useState(false);
+  const handleOpenModal = () => setOpen(true);
+
   const pathname = usePathname();
+  const isDesktop = useMediaQuery('(min-width: 640px)');
 
   if (pathname === '/') return null;
 
   return (
-    <div className="flex-center h-18 w-full gap-6 py-4">
-      <div className="flex items-center gap-2">
-        <Hotel className="text-muted-foreground size-5" />
-        <span className="text-sm font-semibold">هتل‌ های تهران</span>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <CalendarRange className="text-muted-foreground size-5" />
-        <span className="text-sm font-semibold">18 تا 20 آبان</span>
-      </div>
-
-      <Button size={'icon'}>
-        <Search />
-      </Button>
-
-      {/* <DestinationSearch />
-      <DatePicker />
-
-      <SubmitButton /> */}
-    </div>
+    <>
+      {isDesktop ? (
+        <div className="grid grid-cols-[1fr_1.4fr] items-center gap-x-4 gap-y-5 pt-8 pb-6 lg:grid-cols-[1fr_1fr_auto] lg:gap-6">
+          <DestinationSearch />
+          <DatePicker />
+          <SubmitButton className="col-span-2 lg:col-span-1" />
+        </div>
+      ) : (
+        <>
+          <SearchBarTrigger openModal={handleOpenModal} />
+          <SheetWrapper open={isOpen} onOpenChange={setOpen} />
+        </>
+      )}
+    </>
   );
-};
+}

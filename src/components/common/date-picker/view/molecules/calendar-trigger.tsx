@@ -9,7 +9,7 @@ export default function CalendarTrigger() {
   const isSelected = selectedDates?.length === 2;
 
   return (
-    <div className="bg-sidebar relative grid h-13 min-w-120 grid-cols-2 divide-x rounded-xl border">
+    <div className="bg-sidebar relative grid h-13 grid-cols-2 divide-x rounded-xl border">
       <div className="flex-center relative items-center gap-2.5 px-4">
         {isSelected ? (
           <>

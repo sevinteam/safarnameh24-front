@@ -12,7 +12,7 @@ export default function DestinationSearchTrigger(props: Props) {
   const { destination } = useDestination();
 
   return (
-    <div className="relative flex h-13 min-w-80 items-center gap-2 rounded-xl border px-4">
+    <div className="relative flex h-13 items-center gap-2 rounded-xl border px-4">
       {destination ? (
         <>
           <span className="bg-sidebar text-muted-foreground absolute -top-2.5 right-2.5 z-10 px-1.5 text-xs font-medium">
