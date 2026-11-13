@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       follow: !seo.no_index,
     },
     alternates: {
-      canonical: seo.canonical_url || `https://safarnameh 24.com/hotel/${hotelSlug}`,
+      canonical: seo.canonical_url || `https://safarnameh24.com/hotel/${hotelSlug}`,
     },
     openGraph: {
       title: seo.og_title || seo.title_tag,

@@ -14,14 +14,14 @@ import StickyArea from '@/components/landing/shared/StickyArea';
 export const metadata: Metadata = {
   title: 'لیست هتل‌ها | رزرو بهترین هتل‌های ایران و جهان با سفرنامه 24',
   description: 'مجموعه‌ای از بهترین هتل‌های داخلی و خارجی را در سفرنامه 24 ببینید. مقایسه امکانات، قیمت و رزرو آنلاین هتل‌های خیلی خوب با تخفیف ویژه و واچر آنی.',
-  keywords: ['رزرو هتل', 'لیست هتل ها', 'بهترین هتل ها', 'هتل خیلی خوب', 'رزرو آنلاین هتل', 'هتل های ارزان', 'safarnameh 24'],
+  keywords: ['رزرو هتل', 'لیست هتل ها', 'بهترین هتل ها', 'هتل خیلی خوب', 'رزرو آنلاین هتل', 'هتل های ارزان', 'safarnameh24'],
   alternates: {
-    canonical: 'https://safarnameh 24.com/hotel',
+    canonical: 'https://safarnameh24.com/hotel',
   },
   openGraph: {
     title: 'جستجو و رزرو بهترین هتل‌ها | سفرنامه 24',
     description: 'انتخاب از میان هزاران هتل برتر. همین حالا هتل مورد نظر خود را با بهترین قیمت رزرو کنید.',
-    url: 'https://safarnameh 24.com/hotel',
+    url: 'https://safarnameh24.com/hotel',
     type: 'website',
   },
 };

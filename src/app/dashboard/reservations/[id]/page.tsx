@@ -136,7 +136,7 @@ export default function ReservationFactorPage({
                 aubrey.className,
               )}
             >
-              safarnameh 24
+              safarnameh24
             </span>
             <span
               className={cn(

@@ -27,7 +27,7 @@ export function PassengersNotebookHeader() {
         <SheetTitle className="text-[0.9rem]/5">سفرنامه 24</SheetTitle>
 
         <SheetDescription className="font-inter text-[0.8rem]/5 font-semibold capitalize text-zinc-800">
-          agency safarnameh 24
+          agency safarnameh24
         </SheetDescription>
       </div>
 

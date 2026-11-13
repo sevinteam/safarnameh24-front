@@ -12,15 +12,15 @@ export const metadata: Metadata = {
     template: '%s | سفرنامه 24',
   },
   description: 'با سفرنامه 24، بهترین هتل‌ها را با قیمت مناسب رزرو کنید. اقامتی راحت و بی‌دغدغه در هتل‌های منتخب با پشتیبانی ۲۴ ساعته.',
-  keywords: ['رزرو هتل', 'سفرنامه 24', 'safarnameh 24', 'بهترین هتل ها', 'رزرو آنلاین هتل'],
-  authors: [{ name: 'safarnameh 24 Team' }],
+  keywords: ['رزرو هتل', 'سفرنامه 24', 'safarnameh24', 'بهترین هتل ها', 'رزرو آنلاین هتل'],
+  authors: [{ name: 'safarnameh24 Team' }],
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
     type: 'website',
-    siteName: 'safarnameh 24',
+    siteName: 'safarnameh24',
     locale: 'fa_IR',
   },
 };

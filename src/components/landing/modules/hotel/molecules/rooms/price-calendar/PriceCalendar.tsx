@@ -65,7 +65,7 @@ export default function PriceCalendar(props: Props) {
 
           <div className="grid text-cs85 font-bold">
             <span>سفرنامه 24</span>
-            <span className="capitalize">safarnameh 24</span>
+            <span className="capitalize">safarnameh24</span>
           </div>
 
           <SheetClose className="mr-auto">

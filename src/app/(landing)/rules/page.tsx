@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'قوانین و مقررات سفرنامه 24 | شرایط رزرو هتل',
   description: 'پیش از رزرو هتل، قوانین و مقررات سفرنامه 24 شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
-  alternates: { canonical: 'https://safarnameh 24.com/rules' },
+  alternates: { canonical: 'https://safarnameh24.com/rules' },
 };
 
 // تابع دریافت داده در سمت سرور (کاملاً ایمن در برابر ارورهای URL و قطع بودن سرور)

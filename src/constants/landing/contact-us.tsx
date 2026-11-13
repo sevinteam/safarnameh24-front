@@ -24,7 +24,7 @@ export const contactUs = {
       icon: 'Sms' as IconsName,
       title: 'ایمیل',
       subtitle: 'با ایمیل زیر با ما در ارتباط باشید',
-      detail: 'safarnameh 24@info.com',
+      detail: 'safarnameh24@info.com',
       href: '',
       detailType: 'email',
     },
@@ -68,7 +68,7 @@ export const contactUs = {
         </svg>
       ),
       title: 'تلگرام | Telegram',
-      link: 'te.safarnameh 24.com',
+      link: 'te.safarnameh24.com',
       href: '/',
     },
     {
@@ -107,7 +107,7 @@ export const contactUs = {
         </svg>
       ),
       title: 'اینستاگرام | Instagram',
-      link: 'insta.safarnameh 24.com',
+      link: 'insta.safarnameh24.com',
       href: '',
     },
     {
@@ -138,7 +138,7 @@ export const contactUs = {
         </svg>
       ),
       title: 'لینکدین  |  LinkedIn',
-      link: 'te.safarnameh 24.com',
+      link: 'te.safarnameh24.com',
       href: '',
     },
     {
@@ -157,7 +157,7 @@ export const contactUs = {
         </svg>
       ),
       title: 'توییتر  |  Twitter (X)',
-      link: 'twitter.safarnameh 24.com',
+      link: 'twitter.safarnameh24.com',
       href: '',
     },
   ],

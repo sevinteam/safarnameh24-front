@@ -45,7 +45,7 @@ export default function Logo({
             className="block truncate font-inter text-[13px] font-semibold"
             dir="ltr"
           >
-            safarnameh 24
+            safarnameh24
           </span>
         </div>
       </div>

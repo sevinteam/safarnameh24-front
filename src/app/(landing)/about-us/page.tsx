@@ -10,15 +10,15 @@ import {
 export const metadata = {
   title: 'درباره سفرنامه 24 | رزرو هتل‌های خیلی خوب با بهترین قیمت',
   description: 'در سفرنامه 24، ما با گلچین کردن بهترین هتل‌ها، تجربه‌ای متفاوت از اقامت را برای شما فراهم می‌کنیم. درباره سفرنامه 24 و تعهد ما به ارائه خدمات مسافرتی باکیفیت بیشتر بدانید.',
-  keywords: 'سفرنامه 24, safarnameh 24, رزرو هتل, هتل خیلی خوب, بهترین هتل‌ها, اقامتگاه ارزان, رزرو آنلاین هتل',
+  keywords: 'سفرنامه 24, safarnameh24, رزرو هتل, هتل خیلی خوب, بهترین هتل‌ها, اقامتگاه ارزان, رزرو آنلاین هتل',
   alternates: {
-    canonical: 'https://safarnameh 24.com/about-us', // آدرس دقیق این صفحه را اینجا بگذارید
+    canonical: 'https://safarnameh24.com/about-us', // آدرس دقیق این صفحه را اینجا بگذارید
   },
   openGraph: {
     title: 'درباره سفرنامه 24 | مرجع رزرو هتل‌های باکیفیت',
     description: 'سفر به یادماندنی با رزرو بهترین هتل‌ها در سفرنامه 24. ما کیفیت اقامت شما را تضمین می‌کنیم.',
-    url: 'https://safarnameh 24.com/about-us',
-    siteName: 'safarnameh 24',
+    url: 'https://safarnameh24.com/about-us',
+    siteName: 'safarnameh24',
     locale: 'fa_IR',
     type: 'website',
   },
