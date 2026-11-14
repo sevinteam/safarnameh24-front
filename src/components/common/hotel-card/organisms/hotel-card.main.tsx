@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Percent, Star } from 'lucide-react';
 
 import { cn, formatNumber, getRatingTier } from '@/lib/utils';
 import hotel_image from '@/assets/images/background/hero-3.jpg';
@@ -31,38 +31,55 @@ export function HotelCard(props: Props) {
     price,
   } = props;
 
+  const formattedInfo = {
+    name: `هتل ${name} ${city}`,
+    address: `${city}, ${address}`,
+    price: formatNumber(price),
+    originalPrice: formatNumber(originalPrice),
+    discountExists: discountPercentage && discountPercentage > 0,
+    hotelLink: `/hotel/${country_slug}/${city_slug}/${hotel_slug}`,
+  };
+
   const { label, badgeClass } = getRatingTier(rating);
 
   return (
     <Link
-      href={`/hotel/${country_slug}/${city_slug}/${hotel_slug}`}
+      href={formattedInfo.hotelLink}
       className={cn(
-        'bg-card flex h-93 flex-col overflow-hidden rounded-2xl border',
+        'bg-card flex h-94 flex-col overflow-hidden rounded-2xl border',
         className,
       )}
     >
       <div className="relative h-44 overflow-hidden border-b">
+        {/* Placeholders */}
+        <div className="absolute inset-3 z-20">
+          {formattedInfo.discountExists && (
+            <div className="flex-center w-fit gap-1 rounded-md bg-red-500 px-2 py-1 text-white">
+              <Percent className="size-3.5 stroke-3" />
+              <span className="text-xs font-semibold">تخفیف</span>
+            </div>
+          )}
+        </div>
+
         {/* Hotel-Image */}
-        <Image fill src={hotel_image} alt="" className="z-10 object-cover" />
+        <Image
+          fill
+          src={hotel_image}
+          alt={formattedInfo.name}
+          className="z-10 object-cover"
+        />
       </div>
 
       <div className="flex flex-1 flex-col p-4">
         {/* Hotel-Name */}
         <p
-          title={`هتل ${name} ${city}`}
+          title={formattedInfo.name}
           className="text-95 line-clamp-1 font-bold"
-        >{`هتل ${name} ${city}`}</p>
-
-        {/* Address */}
-        <div
-          title={`${city}, ${address}`}
-          className="text-muted-foreground my-4 flex items-center gap-1"
         >
-          <MapPin className="size-4 shrink-0" />
-          <p className="text-08 line-clamp-1 font-medium">{`${city}, ${address}`}</p>
-        </div>
+          {formattedInfo.name}
+        </p>
 
-        <div className="flex-between items-center">
+        <div className="flex-between my-4 items-center">
           {/* Icon-Text / Rating / Review-Count */}
           <div className="flex items-center gap-1.5 text-xs font-medium">
             <span className={cn('rounded-sm px-1.5 py-0.5', badgeClass)}>
@@ -84,26 +101,36 @@ export function HotelCard(props: Props) {
           )}
         </div>
 
-        <div className="flex-between text-muted-foreground text-08 relative mt-auto items-center border-t border-dashed pt-5 font-semibold">
+        {/* Address */}
+        <div
+          title={formattedInfo.address}
+          className="text-muted-foreground flex items-center gap-1"
+        >
+          <MapPin className="size-4 shrink-0" />
+          <p className="text-08 line-clamp-1 font-medium">
+            {formattedInfo.address}
+          </p>
+        </div>
+
+        {/* Price */}
+        <div className="flex-between text-muted-foreground text-08 relative mt-auto items-center border-t border-dashed pt-6 font-semibold">
           <span>شروع قیمت :</span>
 
-          {/* Original-Price (line-through) */}
-          {discountPercentage && discountPercentage > 0 && (
-            <div className="bg-card absolute -top-2.5 left-0 flex items-center gap-2 ps-2">
+          {formattedInfo.discountExists && (
+            <div className="bg-card absolute -top-2.5 left-0 flex items-center gap-3 ps-2">
               <span className="text-muted-foreground text-08 line-through">
-                {formatNumber(originalPrice)}
+                {formattedInfo.originalPrice}
               </span>
 
-              <span className="rounded-sm bg-red-500 px-1.5 py-0.5 text-xs text-white">
+              <span className="rounded-sm bg-red-500 px-2 py-0.5 text-xs text-white">
                 %{discountPercentage}
               </span>
             </div>
           )}
 
-          {/* Price */}
           <div className="flex items-center gap-1">
             <span className="text-primary text-95 font-bold">
-              {formatNumber(price)}
+              {formattedInfo.price}
             </span>
 
             <span className="text-primary">تومان</span>

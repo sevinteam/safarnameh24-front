@@ -46,7 +46,7 @@ const HOTEL_FEATURES: Feature[] = [
 
 export function Features() {
   return (
-    <section className="-mx-4 xl:mx-0">
+    <section className="-mx-4 -mt-8 xl:mx-0">
       <Swiper
         breakpoints={{
           0: {

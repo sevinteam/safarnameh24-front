@@ -1,7 +1,5 @@
 'use client';
 
-// import { StickySearchBar } from '../../sticky-search-bar/sticky-search-bar';
-
 import Menu from '../molecules/menu';
 import Navbar from '../molecules/navbar';
 
@@ -20,7 +18,6 @@ const StickySearchBar = dynamic(
   () => import('../../sticky-search-bar/sticky-search-bar'),
   {
     ssr: false,
-    // loader:'',
     loading: () => null,
   },
 );
@@ -33,10 +30,13 @@ export const SmartHeader: React.FC = () => {
     scrollUpThreshold: 15,
   });
 
+  const isHomePage =
+    typeof window !== 'undefined' && window.location.pathname === '/';
+
   return (
     <header
       className={`bg-sidebar sticky inset-x-0 top-0 z-50 w-full border-b transition-transform duration-300 ease-in-out will-change-transform ${
-        isCollapsed ? '-translate-y-20' : 'translate-y-0'
+        !isHomePage && isCollapsed ? '-translate-y-20' : 'translate-y-0'
       }`}
     >
       <div className="mx-auto w-full max-w-7xl px-4">

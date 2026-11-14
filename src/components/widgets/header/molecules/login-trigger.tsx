@@ -20,11 +20,11 @@ export function LoginTrigger(props: Props) {
   const { openAuthModal } = useAuthModal();
 
   return (
-    <Button onClick={openAuthModal} className={cn('', className)}>
+    <Button onClick={openAuthModal} className={cn('sm:px-5', className)}>
       <LogIn />
 
       {variant === 'normal' ? (
-        <span className="sm:px-1">ورود</span>
+        <span>ورود</span>
       ) : (
         <>
           <span>ورود به حساب کاربری</span>
