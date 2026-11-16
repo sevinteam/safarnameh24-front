@@ -16,7 +16,9 @@ import { useReservationStatus } from '../../helpers/useReservationStatus';
 type ApiResponse = {
   data: {
     ok: boolean;
+    paid_by_wallet?: boolean;
     payment_link: string;
+    redirect_url?: string;
   };
 };
 
@@ -39,8 +41,16 @@ export function SecondStepSubmitButton() {
     onSuccess: (response: any) => {
       const res = response?.data?.data || response?.data;
 
+      // ۱. پرداخت کامل از طریق کیف پول (بدون رفتن به درگاه و بدون خطای ۴۰۴)
+      if (res?.paid_by_wallet) {
+        router.push(
+          `/payment/watcher-info?Status=OK&${payment.reservationId}=${trackingCode}&Authority=wallet_${trackingCode}&refId=wallet_${trackingCode}`,
+        );
+        return;
+      }
+
+      // ۲. هدایت به درگاه بانکی یا آدرس بازگشت
       if (res?.ok && res?.payment_link) {
-        // برای لینک‌های بانکی و شاپرک، انتقال با تغییر لوکیشن مرورگر الزامی است
         if (
           res.payment_link.startsWith('http://') ||
           res.payment_link.startsWith('https://')
@@ -51,12 +61,11 @@ export function SecondStepSubmitButton() {
         }
       } else {
         router.push(
-          `/payment/watcher-info?${payment.reservationId}=${trackingCode}`,
+          `/payment/watcher-info?Status=OK&${payment.reservationId}=${trackingCode}`,
         );
       }
     },
     onError: (error) => {
-      // استخراج پیام خطا از تمام کلیدهای ارسالی بک‌اند (message, detail, error)
       const errorMsg =
         error?.response?.data?.message ||
         error?.response?.data?.detail ||
