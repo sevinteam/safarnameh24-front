@@ -114,10 +114,8 @@ export function HotelCard(props: Props) {
 
         {/* Price */}
         <div className="flex-between text-muted-foreground text-08 relative mt-auto items-center border-t border-dashed pt-6 font-semibold">
-          <span>شروع قیمت :</span>
-
           {formattedInfo.discountExists && (
-            <div className="bg-card absolute -top-2.5 left-0 flex items-center gap-3 ps-2">
+            <div className="bg-card absolute -top-2.5 left-0 flex items-center gap-2.5 ps-2">
               <span className="text-muted-foreground text-08 line-through">
                 {formattedInfo.originalPrice}
               </span>
@@ -127,6 +125,8 @@ export function HotelCard(props: Props) {
               </span>
             </div>
           )}
+
+          <span>شروع قیمت :</span>
 
           <div className="flex items-center gap-1">
             <span className="text-primary text-95 font-bold">

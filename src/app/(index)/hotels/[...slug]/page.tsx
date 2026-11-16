@@ -1,7 +1,8 @@
-import Filters from '@/components/pages/hotels/filters';
-import HotelList from '@/components/pages/hotels/hotel-list';
+import { Filters, HotelList } from '@/components/pages/hotels';
 
-export default async function Page(props: PageProps<'/hotels/[...slug]'>) {
+// ------------------------------
+
+export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
   const { slug } = await props.params;
   console.log(slug);
 
