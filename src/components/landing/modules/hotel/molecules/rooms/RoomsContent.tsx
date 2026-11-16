@@ -5,25 +5,21 @@ import RoomsArea from './RoomsArea';
 import { TopBarConfig } from '@/components/landing/shared';
 import { DDatePicker } from '@/components/landing/shared/search/date-picker';
 import NumberOfNights from '@/components/landing/shared/search/NumberOfNights';
-import Passengers from '@/components/landing/shared/search/passengers/Passengers';
+// import Passengers from '@/components/landing/shared/search/passengers/Passengers';
 
 type Props = {
   data?: any;
   status: 'success' | 'pending' | 'error';
 };
 
-// تبدیل اعداد انگلیسی به فارسی
 const toPersianDigits = (val: number | string) =>
   String(val)
     .padStart(2, '0')
     .replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
 
-// ------------------------------
-
 export function RoomsContent(props: Props) {
   const { data, status } = props;
 
-  // ۱. بررسی وضعیت پیشنهاد لحظه آخری (اگر حداقل یکی از اتاق‌ها لحظه آخری باشد بنر بالا فعال می‌شود)
   const lastMinuteInfo = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
       return { active: false, maxDiscount: 0, minTimerSeconds: 0 };
@@ -78,7 +74,6 @@ export function RoomsContent(props: Props) {
   const isLastMinuteCurrentlyValid =
     lastMinuteInfo.active && secondsLeft > 0;
 
-  // ۲. آماده‌سازی دیتای اتاق‌ها به تفکیک هر اتاق (تخفیف لحظه آخری اختصاصی یا عادی)
   const normalizedData = useMemo(() => {
     if (!Array.isArray(data)) return data;
 
@@ -88,7 +83,6 @@ export function RoomsContent(props: Props) {
         r?.is_last_minute || r?.price?.is_last_minute,
       );
 
-      // اگر تایمر لحظه آخری به پایان رسید، تخفیف لحظه آخری در فرانت ریست شود
       if (isThisRoomLM && !isLastMinuteCurrentlyValid) {
         return {
           ...r,
@@ -110,14 +104,11 @@ export function RoomsContent(props: Props) {
         is_last_minute: isThisRoomLM && isLastMinuteCurrentlyValid,
         price: {
           ...r.price,
-          // قیمت اصلی خط‌خورده
           total_price: r.price.total_price,
-          // قیمت نهایی پس از تخفیف
           total_price_discount:
             r.price.total_price_discount && r.price.total_price_discount > 0
               ? r.price.total_price_discount
               : r.price.total_price,
-          // در حالت لحظه آخری، discount_date را خالی می‌کنیم تا باکس‌های ۴ تایی خاکستری محو شوند
           discount_date: isThisRoomLM ? null : r.price.discount_date,
         },
       };
@@ -158,10 +149,11 @@ export function RoomsContent(props: Props) {
 
       <div className="space-y-4 lg:space-y-8">
         <div className="hidden lg:grid text-cs08 font-bold items-end grid-cols-[65%_auto] gap-4">
-          <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-4">
+          {/* دو ستونه شدن نوار ورودی با حذف مسافران */}
+          <div className="grid grid-cols-[1.6fr_1fr] gap-4">
             <DDatePicker sideOffset={15} triggerType="else" />
             <NumberOfNights type="else" />
-            <Passengers sideOffset={15} triggerType="else" />
+            {/* <Passengers sideOffset={15} triggerType="else" /> */}
           </div>
 
           <div className="flex gap-4 mr-auto">
@@ -178,14 +170,13 @@ export function RoomsContent(props: Props) {
           </div>
         </div>
 
-        {/* بنر و تایمر پیشنهاد لحظه آخری (اگر حداقل یکی از اتاق‌ها لحظه آخری باشد) */}
+        {/* بنر لحظه آخری */}
         {status === 'success' && isLastMinuteCurrentlyValid && (
           <div
             dir="rtl"
             className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-[#e11d48] via-[#f43f5e] to-[#fb7185] px-4 py-3.5 text-white shadow-md transition-all duration-300 lg:px-6 lg:py-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* عنوان و درصد تخفیف */}
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-inner">
                   <span className="text-lg font-black text-white">%</span>
@@ -200,7 +191,6 @@ export function RoomsContent(props: Props) {
                 </div>
               </div>
 
-              {/* تایمر معکوس */}
               <div className="flex items-center gap-1.5" dir="ltr">
                 {days > 0 && (
                   <>

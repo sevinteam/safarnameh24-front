@@ -13,10 +13,9 @@ import { RoomsContent } from './molecules/rooms/RoomsContent';
 
 import persianCalendar from 'react-date-object/calendars/persian';
 import persianLanguage from 'react-date-object/locales/persian_en';
-import { useDatePickerContext, usePassengersContext } from '@/context';
+import { useDatePickerContext } from '@/context';
 
 type Props = { hotelSlug: string };
-type Rooms = { adults: number; children: number }[];
 
 const dateInfo = {
   calendar: persianCalendar,
@@ -31,18 +30,14 @@ const buildQueryString = (options: {
   return `start-date=${options.startDate}&end-date=${options.endDate}&passengers=${options.passengers}`;
 };
 
-// ----------------------------------
-
 export function Rooms({ hotelSlug }: Props) {
   const router = useRouter();
-
   const { confirmedValue: dates } = useDatePickerContext();
-  const { rooms, confirmedPassengers } = usePassengersContext();
 
   const [queryOptions, setQueryOptions] = useState({
     endDate: '',
     startDate: '',
-    passengers: '',
+    passengers: '0',
   });
 
   const queryString = useMemo(
@@ -51,12 +46,12 @@ export function Rooms({ hotelSlug }: Props) {
   );
 
   const { data, status } = useQuery<{ data: Room[] }>({
-    queryKey: ['hotel-rooms', queryString],
+    queryKey: ['hotel-rooms', hotelSlug, queryString],
+    enabled: Boolean(queryOptions.startDate && queryOptions.endDate),
     queryFn: () =>
       axiosInstance(`/hotel/hotels/${hotelSlug}/rooms?${queryString}`),
   });
 
-  // === Update query-options & url
   useEffect(() => {
     const startDate =
       dates?.[0]
@@ -69,29 +64,19 @@ export function Rooms({ hotelSlug }: Props) {
         .format('YYYY-MM-DD') ||
       new DateObject(dateInfo).add(1, 'days').format('YYYY-MM-DD');
 
-    let passengers;
-    if (!confirmedPassengers.rooms) passengers = '0';
-    else {
-      passengers = rooms.map((item) => item.adults + item.children).toString();
-    }
-
+    // همیشه مسافران برابر با 0 ارسال می‌شود تا فیلتر ظرفیت اعمال نشود و همه اتاق‌ها نمایش یابند
     setQueryOptions({
       endDate,
       startDate,
-      passengers,
+      passengers: '0',
     });
 
-    function encodeRooms(rooms: Rooms) {
-      return rooms.map((r) => `${r.adults},${r.children}`).join('-');
-    }
-
+    // در URL هم دیگر &passengers=1,0 اضافه نمی‌شود
     router.replace(
-      `/hotel/${hotelSlug}?start-date=${startDate}&end-date=${endDate}${passengers === '0' ? '' : `&passengers=${encodeRooms(rooms)}`}`,
-      {
-        scroll: false,
-      },
+      `/hotel/${hotelSlug}?start-date=${startDate}&end-date=${endDate}`,
+      { scroll: false },
     );
-  }, [dates, confirmedPassengers, router, hotelSlug]);
+  }, [dates, router, hotelSlug]);
 
   return (
     <Section sectionID="rooms">
