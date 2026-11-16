@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import RoomsArea from './RoomsArea';
 import { TopBarConfig } from '@/components/landing/shared';
 import { DDatePicker } from '@/components/landing/shared/search/date-picker';
@@ -9,10 +12,91 @@ type Props = {
   status: 'success' | 'pending' | 'error';
 };
 
+// تبدیل اعداد انگلیسی به فارسی
+const toPersianDigits = (val: number | string) =>
+  String(val)
+    .padStart(2, '0')
+    .replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+
+// محاسبه ثانیه تا پایان امشب (۲۳:۵۹:۵۹) در صورتی که تایمر از بک‌اند نیامده باشد
+const getFallbackSecondsUntilMidnight = () => {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(23, 59, 59, 999);
+  return Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
+};
+
 // ------------------------------
 
 export function RoomsContent(props: Props) {
   const { data, status } = props;
+
+  // استخراج وضعیت تخفیف لحظه آخری، درصد تخفیف و تایمر از لیست اتاق‌ها
+  const lastMinuteInfo = useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) {
+      return { active: false, discountPercent: 0, timerSeconds: 0 };
+    }
+
+    for (const item of data) {
+      const roomObj = item?.pack_rooms ? item.pack_rooms[0] : item;
+      const discountPct = Number(roomObj?.price?.discount_percentage || 0);
+      const isLastMinute = Boolean(
+        roomObj?.is_last_minute ||
+          roomObj?.price?.is_last_minute ||
+          discountPct > 0,
+      );
+      const timerSec = Number(
+        roomObj?.last_minute_timer ||
+          roomObj?.price?.last_minute_timer ||
+          (discountPct > 0 ? getFallbackSecondsUntilMidnight() : 0),
+      );
+
+      if (isLastMinute && discountPct > 0) {
+        return {
+          active: true,
+          discountPercent: discountPct,
+          timerSeconds: timerSec,
+        };
+      }
+    }
+
+    return { active: false, discountPercent: 0, timerSeconds: 0 };
+  }, [data]);
+
+  // جایگزینی قیمت کل با قیمت نهایی پس از تخفیف (بدون نمایش قیمت خط‌خورده)
+  const normalizedData = useMemo(() => {
+    if (!Array.isArray(data)) return data;
+    return data.map((item: any) => {
+      if (item?.price?.total_price_discount && item.price.total_price_discount > 0) {
+        return {
+          ...item,
+          price: {
+            ...item.price,
+            total_price: item.price.total_price_discount,
+          },
+        };
+      }
+      return item;
+    });
+  }, [data]);
+
+  const [secondsLeft, setSecondsLeft] = useState<number>(0);
+
+  useEffect(() => {
+    setSecondsLeft(lastMinuteInfo.timerSeconds);
+  }, [lastMinuteInfo.timerSeconds]);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [secondsLeft]);
+
+  const hours = Math.floor(secondsLeft / 3600);
+  const minutes = Math.floor((secondsLeft % 3600) / 60);
+  const seconds = secondsLeft % 60;
 
   return (
     <>
@@ -31,7 +115,7 @@ export function RoomsContent(props: Props) {
         )}
       </div>
 
-      <div className="space-y-4 lg:space-y-10">
+      <div className="space-y-4 lg:space-y-8">
         <div className="hidden lg:grid text-cs08 font-bold items-end grid-cols-[65%_auto] gap-4">
           <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-4">
             <DDatePicker sideOffset={15} triggerType="else" />
@@ -53,7 +137,49 @@ export function RoomsContent(props: Props) {
           </div>
         </div>
 
-        <RoomsArea data={data} status={status} />
+        {/* برچسب و تایمر زیبای «پیشنهاد لحظه آخری» */}
+        {status === 'success' && lastMinuteInfo.active && (
+          <div
+            dir="rtl"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-[#e11d48] via-[#f43f5e] to-[#fb7185] px-4 py-3.5 text-white shadow-md transition-all duration-300 lg:px-6 lg:py-4"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* سمت راست: آیکون تخفیف + عنوان پیشنهاد لحظه آخری */}
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-inner">
+                  <span className="text-lg font-black text-white">%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-extrabold tracking-tight lg:text-base">
+                    پیشنهاد لحظه آخری
+                  </span>
+                  <span className="rounded-lg bg-white px-2.5 py-0.5 text-xs font-black text-[#e11d48] shadow-sm lg:text-sm">
+                    { String(lastMinuteInfo.discountPercent).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]) }٪ تخفیف ویژه
+                  </span>
+                </div>
+              </div>
+
+              {/* سمت چپ: باکس‌های تایمر شمارش معکوس */}
+              {secondsLeft > 0 && (
+                <div className="flex items-center gap-1.5" dir="ltr">
+                  <div className="flex h-8 min-w-[36px] items-center justify-center rounded-lg bg-white px-2 text-xs font-extrabold text-zinc-800 shadow-sm lg:h-9 lg:min-w-[40px] lg:text-sm">
+                    {toPersianDigits(hours)}
+                  </div>
+                  <span className="text-sm font-black text-white/90">:</span>
+                  <div className="flex h-8 min-w-[36px] items-center justify-center rounded-lg bg-white px-2 text-xs font-extrabold text-zinc-800 shadow-sm lg:h-9 lg:min-w-[40px] lg:text-sm">
+                    {toPersianDigits(minutes)}
+                  </div>
+                  <span className="text-sm font-black text-white/90">:</span>
+                  <div className="flex h-8 min-w-[36px] items-center justify-center rounded-lg bg-white px-2 text-xs font-extrabold text-[#e11d48] shadow-sm lg:h-9 lg:min-w-[40px] lg:text-sm">
+                    {toPersianDigits(seconds)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <RoomsArea data={normalizedData} status={status} />
       </div>
     </>
   );
