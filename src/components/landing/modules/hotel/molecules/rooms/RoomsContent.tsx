@@ -12,14 +12,18 @@ type Props = {
   status: 'success' | 'pending' | 'error';
 };
 
+// تبدیل اعداد انگلیسی به فارسی
 const toPersianDigits = (val: number | string) =>
   String(val)
     .padStart(2, '0')
     .replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
 
+// ------------------------------
+
 export function RoomsContent(props: Props) {
   const { data, status } = props;
 
+  // ۱. بررسی وضعیت لحظه آخری (اگر حداقل یک اتاق لحظه آخری باشد بنر بالا روشن می‌شود)
   const lastMinuteInfo = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
       return { active: false, maxDiscount: 0, minTimerSeconds: 0 };
@@ -74,6 +78,7 @@ export function RoomsContent(props: Props) {
   const isLastMinuteCurrentlyValid =
     lastMinuteInfo.active && secondsLeft > 0;
 
+  // ۲. نرمال‌سازی دیتا به تفکیک هر اتاق (حفظ قیمت اصلی برای خط‌خوردگی و قیمت نهایی)
   const normalizedData = useMemo(() => {
     if (!Array.isArray(data)) return data;
 
@@ -83,6 +88,7 @@ export function RoomsContent(props: Props) {
         r?.is_last_minute || r?.price?.is_last_minute,
       );
 
+      // اگر تایمر لحظه آخری تمام شد، تخفیف لحظه آخری در فرانت ریست شود
       if (isThisRoomLM && !isLastMinuteCurrentlyValid) {
         return {
           ...r,
@@ -104,11 +110,14 @@ export function RoomsContent(props: Props) {
         is_last_minute: isThisRoomLM && isLastMinuteCurrentlyValid,
         price: {
           ...r.price,
+          // قیمت اصلی خط‌خورده
           total_price: r.price.total_price,
+          // قیمت نهایی پس از تخفیف
           total_price_discount:
             r.price.total_price_discount && r.price.total_price_discount > 0
               ? r.price.total_price_discount
               : r.price.total_price,
+          // خالی کردن discount_date در حالت لحظه آخری برای حذف باکس‌های ۴ تایی داخل کارت
           discount_date: isThisRoomLM ? null : r.price.discount_date,
         },
       };
@@ -170,13 +179,14 @@ export function RoomsContent(props: Props) {
           </div>
         </div>
 
-        {/* بنر لحظه آخری */}
+        {/* بنر و تایمر معکوس پیشنهاد لحظه آخری */}
         {status === 'success' && isLastMinuteCurrentlyValid && (
           <div
             dir="rtl"
             className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-[#e11d48] via-[#f43f5e] to-[#fb7185] px-4 py-3.5 text-white shadow-md transition-all duration-300 lg:px-6 lg:py-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* عنوان و درصد تخفیف */}
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-inner">
                   <span className="text-lg font-black text-white">%</span>
@@ -191,6 +201,7 @@ export function RoomsContent(props: Props) {
                 </div>
               </div>
 
+              {/* باکس‌های شمارش معکوس */}
               <div className="flex items-center gap-1.5" dir="ltr">
                 {days > 0 && (
                   <>
