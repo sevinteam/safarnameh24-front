@@ -23,15 +23,19 @@ const toPersianDigits = (val: number | string) =>
 export function RoomsContent(props: Props) {
   const { data, status } = props;
 
-  // ۱. استخراج وضعیت «تخفیف لحظه آخری کل هتل» از دیتای بک‌اند
+  // ۱. بررسی وضعیت پیشنهاد لحظه آخری (اگر حداقل یکی از اتاق‌ها لحظه آخری باشد بنر بالا فعال می‌شود)
   const lastMinuteInfo = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
-      return { active: false, discountPercent: 0, timerSeconds: 0 };
+      return { active: false, maxDiscount: 0, minTimerSeconds: 0 };
     }
+
+    let maxDiscount = 0;
+    let minTimer = Infinity;
+    let hasAnyLastMinute = false;
 
     for (const item of data) {
       const roomObj = item?.pack_rooms ? item.pack_rooms[0] : item;
-      const isHotelLastMinute = Boolean(
+      const isRoomLM = Boolean(
         roomObj?.is_last_minute || roomObj?.price?.is_last_minute,
       );
       const discountPct = Number(roomObj?.price?.discount_percentage || 0);
@@ -39,23 +43,29 @@ export function RoomsContent(props: Props) {
         roomObj?.last_minute_timer || roomObj?.price?.last_minute_timer || 0,
       );
 
-      if (isHotelLastMinute && discountPct > 0 && timerSec > 0) {
-        return {
-          active: true,
-          discountPercent: discountPct,
-          timerSeconds: timerSec,
-        };
+      if (isRoomLM && discountPct > 0 && timerSec > 0) {
+        hasAnyLastMinute = true;
+        maxDiscount = Math.max(maxDiscount, discountPct);
+        minTimer = Math.min(minTimer, timerSec);
       }
     }
 
-    return { active: false, discountPercent: 0, timerSeconds: 0 };
+    if (hasAnyLastMinute && minTimer !== Infinity) {
+      return {
+        active: true,
+        maxDiscount,
+        minTimerSeconds: minTimer,
+      };
+    }
+
+    return { active: false, maxDiscount: 0, minTimerSeconds: 0 };
   }, [data]);
 
   const [secondsLeft, setSecondsLeft] = useState<number>(0);
 
   useEffect(() => {
-    setSecondsLeft(lastMinuteInfo.timerSeconds);
-  }, [lastMinuteInfo.timerSeconds]);
+    setSecondsLeft(lastMinuteInfo.minTimerSeconds);
+  }, [lastMinuteInfo.minTimerSeconds]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -65,73 +75,29 @@ export function RoomsContent(props: Props) {
     return () => clearInterval(timer);
   }, [secondsLeft]);
 
-  // آیا تخفیف لحظه آخری هتل همین الان فعال است و تایمرش تمام نشده؟
   const isLastMinuteCurrentlyValid =
     lastMinuteInfo.active && secondsLeft > 0;
 
-  // ۲. آماده‌سازی دیتای اتاق‌ها برای ارسال به RoomsArea
+  // ۲. آماده‌سازی دیتای اتاق‌ها به تفکیک هر اتاق (تخفیف لحظه آخری اختصاصی یا عادی)
   const normalizedData = useMemo(() => {
     if (!Array.isArray(data)) return data;
 
-    return data.map((item: any) => {
-      // حالت پک چند اتاقه
-      if (item?.pack_rooms && Array.isArray(item.pack_rooms)) {
-        return {
-          ...item,
-          pack_rooms: item.pack_rooms.map((r: any) => {
-            const isRoomLM = Boolean(
-              r?.is_last_minute || r?.price?.is_last_minute,
-            );
-            if (!r?.price) return r;
-
-            // اگر تخفیف لحظه آخری هتل بود و تایمرش در فرانت تمام شد، قیمت و تخفیف ریست شود
-            if (isRoomLM && !isLastMinuteCurrentlyValid) {
-              return {
-                ...r,
-                is_last_minute: false,
-                last_minute_timer: 0,
-                price: {
-                  ...r.price,
-                  total_price_discount: r.price.total_price,
-                  discount_percentage: null,
-                  discount_amount: 0,
-                  discount_date: null,
-                },
-              };
-            }
-
-            return {
-              ...r,
-              price: {
-                ...r.price,
-                total_price:
-                  r.price.total_price_discount &&
-                  r.price.total_price_discount > 0
-                    ? r.price.total_price_discount
-                    : r.price.total_price,
-                // در حالت لحظه آخری هتل، discount_date را null می‌کنیم تا تایمر ۴ باکسی داخل کارت نیاید
-                discount_date: isRoomLM ? null : r.price.discount_date,
-              },
-            };
-          }),
-        };
-      }
-
-      // حالت تک‌اتاقه
-      const isRoomLM = Boolean(
-        item?.is_last_minute || item?.price?.is_last_minute,
+    const processRoom = (r: any) => {
+      if (!r?.price) return r;
+      const isThisRoomLM = Boolean(
+        r?.is_last_minute || r?.price?.is_last_minute,
       );
-      if (!item?.price) return item;
 
-      // اگر تخفیف لحظه آخری هتل بود و تایمرش به صفر رسید، بلافاصله ریست شود
-      if (isRoomLM && !isLastMinuteCurrentlyValid) {
+      // اگر تایمر لحظه آخری به پایان رسید، تخفیف لحظه آخری در فرانت ریست شود
+      if (isThisRoomLM && !isLastMinuteCurrentlyValid) {
         return {
-          ...item,
+          ...r,
           is_last_minute: false,
           last_minute_timer: 0,
           price: {
-            ...item.price,
-            total_price_discount: item.price.total_price,
+            ...r.price,
+            total_price: r.price.total_price,
+            total_price_discount: r.price.total_price,
             discount_percentage: null,
             discount_amount: 0,
             discount_date: null,
@@ -140,18 +106,31 @@ export function RoomsContent(props: Props) {
       }
 
       return {
-        ...item,
+        ...r,
+        is_last_minute: isThisRoomLM && isLastMinuteCurrentlyValid,
         price: {
-          ...item.price,
-          total_price:
-            item.price.total_price_discount &&
-            item.price.total_price_discount > 0
-              ? item.price.total_price_discount
-              : item.price.total_price,
-          // در حالت لحظه آخری هتل، discount_date را null می‌کنیم تا تایمر ۴ باکسی داخل کارت نیاید
-          discount_date: isRoomLM ? null : item.price.discount_date,
+          ...r.price,
+          // قیمت اصلی خط‌خورده
+          total_price: r.price.total_price,
+          // قیمت نهایی پس از تخفیف
+          total_price_discount:
+            r.price.total_price_discount && r.price.total_price_discount > 0
+              ? r.price.total_price_discount
+              : r.price.total_price,
+          // در حالت لحظه آخری، discount_date را خالی می‌کنیم تا باکس‌های ۴ تایی خاکستری محو شوند
+          discount_date: isThisRoomLM ? null : r.price.discount_date,
         },
       };
+    };
+
+    return data.map((item: any) => {
+      if (item?.pack_rooms && Array.isArray(item.pack_rooms)) {
+        return {
+          ...item,
+          pack_rooms: item.pack_rooms.map(processRoom),
+        };
+      }
+      return processRoom(item);
     });
   }, [data, isLastMinuteCurrentlyValid]);
 
@@ -182,7 +161,7 @@ export function RoomsContent(props: Props) {
           <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-4">
             <DDatePicker sideOffset={15} triggerType="else" />
             <NumberOfNights type="else" />
-            {/* <Passengers sideOffset={15} triggerType="else" /> */}
+            <Passengers sideOffset={15} triggerType="else" />
           </div>
 
           <div className="flex gap-4 mr-auto">
@@ -199,14 +178,14 @@ export function RoomsContent(props: Props) {
           </div>
         </div>
 
-        {/* بنر و تایمر «پیشنهاد لحظه آخری» (فقط وقتی تخفیف لحظه آخری هتل فعال است و تایمر > 0 است) */}
+        {/* بنر و تایمر پیشنهاد لحظه آخری (اگر حداقل یکی از اتاق‌ها لحظه آخری باشد) */}
         {status === 'success' && isLastMinuteCurrentlyValid && (
           <div
             dir="rtl"
             className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-[#e11d48] via-[#f43f5e] to-[#fb7185] px-4 py-3.5 text-white shadow-md transition-all duration-300 lg:px-6 lg:py-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* سمت راست: آیکون تخفیف + عنوان پیشنهاد لحظه آخری */}
+              {/* عنوان و درصد تخفیف */}
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-inner">
                   <span className="text-lg font-black text-white">%</span>
@@ -216,16 +195,12 @@ export function RoomsContent(props: Props) {
                     پیشنهاد لحظه آخری
                   </span>
                   <span className="rounded-lg bg-white px-2.5 py-0.5 text-xs font-black text-[#e11d48] shadow-sm lg:text-sm">
-                    {String(lastMinuteInfo.discountPercent).replace(
-                      /\d/g,
-                      (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)],
-                    )}
-                    ٪ تخفیف ویژه
+                    تا {toPersianDigits(lastMinuteInfo.maxDiscount)}٪ تخفیف ویژه
                   </span>
                 </div>
               </div>
 
-              {/* سمت چپ: باکس‌های تایمر شمارش معکوس */}
+              {/* تایمر معکوس */}
               <div className="flex items-center gap-1.5" dir="ltr">
                 {days > 0 && (
                   <>

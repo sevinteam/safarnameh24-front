@@ -1,3 +1,5 @@
+'use client';
+
 import moment from 'jalali-moment';
 import { InfoCircle } from 'iconsax-react';
 
@@ -16,6 +18,7 @@ type Props = {
     can_book?: boolean;
     is_available?: boolean;
     availability_status?: 'open' | 'close';
+    is_last_minute?: boolean;
   };
   checkAuth: () => boolean;
 };
@@ -44,6 +47,11 @@ export default function NormalRoom(props: Props) {
     checkAuth,
   } = props;
 
+  // آیا این اتاق لحظه آخری است؟
+  const isLastMinute = Boolean(
+    props.room.is_last_minute || price?.is_last_minute,
+  );
+
   // اگر فیلد از بک‌اند نیامده باشد، پیش‌فرض قابل رزرو است
   const canBook = can_book !== false && is_available !== false;
 
@@ -64,9 +72,28 @@ export default function NormalRoom(props: Props) {
   }
 
   return (
-    <div className="grid overflow-hidden rounded-xl border bg-white shadow-[0_0.5rem_1.5rem_rgba(0,0,0,0.03)] lg:grid-cols-[1fr_17rem] lg:rounded-2xl">
+    <div
+      className={`grid overflow-hidden rounded-xl border transition-all duration-300 lg:grid-cols-[1fr_17rem] lg:rounded-2xl ${
+        isLastMinute
+          ? 'border-2 border-rose-300 bg-gradient-to-l from-rose-50/50 via-white to-white shadow-[0_0.5rem_1.5rem_rgba(225,29,72,0.08)]'
+          : 'border-zinc-200 bg-white shadow-[0_0.5rem_1.5rem_rgba(0,0,0,0.03)]'
+      }`}
+    >
       <div className="relative gap-3 overflow-hidden p-3 text-[clamp(0.8rem,3vw,0.85rem)] font-semibold text-zinc-800 lg:flex lg:border-l lg:p-4">
         <div className="p-2 lg:mt-0 lg:flex lg:flex-1 lg:flex-col">
+          {/* برچسب شیک لحظه آخری بالای نام اتاق */}
+          {isLastMinute && (
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-black text-[#e11d48] w-fit">
+              <span className="flex h-2 w-2 rounded-full bg-[#e11d48] animate-pulse" />
+              <span>🔥 پیشنهاد لحظه آخری</span>
+              {price?.discount_percentage ? (
+                <span className="rounded bg-[#e11d48] px-1.5 py-0.5 text-[10px] text-white font-extrabold mr-1">
+                  {price.discount_percentage}٪ تخفیف
+                </span>
+              ) : null}
+            </div>
+          )}
+
           <div className="text-[clamp(0.85rem,3vw,0.9rem)] font-extrabold">
             {name}
           </div>
@@ -99,10 +126,11 @@ export default function NormalRoom(props: Props) {
             </div>
           </div>
 
-          {canBook && (price.is_fixed_discount_one_time || price.discount_date) ? (
+          {/* تایمر اختصاصی بازه اتاق (فقط برای تخفیف‌های زمان‌دار غیراسنپی و غیر لحظه آخری) */}
+          {canBook && (price.is_fixed_discount_one_time || (!isLastMinute && price.discount_date)) ? (
             <div className="absolute left-5 top-5 hidden h-10 xl:flex">
               {price.is_fixed_discount_one_time && (
-                <div className="text-zin-800 flex-center gap-1 rounded-lg bg-zinc-100 px-4 text-cs08 font-bold">
+                <div className="text-zinc-800 flex-center gap-1 rounded-lg bg-zinc-100 px-4 text-cs08 font-bold">
                   <button className="group relative ml-1 rounded-full">
                     <InfoCircle size={16} color="#666" />
                     <span className="invisible absolute -right-4 top-8 w-60 rounded-cs-10 bg-cs-dark-blue px-3 py-2 text-right text-cs75/5 font-medium text-zinc-100 opacity-0 transition-all ease-in-out group-hover:visible group-hover:top-9 group-hover:opacity-100 lg:w-52">
@@ -115,7 +143,7 @@ export default function NormalRoom(props: Props) {
                 </div>
               )}
 
-              {price.discount_percentage && formattedDeadline && (
+              {!isLastMinute && price.discount_percentage && formattedDeadline && (
                 <div className="grid w-48">
                   <DeadlineTimer date={formattedDeadline} />
                 </div>
@@ -131,13 +159,22 @@ export default function NormalRoom(props: Props) {
         handleChangeCounter={handleChangeCounter}
         canBook={canBook}
       >
-        <ReserveButton
-          roomId={id}
-          hotelId={hotel}
-          roomNumber={counter}
-          canBook={canBook}
-          checkAuth={checkAuth}
-        />
+        {/* برای اتاق‌های لحظه آخری دکمه رزرو قرمز خوش‌رنگ و برای عادی مشکی می‌شود */}
+        <div
+          className={
+            isLastMinute
+              ? '[&_button]:!bg-[#e11d48] [&_button]:!text-white [&_button]:hover:!bg-[#be123c] [&_button]:!shadow-md [&_button]:!shadow-rose-500/30'
+              : ''
+          }
+        >
+          <ReserveButton
+            roomId={id}
+            hotelId={hotel}
+            roomNumber={counter}
+            canBook={canBook}
+            checkAuth={checkAuth}
+          />
+        </div>
       </NormalPrimaryInfo>
     </div>
   );
