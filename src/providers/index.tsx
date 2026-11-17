@@ -11,6 +11,7 @@ import { AuthModalProvider } from '@/features/auth/model/auth-modal-context';
 import { AuthModal } from '@/features/auth/view/auth-modal';
 import { DatePickerProvider } from '@/components/common/date-picker';
 import { Suspense } from 'react';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { DestinationProvider } from '@/components/common/destination-search';
 
 // ------------------------------
@@ -36,21 +37,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
           defaultTheme="system"
           disableTransitionOnChange
         >
-          <TooltipProvider>
-            <QueryClientProvider client={queryClient}>
-              <AuthModalProvider>
-                <DatePickerProvider>
-                  <DestinationProvider>
-                    {children}
+          <NuqsAdapter>
+            <TooltipProvider>
+              <QueryClientProvider client={queryClient}>
+                <AuthModalProvider>
+                  <DatePickerProvider>
+                    <DestinationProvider>
+                      {children}
 
-                    <Toaster />
-                    <AuthModal />
-                    {/* <AuthAlert /> */}
-                  </DestinationProvider>
-                </DatePickerProvider>
-              </AuthModalProvider>
-            </QueryClientProvider>
-          </TooltipProvider>
+                      <Toaster />
+                      <AuthModal />
+                      {/* <AuthAlert /> */}
+                    </DestinationProvider>
+                  </DatePickerProvider>
+                </AuthModalProvider>
+              </QueryClientProvider>
+            </TooltipProvider>
+          </NuqsAdapter>
         </ThemeProvider>
       </DirectionProvider>
     </Suspense>
