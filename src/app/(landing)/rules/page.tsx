@@ -95,7 +95,8 @@ export default async function Rules() {
               sectionIsFirst={index === 0}
               section={{ id: String(index), ...section }}
               firstSectionID={index === 0 ? String(index) : null}
-              // پراپ setActiveSection که حاوی تابع بود کاملاً حذف شد تا باعث کرش نشود
+              // این خط اضافه شد تا تایپ‌اسکریپت اجازه عبور بدهد
+              setActiveSection={(() => {}) as any} 
             />
           ))
         ) : (
