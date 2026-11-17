@@ -1,4 +1,4 @@
-import {
+\import {
   NavBar,
   Section,
   BackToTopBtn,
@@ -18,18 +18,16 @@ export const metadata: Metadata = {
 
 // تابع دریافت داده در سمت سرور (کاملاً ایمن در برابر ارورهای URL و قطع بودن سرور)
 async function getRules() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  // اگر آدرس API ست نشده باشد (مثلاً در زمان بیلد داکر)، بیلد کرش نمی‌کند
-  if (!baseUrl) {
-    return null;
-  }
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
 
   try {
-    const res = await fetch(`${baseUrl}/config/rules`, { 
+    const res = await fetch(`${baseUrl}/config/rules/`, { 
       next: { revalidate: 3600 } // کش کردن داده‌ها برای 1 ساعت
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error('خطا در پاسخ سرور قوانین:', res.status, res.statusText);
+      return null;
+    }
     return await res.json();
   } catch (error) {
     console.error('خطا در دریافت قوانین:', error);
@@ -39,7 +37,11 @@ async function getRules() {
 
 export default async function Rules() {
   const response = await getRules();
-  const data = response?.data || [];
+  
+  // اصلاح هوشمند: پشتیبانی همزمان از پاسخ آرایه مستقیم یا ساختار { data: [...] }
+  const data = Array.isArray(response) 
+    ? response 
+    : (response?.data || (Array.isArray(response?.results) ? response.results : []));
 
   const navList = data.map((item: any, index: number) => ({
     id: String(index),
@@ -61,7 +63,6 @@ export default async function Rules() {
           searchbarStatus={{ static: false, fixed: false }}
           fixedClassName="py-0"
         >
-          {/* برای هندل کردن وضعیت اکتیو در سرور کامپوننت، می‌توانید از کلاینت کامپوننت استفاده کنید */}
           <NavBar activeSection="0" navList={navList} />
         </StickyArea>
       </div>
@@ -75,21 +76,27 @@ export default async function Rules() {
           <div className="w-fit h-full flex gap-2">
             <BackToTopBtn />
             <div className="bg-zinc-100 text-zinc-700 text-cs08 font-bold px-5 flex-center gap-1 rounded-lg">
-              زمان مطالعه: {totalDuration} دقیقه
+              زمان مطالعه: {totalDuration > 0 ? totalDuration : 1} دقیقه
             </div>
           </div>
         </div>
 
         {/* لیست بخش‌ها */}
-        {data.map((section: any, index: number) => (
-          <Section
-            key={index}
-            sectionIsFirst={index === 0}
-            setActiveSection={() => {}} // در حالت سرور، این پارامتر را نادیده بگیرید
-            section={{ id: String(index), ...section }}
-            firstSectionID={index === 0 ? String(index) : null}
-          />
-        ))}
+        {data.length > 0 ? (
+          data.map((section: any, index: number) => (
+            <Section
+              key={index}
+              sectionIsFirst={index === 0}
+              setActiveSection={() => {}} 
+              section={{ id: String(index), ...section }}
+              firstSectionID={index === 0 ? String(index) : null}
+            />
+          ))
+        ) : (
+          <div className="py-20 text-center text-zinc-500 font-semibold">
+            در حال حاضر قوانین و مقرراتی ثبت نشده است.
+          </div>
+        )}
       </div>
     </main>
   );
