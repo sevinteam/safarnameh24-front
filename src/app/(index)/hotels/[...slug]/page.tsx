@@ -1,6 +1,6 @@
 import { Filters, HotelList } from '@/components/pages/hotels';
 import Banners from '@/components/pages/hotels/banners';
-import LayoutType from '@/components/pages/hotels/layout-type/layout-type';
+import { ViewSwitcher } from '@/components/pages/hotels/view-mode/view-switcher';
 import { Sort } from '@/components/pages/hotels/sorting/sort';
 import BreadCrumb from '@/components/pages/hotels/view/organisms/breadcrumb';
 
@@ -21,7 +21,7 @@ export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
 
           <div className="hidden items-center justify-between gap-4 lg:flex">
             <Sort />
-            <LayoutType />
+            <ViewSwitcher />
           </div>
         </div>
 
