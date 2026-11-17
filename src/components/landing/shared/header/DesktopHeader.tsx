@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import NavLinks from './NavLinks';
 import { Profile2User } from 'iconsax-react';
 
@@ -23,6 +24,13 @@ export default function DesktopHeader() {
 
   const { toggle } = useUserAccountContext();
   const scrollPosition = useScrollPosition();
+
+  // 1. اضافه کردن استیت برای حل ارور Hydration در Next.js
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const desktopCondition = scrollPosition > 0 || pathname !== '/';
 
@@ -55,7 +63,13 @@ export default function DesktopHeader() {
           <div className="flex h-11 gap-2 text-cs07 text-zinc-800 xl:gap-3">
             <UserFavorites />
 
-            {fetchStatus !== 'idle' && status === 'pending' ? (
+            {/* 2. شرط‌بندی رندر اولیه برای جلوگیری از خطای Hydration */}
+            {!isMounted ? (
+              // در سمت سرور و رندر اولیه کلاینت، همیشه لودینگ را نشان می‌دهیم
+              <button className="flex-center w-16 gap-2 rounded-lg bg-zinc-200/50 xl:w-28">
+                <span className="loader-dots-dark"></span>
+              </button>
+            ) : fetchStatus !== 'idle' && status === 'pending' ? (
               <button className="flex-center w-16 gap-2 rounded-lg bg-zinc-200/50 xl:w-28">
                 <span className="loader-dots-dark"></span>
               </button>

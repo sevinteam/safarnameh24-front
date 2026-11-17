@@ -39,7 +39,7 @@ async function getRules() {
 export default async function Rules() {
   const response = await getRules();
   
-  // استخراج کاملاً ایمن داده‌ها برای جلوگیری از ارور map is not a function
+  // استخراج کاملاً ایمن داده‌ها 
   let data: any[] = [];
   if (Array.isArray(response)) {
     data = response;
@@ -58,6 +58,11 @@ export default async function Rules() {
     const plainText = (item?.text || '').replace(/<[^>]*>/g, '');
     return sum + Math.ceil(plainText.length / 1000);
   }, 0);
+
+  // تابع خنثی با تگ سرور که بدون خطا به کلاینت پاس داده می‌شود
+  async function dummySetActive() {
+    'use server';
+  }
 
   return (
     <main className="container mx-auto">
@@ -95,8 +100,8 @@ export default async function Rules() {
               sectionIsFirst={index === 0}
               section={{ id: String(index), ...section }}
               firstSectionID={index === 0 ? String(index) : null}
-              // این خط اضافه شد تا تایپ‌اسکریپت اجازه عبور بدهد
-              setActiveSection={(() => {}) as any} 
+              // ارسال تابع مجاز سروری
+              setActiveSection={dummySetActive as any} 
             />
           ))
         ) : (
