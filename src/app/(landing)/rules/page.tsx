@@ -16,28 +16,34 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://zarvantrip.com/rules' },
 };
 
-// تابع دریافت داده در سمت سرور
+// تابع دریافت داده در سمت سرور با مدیریت ۱۰۰٪ ایمن خطاها
 async function getRules() {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
 
   try {
     const res = await fetch(`${baseUrl}/config/rules/`, { 
-      next: { revalidate: 3600 } // کش کردن داده‌ها برای 1 ساعت
+      next: { revalidate: 3600 }, // کش کردن داده‌ها برای 1 ساعت
+      cache: 'no-store', // برای جلوگیری از ماندن در کش در صورت بروزرسانی ادمین
     });
+
     if (!res.ok) {
       console.error('خطا در پاسخ سرور قوانین:', res.status, res.statusText);
-      return null;
+      return [];
     }
-    return await res.json();
+
+    const jsonRes = await res.json();
+    return jsonRes;
   } catch (error) {
-    console.error('خطا در دریافت قوانین:', error);
-    return null;
+    console.error('خطا در ارتباط سرور به بک‌اند قوانین:', error);
+    // بازگرداندن آرایه خالی به جای throw کردن خطا تا صفحه به هیچ عنوان کرش نکند
+    return [];
   }
 }
 
 export default async function Rules() {
   const response = await getRules();
   
+  // استخراج امن داده‌ها چه به صورت آرایه مستقیم و چه داخل ساختار آبجکتی
   const data = Array.isArray(response) 
     ? response 
     : (response?.data || (Array.isArray(response?.results) ? response.results : []));
@@ -92,8 +98,8 @@ export default async function Rules() {
             />
           ))
         ) : (
-          <div className="py-20 text-center text-zinc-500 font-semibold">
-            در حال حاضر قوانین و مقرراتی ثبت نشده است.
+          <div className="py-20 text-center text-zinc-500 font-semibold bg-white rounded-2xl border border-zinc-100 shadow-sm">
+            در حال حاضر قوانین و مقرراتی ثبت نشده است یا سرور در دسترس نمی‌باشد.
           </div>
         )}
       </div>
