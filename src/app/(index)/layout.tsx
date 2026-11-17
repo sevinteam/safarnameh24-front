@@ -13,7 +13,7 @@ export default function IndexLayout({
       {/* <Header /> */}
       <SmartHeader />
 
-      <main className="relative mx-auto mt-6 mb-24 w-full max-w-7xl px-4">
+      <main className="relative mx-auto mt-8 mb-24 w-full max-w-7xl px-4">
         {children}
       </main>
 

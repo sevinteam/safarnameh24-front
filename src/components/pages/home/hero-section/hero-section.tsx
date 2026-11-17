@@ -20,7 +20,7 @@ import heroImage_3 from '@/assets/images/background/hero-3.jpg';
 
 export function HeroSection() {
   return (
-    <section className="-mx-4 -mt-6 xl:mt-0">
+    <section className="-mx-4 -mt-8 xl:mt-0">
       <div className="hidden h-110 overflow-hidden sm:block xl:rounded-[3rem]">
         <Swiper
           autoplay={{

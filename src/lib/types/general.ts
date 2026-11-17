@@ -1,3 +1,6 @@
+import { StaticImageData } from 'next/image';
+import { type LucideIcon } from 'lucide-react';
+
 // ------------------------------
 
 type City = {
@@ -16,6 +19,18 @@ type FAQ = {
   question: string;
 };
 
+type GeneralIcon = LucideIcon;
+
+type GeneralBadge = {
+  icon?: GeneralIcon;
+  text: string;
+};
+
+type GeneralImage = {
+  alt: string;
+  src: StaticImageData | string;
+};
+
 // ------------------------------
 
-export type { City, TopCities, FAQ };
+export type { City, TopCities, FAQ, GeneralBadge, GeneralIcon, GeneralImage };
