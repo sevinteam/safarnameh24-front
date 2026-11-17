@@ -6,10 +6,10 @@ import {
 import StickyArea from '@/components/landing/shared/StickyArea';
 import { Metadata } from 'next';
 
-// جلوگیری از ارور بیلد داکر در زمان ساخت صفحات استاتیک
+// جلوگیری از ارور بیلد و اجبار به رندر داینامیک
 export const dynamic = 'force-dynamic';
 
-// 1. متادیتا برای این صفحه
+// متادیتا برای سئو
 export const metadata: Metadata = {
   title: 'قوانین و مقررات زروان تریپ | شرایط رزرو هتل',
   description: 'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
@@ -22,31 +22,32 @@ async function getRules() {
 
   try {
     const res = await fetch(`${baseUrl}/config/rules/`, { 
-      next: { revalidate: 3600 }, // کش کردن داده‌ها برای 1 ساعت
-      cache: 'no-store', // برای جلوگیری از ماندن در کش در صورت بروزرسانی ادمین
+      cache: 'no-store', // لغو کش برای جلوگیری از تداخل با Next.js و دریافت دیتای زنده
     });
 
     if (!res.ok) {
-      console.error('خطا در پاسخ سرور قوانین:', res.status, res.statusText);
       return [];
     }
 
-    const jsonRes = await res.json();
-    return jsonRes;
+    return await res.json();
   } catch (error) {
     console.error('خطا در ارتباط سرور به بک‌اند قوانین:', error);
-    // بازگرداندن آرایه خالی به جای throw کردن خطا تا صفحه به هیچ عنوان کرش نکند
-    return [];
+    return []; // بازگرداندن آرایه خالی به جای پرتاب خطا
   }
 }
 
 export default async function Rules() {
   const response = await getRules();
   
-  // استخراج امن داده‌ها چه به صورت آرایه مستقیم و چه داخل ساختار آبجکتی
-  const data = Array.isArray(response) 
-    ? response 
-    : (response?.data || (Array.isArray(response?.results) ? response.results : []));
+  // استخراج کاملاً ایمن داده‌ها برای جلوگیری از ارور map is not a function
+  let data: any[] = [];
+  if (Array.isArray(response)) {
+    data = response;
+  } else if (response?.data && Array.isArray(response.data)) {
+    data = response.data;
+  } else if (response?.results && Array.isArray(response.results)) {
+    data = response.results;
+  }
 
   const navList = data.map((item: any, index: number) => ({
     id: String(index),
@@ -73,7 +74,7 @@ export default async function Rules() {
       </div>
 
       <div className="space-y-12 xl:mt-12">
-        {/* Sticky Bar */}
+        {/* نوار چسبان زمان مطالعه */}
         <div className="sticky top-24 bg-white h-16 p-3 items-center justify-between gap-12 hidden rounded-xl shadow-[0_0_2rem_rgba(0,0,0,0.05)] lg:flex">
           <div className="flex-1">
             <NavBar activeSection="0" navList={navList} />
@@ -86,15 +87,15 @@ export default async function Rules() {
           </div>
         </div>
 
-        {/* لیست بخش‌ها */}
+        {/* لیست بخش‌ها و متن قوانین */}
         {data.length > 0 ? (
           data.map((section: any, index: number) => (
             <Section
               key={index}
               sectionIsFirst={index === 0}
-              setActiveSection={() => {}} 
               section={{ id: String(index), ...section }}
               firstSectionID={index === 0 ? String(index) : null}
+              // پراپ setActiveSection که حاوی تابع بود کاملاً حذف شد تا باعث کرش نشود
             />
           ))
         ) : (
