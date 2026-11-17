@@ -1,4 +1,4 @@
-\import {
+import {
   NavBar,
   Section,
   BackToTopBtn,
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://zarvantrip.com/rules' },
 };
 
-// تابع دریافت داده در سمت سرور (کاملاً ایمن در برابر ارورهای URL و قطع بودن سرور)
+// تابع دریافت داده در سمت سرور
 async function getRules() {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
 
@@ -38,7 +38,6 @@ async function getRules() {
 export default async function Rules() {
   const response = await getRules();
   
-  // اصلاح هوشمند: پشتیبانی همزمان از پاسخ آرایه مستقیم یا ساختار { data: [...] }
   const data = Array.isArray(response) 
     ? response 
     : (response?.data || (Array.isArray(response?.results) ? response.results : []));
