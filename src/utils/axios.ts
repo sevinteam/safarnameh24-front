@@ -7,11 +7,20 @@ interface RetryableRequest extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return '/api/v1';
+  }
+  return (
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    (process.env.NODE_ENV === 'development'
+      ? 'http://127.0.0.1:8000/api/v1'
+      : 'https://cps.zarvantrip.com/api/v1')
+  );
+};
+
 export const axiosInstance = axios.create({
-  baseURL:
-    typeof window !== 'undefined'
-      ? '/api/v1'
-      : 'https://cps.zarvantriph24.com/api/v1',
+  baseURL: getBaseUrl(),
   withCredentials: true,
 });
 
@@ -22,7 +31,7 @@ const refreshAccessToken = (): Promise<void> => {
   if (!refreshPromise) {
     refreshPromise = axios
       .post(
-        '/api/v1/token/refresh/',
+        `${getBaseUrl()}/token/refresh/`,
         {},
         {
           withCredentials: true,
@@ -30,7 +39,6 @@ const refreshAccessToken = (): Promise<void> => {
       )
       .then(() => {
         // بک‌اند توکن جدید را با Set-Cookie تنظیم می‌کند.
-        // نیازی به خواندن response.data.access نیست.
       })
       .finally(() => {
         refreshPromise = null;
