@@ -21,7 +21,6 @@ export const SortOptionButton = ({
   onSelect,
 }: SortOptionButtonProps) => {
   const { value, label, description, icon: Icon } = option;
-  console.log(value, isActive);
 
   const button = (
     <Button

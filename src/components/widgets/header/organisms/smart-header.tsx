@@ -13,6 +13,7 @@ import { ThemeSwitcher } from '@/components/common/theme-switcher';
 import { useSmartScrollHeader } from '@/lib/hooks/use-smart-scroll-header';
 
 import dynamic from 'next/dynamic';
+import { cn } from '@/lib/utils';
 
 const StickySearchBar = dynamic(
   () => import('../../sticky-search-bar/sticky-search-bar'),
@@ -34,10 +35,17 @@ export const SmartHeader: React.FC = () => {
     typeof window !== 'undefined' && window.location.pathname === '/';
 
   return (
+    // <header
+    //   className={`bg-sidebar sticky inset-x-0 top-0 z-50 w-full border-b transition-transform duration-300 ease-in-out will-change-transform ${
+    //     !isHomePage && isCollapsed ? '-translate-y-20' : 'translate-y-0'
+    //   }`}
+    // >
     <header
-      className={`bg-sidebar sticky inset-x-0 top-0 z-50 w-full border-b transition-transform duration-300 ease-in-out will-change-transform ${
-        !isHomePage && isCollapsed ? '-translate-y-20' : 'translate-y-0'
-      }`}
+      className={cn(
+        'bg-sidebar inset-x-0 top-0 z-50 w-full border-b transition-transform duration-300 ease-in-out will-change-transform',
+        // !isHomePage && isCollapsed ? '-translate-y-20' : 'translate-y-0',
+        false ? 'sticky' : '',
+      )}
     >
       <div className="mx-auto w-full max-w-7xl px-4">
         <div className="flex h-20 items-center gap-6 xl:gap-8">
@@ -66,7 +74,7 @@ export const SmartHeader: React.FC = () => {
           </div>
         </div>
 
-        <StickySearchBar />
+        {/* <StickySearchBar /> */}
       </div>
     </header>
   );

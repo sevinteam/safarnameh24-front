@@ -168,7 +168,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="drawer-header"
       className={cn(
-        'flex shrink-0 flex-col gap-0.5 p-4 pt-6 pb-0 group-data-[swipe-axis=y]/drawer-popup:text-center md:gap-1.5 md:text-left',
+        'flex shrink-0 flex-col gap-0.5 p-4 pt-6 pb-0 md:gap-1.5',
         className,
       )}
       {...props}
@@ -190,7 +190,10 @@ function DrawerTitle({ className, ...props }: DrawerPrimitive.Title.Props) {
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn('font-heading text-foreground font-medium', className)}
+      className={cn(
+        'font-heading text-foreground text-base font-semibold',
+        className,
+      )}
       {...props}
     />
   );
@@ -203,7 +206,10 @@ function DrawerDescription({
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={cn('text-muted-foreground text-sm text-balance', className)}
+      className={cn(
+        'text-muted-foreground text-sm font-medium text-balance',
+        className,
+      )}
       {...props}
     />
   );
