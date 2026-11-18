@@ -7,6 +7,7 @@ import loader from '@/styles/loader.module.css';
 
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
+import { TickCircle, CloseCircle } from 'iconsax-react';
 
 type ApiResponse = {
   payment_status: 'unpaid' | 'paid' | 'pending';
@@ -39,7 +40,6 @@ export function WatcherInfo() {
       ),
   });
 
-  // دریافت عکس هتل مشابه استپ دوم (جهت اطمینان کامل)
   const { data: hotelData } = useQuery<HotelImageResponse>({
     queryKey: ['reservation-hotel-image', trackingCode],
     enabled: Boolean(trackingCode),
@@ -55,88 +55,97 @@ export function WatcherInfo() {
   const hotelName = data?.hotel_name || hotelData?.hotel_name;
 
   return (
-    <div className="space-y-4">
-      {/* کارت عکس هتل دقیقاً مشابه استپ دوم */}
+    <div className="mx-auto w-full max-w-2xl space-y-5">
+      {/* عکس تمیز هتل (بدون نوشته روی عکس، یکسان در موبایل و دسکتاپ) */}
       {hotelImage ? (
-        <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm">
           {hotelSlug ? (
-            <Link href={`/hotel/${hotelSlug}`} className="block group relative h-44 w-full overflow-hidden">
+            <Link
+              href={`/hotel/${hotelSlug}`}
+              className="group block h-44 w-full overflow-hidden md:h-52"
+            >
               <img
                 src={hotelImage}
                 alt={hotelName || 'تصویر هتل'}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              {hotelName ? (
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-4 py-2.5 text-xs font-bold text-white">
-                  {hotelName}
-                </div>
-              ) : null}
             </Link>
           ) : (
-            <div className="relative h-44 w-full overflow-hidden">
+            <div className="h-44 w-full overflow-hidden md:h-52">
               <img
                 src={hotelImage}
                 alt={hotelName || 'تصویر هتل'}
                 className="h-full w-full object-cover"
               />
-              {hotelName ? (
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-4 py-2.5 text-xs font-bold text-white">
-                  {hotelName}
-                </div>
-              ) : null}
             </div>
           )}
         </div>
       ) : null}
 
-      {/* کارت وضعیت پرداخت */}
-      <div className="rounded-xl border bg-white p-5 text-cs08/6 font-semibold">
+      {/* کارت وضعیت پرداخت (ریسپانسیو در موبایل و دسکتاپ) */}
+      <div className="rounded-2xl border border-zinc-100 bg-white p-6 text-cs08/6 font-semibold shadow-sm md:p-8">
         {status === 'pending' ? (
-          <div className="flex-center h-28">
+          <div className="flex-center h-32">
             <div className={loader.dots} />
           </div>
         ) : (
           <>
             {paymentStatus === 'paid' ? (
-              <div className="grid">
-                <p className="border-b pb-3 text-cs85/5 font-bold text-green-600">
-                  پرداخت صورتحساب با موفقیت انجام شد
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
+                  <TickCircle
+                    size={36}
+                    variant="Bold"
+                    className="text-green-600"
+                  />
+                </div>
+                <h2 className="mb-2 text-lg font-black text-green-700 md:text-xl">
+                  پرداخت صورت‌حساب با موفقیت انجام شد
+                </h2>
+                <p className="mb-8 max-w-md text-sm leading-7 text-zinc-600">
+                  مشتری گرامی، سپاس از اعتماد شما به مجموعه زروان تریپ. خرید شما
+                  با موفقیت قطعی شد و واچر اقامت صادر گردید.
                 </p>
 
-                <p className="mb-4 mt-3.5 text-zinc-600">
-                  مشتری گرامی سپاس از اعتماد شما نسبت به مجموعه زروان تریپ , خرید
-                  شما با موفقیت انجام شد .
-                </p>
+                <div className="flex w-full flex-col items-center justify-center gap-3 md:flex-row">
+                  <Link
+                    href={`/voucher/${trackingCode}`}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3 text-sm font-bold text-white shadow-md shadow-green-600/20 transition-all hover:bg-green-700 active:scale-95 md:w-auto md:py-2.5"
+                  >
+                    <span>مشاهده و دانلود واچر</span>
+                  </Link>
 
-                <Link
-                  href={`/dashboard/reservations/${trackingCode}`}
-                  className="flex w-fit items-center gap-2 rounded-cs-10 bg-cs-blue/10 px-5 py-2 font-bold text-cs-blue"
-                >
-                  <div className="relative aspect-square w-2.5 rounded-full bg-cs-blue/90">
-                    <span className="pointer-events-none absolute inset-0 animate-ping rounded-lg bg-cs-blue" />
-                  </div>
-
-                  <span>مشاهده واچر</span>
-                </Link>
+                  <Link
+                    href={`/dashboard/reservations/${trackingCode}`}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-100 px-6 py-3 text-sm font-bold text-zinc-700 transition-all hover:bg-zinc-200 active:scale-95 md:w-auto md:py-2.5"
+                  >
+                    <span>پنل کاربری</span>
+                  </Link>
+                </div>
               </div>
             ) : (
-              <div className="grid">
-                <p className="border-b pb-3 text-cs85/5 font-bold text-cs-red">
-                  پرداخت صورتحساب با خطا مواجه شد
-                </p>
-
-                <p className="mb-4 mt-3.5 text-zinc-600">
-                  مشتری گرامی به دلیل مشکل فنی در سیستم درگاه پرداخت , رزرو شما
-                  قابل پیگیری نمیباشد .
-                  <br />
-                  لطفا رزرو جدیدی را با استفاده از دکمه زیر ثبت نمایید .
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+                  <CloseCircle
+                    size={36}
+                    variant="Bold"
+                    className="text-cs-red"
+                  />
+                </div>
+                <h2 className="mb-2 text-lg font-black text-cs-red md:text-xl">
+                  پرداخت صورت‌حساب ناموفق بود
+                </h2>
+                <p className="mb-8 max-w-md text-sm leading-7 text-zinc-600">
+                  به دلیل لغو تراکنش یا مشکل در درگاه بانکی، رزرو شما قطعی نشد.
+                  در صورت کسر وجه از حساب شما، مبلغ طی ۷۲ ساعت توسط بانک بازگشت
+                  داده می‌شود.
                 </p>
 
                 <Link
-                  href={'/hotel'}
-                  className="w-fit rounded-cs-10 bg-zinc-100 px-5 py-2 text-zinc-800"
+                  href={hotelSlug ? `/hotel/${hotelSlug}` : '/hotel'}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-zinc-800 active:scale-95 md:w-auto md:py-2.5"
                 >
-                  ثبت رزرو جدید
+                  <span>تلاش مجدد و ثبت رزرو جدید</span>
                 </Link>
               </div>
             )}
