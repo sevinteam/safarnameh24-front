@@ -73,14 +73,12 @@ export const Sort = ({ onSortChange, className }: Props) => {
         />
       ))}
 
-      {/* Controlled Base UI Select: `null` resets trigger back to placeholder */}
       <Select
         items={overflowSelectItems}
         onValueChange={handleSelectChange}
         value={isOverflowActive ? activeSort : null}
       >
         <SelectTrigger
-          size="sm"
           className="min-w-36"
           aria-label="سایر گزینه‌های مرتب‌سازی"
         >
