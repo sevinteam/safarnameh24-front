@@ -1,182 +1,120 @@
 'use client';
 
-import Filter from '@/components/dashboard/favoritesId/filter';
 import { ReactNode, useState } from 'react';
-import CustomPagination from '@/components/dashboard/ui/customPagination';
-import { useApiQuery } from '@/hooks/dashboard/useApiQuery';
-import { GETFavoritesSingle } from '@/types/dashboard/api/get';
+import Filter from '@/components/dashboard/favorites/filter';
+import Collection from '@/components/dashboard/favorites/collection';
 import ErrorTable from '@/components/dashboard/api/errorTable';
 import EmptyTable from '@/components/dashboard/api/emptyTable';
-import { useParams } from 'next/navigation';
-import { SuggestedHotel } from '@/components/landing/shared';
-import Blog from '@/components/dashboard/favoritesId/blog';
-import { Skeleton } from '@/components/ui/skeleton';
-import IconsaxIcons from '@/components/icons/iconsaxIcons';
-import DeleteItemDialog from '@/components/dashboard/favoritesId/dialog/deleteItemDialog';
+import { useApiQuery } from '@/hooks/dashboard/useApiQuery';
 
-export default function FavoritesPage(): ReactNode {
-  // Defining states of component
-  const [paginationNumber, setPaginationNumber] = useState<number>(0);
-  const [deleteDialogOpened, setDeleteDialogOpened] = useState<boolean>(false);
-  const [deleteDialogId, setDeleteDialogId] = useState<number | undefined>(undefined);
-  const [savedType, setSavedType] = useState<'savedHotels' | 'savedBlogs'>('savedHotels');
-  
-  const params = useParams();
-  const id = params.id as string;
+type RawCollectionItem = {
+  id: number | string;
+  title: string;
+  thumbnails?: string[];
+  images?: string[];
+};
 
-  // ۱. متغیرهای id و paginationNumber به queryKey اضافه شدند و useEffect حذف شد
-  const getData = useApiQuery<GETFavoritesSingle>({
-    url: `/favorite/collections/${id}?p=${paginationNumber + 1}`,
-    queryKey: ['favorites', 'list', String(id), String(paginationNumber)],
+// ----------------------------------------------
+
+export default function DashboardFavoritesPage(): ReactNode {
+  const [deleteState, setDeleteState] = useState<boolean>(false);
+
+  const getData = useApiQuery<any>({
+    url: '/favorite/collections/',
+    queryKey: ['favorites', 'collections'],
     options: {
-      staleTime: 30000, // 30 Sec
-      enabled: !!id,
+      staleTime: 30000,
     },
   });
 
-  const itemToRender = !getData.data
-    ? []
-    : savedType === 'savedHotels'
-      ? getData.data.results.items.filter((item) => item.type === 'hotel')
-      : getData.data.results.items.filter((item) => item.type === 'article');
+  // استخراج ایمن آرایه کالکشن‌ها در هر حالت پاسخ بک‌اند
+  const rawData = getData.data;
+  const rawList: RawCollectionItem[] = Array.isArray(rawData)
+    ? rawData
+    : Array.isArray(rawData?.results)
+      ? rawData.results
+      : Array.isArray(rawData?.data)
+        ? rawData.data
+        : [];
 
-  // ۲. توابع کمکی برای تمیز کردنِ JSX
-  const renderLoading = () => (
-    <>
-      <Filter loading favName="X" />
-      <div className="grid lg:grid-cols-4 grid-cols-1 lg:gap-10 gap-[24px]">
-        {[...new Array(12)].map((_, index) => (
-          <Skeleton key={index} className="h-[200px] rounded-lg" />
-        ))}
-      </div>
-    </>
-  );
+  // تبدیل thumbnails بک‌اند به آرایه ۳ تایی images مورد نیاز کامپوننت Collection
+  const collections = rawList.map((item) => {
+    const sourceThumbs = Array.isArray(item?.thumbnails)
+      ? item.thumbnails
+      : Array.isArray(item?.images)
+        ? item.images
+        : [];
 
-  const renderEmpty = () => (
-    <EmptyTable
-      className="lg:col-span-4 col-span-1 lg:bg-transparent border-none"
-      title="هیچ آیتمی فعلا ندارید!"
-      description="مشتری گرامی، برای ثبت آیتم می‌توانید از وبسایت اقدام نمایید. از همراهی شما متشکریم."
-    />
-  );
-
-  const renderContent = () => {
-    if (getData.data!.count === 0) return renderEmpty();
-
-    return (
-      <>
-        <Filter
-          favName={getData.data!.results.title}
-          loading={false}
-          onChange={setSavedType}
-        />
-        
-        {itemToRender.length === 0 ? (
-          renderEmpty()
-        ) : (
-          <>
-            <div className="grid lg:grid-cols-4 grid-cols-1 lg:gap-10 gap-[24px]">
-              {deleteDialogId && (
-                <DeleteItemDialog
-                  isOpened={deleteDialogOpened}
-                  id={deleteDialogId}
-                  refetch={getData.refetch}
-                  type={savedType === 'savedHotels' ? 'hotel' : 'article'}
-                  closeFn={() => {
-                    setDeleteDialogOpened(false);
-                    setDeleteDialogId(undefined);
-                  }}
-                />
-              )}
-              
-              {/* منطق شرطی رندر کردن آیتم‌ها ساده‌تر شد */}
-              {itemToRender.map((item, index) => {
-                if (savedType === 'savedHotels' && item.type === 'hotel') {
-                  return (
-                    <div className="relative" key={index}>
-                      <button
-                        className="absolute left-[18px] top-[18px] z-10 flex size-[40px] items-center justify-center rounded-lg backdrop-blur-xl p-2 text-white"
-                        onClick={() => {
-                          setDeleteDialogOpened(true);
-                          setDeleteDialogId(item.actual_id);
-                        }}
-                      >
-                        <IconsaxIcons
-                          className="w-full aspect-square"
-                          color="currentColor"
-                          variant="Bold"
-                          name="Heart"
-                        />
-                      </button>
-                      <SuggestedHotel
-                        showDiscount={true}
-                        showTimer={false}
-                        hotel={{
-                          average_score: item.average_score ? Number(item.average_score.toFixed(1)) : item.rating,
-                          city: item.city,
-                          discount_expiry: item.discount_date || '-',
-                          discount_percentage: item.discount_percentage,
-                          id: item.id,
-                          main_image: item.main_image,
-                          name: item.name,
-                          original_total_price: item.price,
-                          rating: item.rating,
-                          slug: item.slug,
-                          stars: item.stars,
-                          total_price: item.price_after_discount,
-                        }}
-                      />
-                    </div>
-                  );
-                }
-
-                if (savedType === 'savedBlogs' && item.type === 'article') {
-                  return (
-                    <Blog
-                      key={index}
-                      desc={item.summary}
-                      actualId={item.id}
-                      onLikeClick={() => {
-                        setDeleteDialogOpened(true);
-                        setDeleteDialogId(item.actual_id);
-                      }}
-                      createdAt={item.published_date}
-                      image={item.thumbnail}
-                      title={item.title}
-                    />
-                  );
-                }
-
-                return null;
-              })}
-            </div>
-
-            {getData.data!.count > 18 && (
-              <div className="flex items-center justify-center lg:justify-end">
-                <CustomPagination
-                  count={getData.data!.count}
-                  activeIndex={paginationNumber}
-                  setActiveIndex={setPaginationNumber}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </>
+    const images = [0, 1, 2].map(
+      (idx) => sourceThumbs[idx] || 'EmptyCollectionImage',
     );
-  };
 
-  // ۳. مدیریت خروجی نهایی به شدت تمیز شد
-  const renderMainState = () => {
-    if (getData.isLoading || getData.isRefetching) return renderLoading();
-    if (getData.isError) return <ErrorTable refetch={getData.refetch} />;
-    if (getData.data) return renderContent();
-    return null;
-  };
+    return {
+      id: item.id,
+      title: item.title,
+      images,
+    };
+  });
+
+  const isLoading = getData.isLoading || getData.isRefetching;
+  const safeRefetch = (() => getData.refetch()) as any;
 
   return (
-    <main className="flex flex-col gap-[24px] p-0 px-[24px] pt-[24px] pb-[50px] lg:p-5 lg:pb-5 lg:gap-5 lg:px-5">
-      {renderMainState()}
+    <main className="flex flex-col gap-[24px] p-0 px-[24px] pt-[24px] pb-[50px] lg:gap-5 lg:p-5 lg:px-5 lg:pb-5">
+      {isLoading ? (
+        <>
+          <Filter
+            deleteState={deleteState}
+            setDeleteState={setDeleteState}
+            loading={true}
+            listIsEmpty={true}
+            refetch={safeRefetch}
+          />
+          <div className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+            {[1, 2, 3, 4].map((n) => (
+              <Collection
+                key={n}
+                loading={true}
+                isDeletingByUser={false}
+                data={{ id: n, title: '', images: [] } as any}
+                refetch={safeRefetch}
+              />
+            ))}
+          </div>
+        </>
+      ) : getData.isError ? (
+        <ErrorTable refetch={safeRefetch} />
+      ) : (
+        <>
+          <Filter
+            deleteState={deleteState}
+            setDeleteState={setDeleteState}
+            loading={false}
+            listIsEmpty={collections.length === 0}
+            refetch={safeRefetch}
+          />
+
+          {collections.length === 0 ? (
+            <EmptyTable
+              className="col-span-1 border-none lg:col-span-4 lg:bg-transparent"
+              title="هیچ لیست مورد علاقه‌ای فعلاً ندارید!"
+              description="مشتری گرامی، برای ایجاد اولین لیست علاقه‌مندی از دکمه «ثبت لیست جدید» استفاده نمایید."
+            />
+          ) : (
+            <div className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+              {collections.map((collection) => (
+                <Collection
+                  key={collection.id}
+                  loading={false}
+                  isDeletingByUser={deleteState}
+                  data={collection as any}
+                  refetch={safeRefetch}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </main>
   );
 }
