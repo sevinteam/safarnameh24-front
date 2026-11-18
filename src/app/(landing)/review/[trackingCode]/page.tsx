@@ -16,7 +16,6 @@ import {
   User,
   Calendar,
   Location,
-  Building,
 } from 'iconsax-react';
 
 type PointItem = {
@@ -102,7 +101,7 @@ export default function PostStayReviewPage({
   const submitMutation = useMutation({
     mutationFn: () => {
       const payload = {
-        guest_name: guestName.trim(),
+        guest_name: guestName.trim() || 'مسافر زروان تریپ',
         stars,
         text: text.trim(),
         strength_ids: selectedStrengths,
@@ -154,7 +153,7 @@ export default function PostStayReviewPage({
 
   if (isLoading) {
     return (
-      <main className="container mx-auto max-w-2xl px-4 py-16">
+      <main className="container mx-auto max-w-2xl px-4 py-20">
         <div className="flex flex-col items-center justify-center space-y-4 rounded-3xl border border-zinc-100 bg-white p-10 shadow-sm">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-cs-blue border-t-transparent" />
           <p className="text-sm font-bold text-zinc-600">در حال بارگذاری اطلاعات رزرو...</p>
@@ -167,7 +166,7 @@ export default function PostStayReviewPage({
     const errMsg =
       (error as any)?.response?.data?.message ||
       (error as any)?.response?.data?.detail ||
-      'رزرو معتبری با این کد پیگیری یافت نشد یا زمان آن گذشته است.';
+      'رزرو معتبری با این کد پیگیری یافت نشد.';
     return (
       <main className="container mx-auto max-w-lg px-4 py-20" dir="rtl">
         <div className="rounded-3xl border border-rose-100 bg-white p-8 text-center shadow-lg shadow-rose-500/5">
@@ -198,7 +197,7 @@ export default function PostStayReviewPage({
             {submittedSuccess ? 'سپاس از ثبت دیدگاه ارزشمند شما!' : 'شما قبلاً برای این رزرو نظر داده‌اید'}
           </h1>
           <p className="mb-8 text-xs leading-7 font-semibold text-zinc-500">
-            نظر شما با موفقیت در صفحه هتل <strong>{reviewData.hotel.name}</strong> ثبت شد و به مسافران دیگر کمک می‌کند.
+            نظر شما با موفقیت در صفحه هتل <strong>{reviewData.hotel.name}</strong> ثبت شد.
           </p>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center">
             <Link
@@ -305,13 +304,12 @@ export default function PostStayReviewPage({
                 برای ثبت امتیاز، روی ستاره‌ها کلیک کنید
               </p>
 
-              {/* ستاره‌های تعاملی و زیبا */}
               <div 
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50/60 border border-amber-100 px-6 py-4 shadow-sm"
                 dir="ltr"
               >
                 {[1, 2, 3, 4, 5].map((s) => {
-                  const isFilled = s <= (hoverStar || stars);
+                  const filled = s <= (hoverStar || stars);
                   return (
                     <button
                       key={s}
@@ -323,8 +321,8 @@ export default function PostStayReviewPage({
                     >
                       <Star1
                         size={40}
-                        variant={isFilled ? 'Bold' : 'Outline'}
-                        className={isFilled ? 'text-amber-400 drop-shadow-sm' : 'text-zinc-300'}
+                        variant={filled ? 'Bold' : 'Outline'}
+                        className={filled ? 'text-amber-400 drop-shadow-sm' : 'text-zinc-300'}
                       />
                     </button>
                   );
@@ -336,7 +334,6 @@ export default function PostStayReviewPage({
               </div>
             </div>
 
-            {/* امتیاز به جزئیات */}
             {reviewData.suggested_comment_items.length > 0 && (
               <div className="border-t border-zinc-100 pt-6">
                 <h3 className="mb-4 text-xs font-extrabold text-zinc-700 lg:text-sm">
@@ -405,19 +402,19 @@ export default function PostStayReviewPage({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {positiveItems.map((item) => {
-                    const selected = selectedStrengths.includes(item.id);
+                    const sel = selectedStrengths.includes(item.id);
                     return (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => toggleStrength(item.id)}
                         className={`rounded-xl border px-3.5 py-2 text-xs font-bold transition ${
-                          selected
+                          sel
                             ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm'
                             : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'
                         }`}
                       >
-                        {selected ? '✓ ' : '+ '}
+                        {sel ? '✓ ' : '+ '}
                         {item.title}
                       </button>
                     );
@@ -434,19 +431,19 @@ export default function PostStayReviewPage({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {negativeItems.map((item) => {
-                    const selected = selectedWeaknesses.includes(item.id);
+                    const sel = selectedWeaknesses.includes(item.id);
                     return (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => toggleWeakness(item.id)}
                         className={`rounded-xl border px-3.5 py-2 text-xs font-bold transition ${
-                          selected
+                          sel
                             ? 'border-rose-500 bg-rose-50 text-rose-700 shadow-sm'
                             : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'
                         }`}
                       >
-                        {selected ? '✓ ' : '+ '}
+                        {sel ? '✓ ' : '+ '}
                         {item.title}
                       </button>
                     );
@@ -522,11 +519,11 @@ export default function PostStayReviewPage({
                 type="button"
                 disabled={submitMutation.isPending || !text.trim()}
                 onClick={() => submitMutation.mutate()}
-                className="flex items-center gap-2 rounded-xl bg-emerald-600 px-7 py-3 text-xs font-black text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex items-center gap-2 rounded-xl bg-emerald-600 px-7 py-3 text-xs font-black text-white shadow-md transition hover:bg-emerald-700 disabled:opacity-50"
               >
                 <TickCircle size={18} variant="Bold" />
                 <span>
-                  {submitMutation.isPending ? 'در حال ثبت نظر...' : 'ثبت نهایی نظر'}
+                  {submitMutation.isPending ? 'در حال ثبت...' : 'ثبت نهایی نظر'}
                 </span>
               </button>
             </div>
