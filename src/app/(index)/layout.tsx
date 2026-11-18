@@ -1,5 +1,5 @@
-import { Footer } from '@/components/widgets/footer';
-import { Header, SmartHeader } from '@/components/widgets/header';
+import { Footer } from '@/components/layout/footer';
+import { Header, SmartHeader } from '@/components/layout/header';
 
 // ------------------------------
 

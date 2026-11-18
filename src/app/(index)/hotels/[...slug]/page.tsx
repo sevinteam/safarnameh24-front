@@ -5,7 +5,7 @@ import { Sort } from '@/components/pages/hotels/sorting/sort';
 import BreadCrumb from '@/components/pages/hotels/view/organisms/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import StickySearchBar from '@/components/widgets/sticky-search-bar/sticky-search-bar';
+import StickySearchBar from '@/components/layout/sticky-search-bar/sticky-search-bar';
 import SortWrapper from '@/components/pages/hotels/sorting/sort-wrapper';
 
 // ------------------------------
