@@ -1,3 +1,4 @@
+import { FloatingActions } from '@/components/layout/floating-actions/floating-actions';
 import { Footer } from '@/components/layout/footer';
 import { Header, SmartHeader } from '@/components/layout/header';
 
@@ -9,7 +10,7 @@ export default function IndexLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="relative flex min-h-dvh flex-col">
       {/* <Header /> */}
       <SmartHeader />
 
@@ -17,6 +18,7 @@ export default function IndexLayout({
         {children}
       </main>
 
+      <FloatingActions />
       <Footer />
     </div>
   );

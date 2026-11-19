@@ -11,7 +11,7 @@ import { AccessLinks } from './access-links';
 import { SocialMedia } from './social-media';
 import Brand from '@/components/common/brand';
 
-import { ScrollToTop } from '@/components/common/scroll-to-top';
+import { ScrollToTop } from '@/components/layout/floating-actions/scroll-to-top';
 
 // ------------------------------
 
