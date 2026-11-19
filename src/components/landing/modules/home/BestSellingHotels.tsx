@@ -29,6 +29,44 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
   );
 }
 
+function hasLastMinuteDiscount(hotel: Hotel): boolean {
+  const h = hotel as any;
+  return Boolean(
+    h?.is_last_minute_active ||
+      h?.has_last_minute ||
+      h?.is_last_minute ||
+      h?.has_hotel_last_minute ||
+      Number(h?.last_minute_discount_percent ?? 0) > 0 ||
+      Number(h?.last_minute_discount ?? 0) > 0,
+  );
+}
+
+function LastMinuteBadge({
+  hotel,
+  compact = false,
+}: {
+  hotel: Hotel;
+  compact?: boolean;
+}) {
+  if (!hasLastMinuteDiscount(hotel)) return null;
+
+  return (
+    <span
+      className={`pointer-events-none absolute z-10 inline-flex animate-pulse items-center gap-1.5 rounded-lg bg-rose-600 font-extrabold text-white shadow-md shadow-rose-600/40 ${
+        compact
+          ? 'right-3 top-3 px-2 py-0.5 text-[11px]'
+          : 'right-5 top-5 px-2.5 py-1 text-xs'
+      }`}
+    >
+      <span className="relative flex size-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
+        <span className="relative inline-flex size-2 rounded-full bg-white" />
+      </span>
+      <span>لحظه آخری</span>
+    </span>
+  );
+}
+
 export function BestSellingHotels() {
   const swiperRef = useRef<SwiperType>(null);
   const { data, status } = useQuery<ApiResponse>({
@@ -79,7 +117,10 @@ export function BestSellingHotels() {
             >
               {hotels.map((hotel, i) => (
                 <SwiperSlide key={i} className="max-w-[20rem] select-none">
-                  <BestSellingHotelA hotel={hotel} />
+                  <div className="relative">
+                    <LastMinuteBadge hotel={hotel} compact />
+                    <BestSellingHotelA hotel={hotel} />
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -101,7 +142,10 @@ export function BestSellingHotels() {
             >
               {topHotels.map((hotel, i) => (
                 <SwiperSlide key={i} className="max-w-full select-none">
-                  <BestSellingHotelB hotel={hotel} />
+                  <div className="relative">
+                    <LastMinuteBadge hotel={hotel} />
+                    <BestSellingHotelB hotel={hotel} />
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -120,7 +164,7 @@ export function BestSellingHotels() {
             <Swiper
               spaceBetween={20}
               slidesPerView={2}
-              modules={[Navigation, Navigation]}
+              modules={[Navigation]}
               className="bestSellingHotelsA-swiper"
               watchOverflow
               onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -129,7 +173,10 @@ export function BestSellingHotels() {
                 <SwiperSlide key={i} className="max-w-full select-none pb-4">
                   <div className="grid gap-4">
                     {group.map((hotel, j) => (
-                      <BestSellingHotelA key={j} hotel={hotel} />
+                      <div key={j} className="relative">
+                        <LastMinuteBadge hotel={hotel} compact />
+                        <BestSellingHotelA hotel={hotel} />
+                      </div>
                     ))}
                   </div>
                 </SwiperSlide>

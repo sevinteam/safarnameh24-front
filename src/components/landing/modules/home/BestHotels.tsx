@@ -17,11 +17,23 @@ import { generalInstance, isEmptyOrInvalid } from '@/utils/services';
 type Data = {
   hotel_slug: string;
   image_logo_hotel: string;
+  is_last_minute_active?: boolean;
+  last_minute_discount_percent?: number;
 };
 
 type ApiResponse = {
   data: Data[];
 };
+
+function hasLastMinuteDiscount(hotel: Data): boolean {
+  const h = hotel as any;
+  return Boolean(
+    h?.is_last_minute_active ||
+      h?.has_last_minute ||
+      h?.is_last_minute ||
+      Number(h?.last_minute_discount_percent ?? 0) > 0,
+  );
+}
 
 // -----------------------------------------------
 
@@ -48,13 +60,13 @@ export function BestHotels() {
 
       {status === 'pending' ? (
         <>
-          <Skeleton className="w-full h-32 xl:hidden" />
+          <Skeleton className="h-32 w-full xl:hidden" />
 
           <div className="hidden gap-5 xl:flex">
             {Array(6)
               .fill(null)
               .map((_, index) => (
-                <Skeleton key={index} className="w-full h-32" />
+                <Skeleton key={index} className="h-32 w-full" />
               ))}
           </div>
         </>
@@ -76,8 +88,18 @@ export function BestHotels() {
             >
               <Link
                 href={`/hotel/${hotel.hotel_slug}`}
-                className="relative bg-white h-28 p-4 group flex-center rounded-xl shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)] xl:h-32 xl:p-6"
+                className="flex-center group relative h-28 rounded-xl bg-white p-4 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)] xl:h-32 xl:p-6"
               >
+                {hasLastMinuteDiscount(hotel) && (
+                  <span className="pointer-events-none absolute right-2 top-2 z-10 inline-flex animate-pulse items-center gap-1 rounded-lg bg-rose-600 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-sm shadow-rose-600/40">
+                    <span className="relative flex size-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
+                      <span className="relative inline-flex size-1.5 rounded-full bg-white" />
+                    </span>
+                    <span>لحظه آخری</span>
+                  </span>
+                )}
+
                 {hotel && (
                   <Image
                     width={200}
@@ -88,7 +110,7 @@ export function BestHotels() {
                   />
                 )}
 
-                <div className="absolute -z-10 bottom-1 left-1/2 -translate-x-1/2 bg-cs-red w-20 h-10 rounded-xl transition-all duration-200 ease-in-out delay-100 group-hover:-bottom-2"></div>
+                <div className="absolute -z-10 bottom-1 left-1/2 h-10 w-20 -translate-x-1/2 rounded-xl bg-cs-red transition-all delay-100 duration-200 ease-in-out group-hover:-bottom-2"></div>
               </Link>
             </SwiperSlide>
           ))}
