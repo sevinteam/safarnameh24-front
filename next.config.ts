@@ -1,21 +1,26 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Keep 'standalone' only if deploying via Docker / self-hosted Node server
   output: 'standalone',
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+
+  // Remove Next.js powered-by response header for cleaner security headers
+  poweredByHeader: false,
+
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      // Example for production CDN:
+      // {
+      //   protocol: 'https',
+      //   hostname: 'cdn.safarnameh24.ir',
+      // },
     ],
   },
-  experimental: {
-    agentFeedback: true,
-  },
+
   turbopack: {
     rules: {
       '*.css': {
