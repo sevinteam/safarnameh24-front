@@ -15,6 +15,18 @@ const parseAsShowToggle = parseAsStringEnum(['show', 'hide']).withDefault(
 
 type ApiResponse = { data: Hotel[] };
 
+function hasLastMinuteDiscount(hotel: Hotel): boolean {
+  const h = hotel as any;
+  return Boolean(
+    h?.is_last_minute_active ||
+      h?.has_last_minute ||
+      h?.is_last_minute ||
+      h?.has_hotel_last_minute ||
+      Number(h?.last_minute_discount_percent ?? 0) > 0 ||
+      Number(h?.last_minute_discount ?? 0) > 0,
+  );
+}
+
 // ----------------------------
 
 export function AmazingHotels() {
@@ -40,7 +52,7 @@ export function AmazingHotels() {
       />
 
       {status !== 'pending' && !amazingHotels.length && (
-        <div className="text-zinc-500 text-cs85 font-semibold">
+        <div className="text-cs85 font-semibold text-zinc-500">
           * هتلی برای نمایش وجود ندارد !
         </div>
       )}
@@ -53,17 +65,27 @@ export function AmazingHotels() {
                 <Skeleton key={index} className="h-[23.5rem] rounded-xl" />
               ))
           : amazingHotels.length > 0 &&
-            amazingHotels
-              ?.slice(0, visibleCount)
-              .map((hotel, index) => (
-                <SuggestedHotel key={index} hotel={hotel} bestType="amazing" />
-              ))}
+            amazingHotels?.slice(0, visibleCount).map((hotel, index) => (
+              <div key={index} className="relative">
+                {hasLastMinuteDiscount(hotel) && (
+                  <span className="pointer-events-none absolute right-5 top-5 z-10 inline-flex animate-pulse items-center gap-1.5 rounded-lg bg-rose-600 px-2.5 py-1 text-xs font-extrabold text-white shadow-md shadow-rose-600/40">
+                    <span className="relative flex size-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
+                      <span className="relative inline-flex size-2 rounded-full bg-white" />
+                    </span>
+                    <span>لحظه آخری</span>
+                  </span>
+                )}
+
+                <SuggestedHotel hotel={hotel} bestType="amazing" />
+              </div>
+            ))}
       </div>
 
       {visibleCount < amazingHotels?.length && (
         <button
           onClick={() => setVisibleCount((prev) => prev + 6)}
-          className="w-fit bg-zinc-200/80 text-cs08 font-semibold px-5 py-2 mt-6 rounded-lg"
+          className="mt-6 w-fit rounded-lg bg-zinc-200/80 px-5 py-2 text-cs08 font-semibold"
         >
           مشاهده بیشتر
         </button>

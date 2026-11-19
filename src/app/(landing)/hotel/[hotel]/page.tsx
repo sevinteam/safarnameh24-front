@@ -26,11 +26,12 @@ type Props = { params: Promise<{ hotel: string }> };
 const getHotelSeo = cache(async (hotelSlug: string) => {
   try {
     const res = await fetch(`${apiBaseUrl}/hotel/seo/${hotelSlug}/`, {
-      next: { revalidate: 3600 }, // کش ۱ ساعته ISR برای سرعت فوق‌العاده
+      next: { revalidate: 3600 }, // کش ۱ ساعته ISR
     });
     if (!res.ok) return null;
     return await res.json();
-  } catch {
+  } catch (error) {
+    console.error("Error fetching SEO:", error);
     return null;
   }
 });
@@ -44,41 +45,66 @@ const getHotelIntroduction = cache(async (hotelSlug: string) => {
     if (res.status === 404) return null;
     if (!res.ok) return null;
     return await res.json();
-  } catch {
+  } catch (error) {
+    console.error("Error fetching hotel introduction:", error);
     return null;
   }
 });
 
-// ۳. تولید متادیتای صفحه
+// ۳. تولید متادیتای کاملاً پویا و ایمن صفحه
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { hotel: hotelSlug } = await params;
-  const seo = await getHotelSeo(hotelSlug);
+  
+  // ابتدا تلاش برای دریافت دیتای سئو و اطلاعات هتل به صورت همزمان
+  const [seo, hotelData] = await Promise.all([
+    getHotelSeo(hotelSlug),
+    getHotelIntroduction(hotelSlug)
+  ]);
 
-  if (!seo) {
+  // رمزگشایی اسلاگ برای استفاده در تایتل (در صورتی که فارسی باشد)
+  const decodedSlug = decodeURIComponent(hotelSlug).replace(/-/g, ' ');
+
+  // اگر دیتای سئو وجود داشت، از آن استفاده کن
+  if (seo && seo.title_tag) {
     return {
-      title: 'رزرو هتل در زروان تریپ',
-      description: 'بهترین قیمت رزرو آنلاین هتل در زروان تریپ با پشتیبانی ۲۴ ساعته',
+      title: seo.title_tag,
+      description: seo.description || `رزرو هتل در زروان تریپ`,
+      keywords: Array.isArray(seo.keywords) ? seo.keywords : [],
+      robots: {
+        index: !seo.no_index,
+        follow: !seo.no_index,
+      },
+      alternates: {
+        canonical: seo.canonical_url || `https://zarvantrip.com/hotel/${hotelSlug}`,
+      },
+      openGraph: {
+        title: seo.og_title || seo.title_tag,
+        description: seo.og_description || seo.description,
+        images: seo.og_image ? [{ url: seo.og_image }] : [],
+        type: 'website',
+        locale: 'fa_IR',
+      },
     };
   }
 
+  // اگر دیتای سئو نبود، اما اطلاعات پایه هتل لود شد (تایتل پویا بر اساس نام هتل)
+  if (hotelData && hotelData.name) {
+    return {
+      title: `رزرو هتل ${hotelData.name} با بهترین قیمت | زروان تریپ`,
+      description: `رزرو آنلاین و اطلاعات کامل هتل ${hotelData.name} ${hotelData.city_name ? `در ${hotelData.city_name}` : ''} با تخفیف ویژه در زروان تریپ.`,
+      alternates: {
+        canonical: `https://zarvantrip.com/hotel/${hotelSlug}`,
+      }
+    };
+  }
+
+  // حالت سقوط نهایی (Fallback) به جای نمایش تایتل صفحه اصلی، از نام اسلاگ استفاده می‌کند
   return {
-    title: seo.title_tag,
-    description: seo.description,
-    keywords: Array.isArray(seo.keywords) ? seo.keywords : [],
-    robots: {
-      index: !seo.no_index,
-      follow: !seo.no_index,
-    },
+    title: `رزرو هتل ${decodedSlug} | زروان تریپ`,
+    description: `رزرو آنلاین هتل ${decodedSlug} با بهترین قیمت و پشتیبانی ۲۴ ساعته در زروان تریپ.`,
     alternates: {
-      canonical: seo.canonical_url || `https://zarvantrip.com/hotel/${hotelSlug}`,
-    },
-    openGraph: {
-      title: seo.og_title || seo.title_tag,
-      description: seo.og_description || seo.description,
-      images: seo.og_image ? [{ url: seo.og_image }] : [],
-      type: 'website',
-      locale: 'fa_IR',
-    },
+      canonical: `https://zarvantrip.com/hotel/${hotelSlug}`,
+    }
   };
 }
 
@@ -112,14 +138,12 @@ export default async function Hotel({ params }: Props) {
 
   return (
     <>
-      {/* تزریق اسکیما */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <HotelWrapper>
-        {/* نوار ناوبری چسبان */}
         <StickyArea
           scrollFromTop={500}
           fixedClassName="pb-0"
@@ -133,10 +157,8 @@ export default async function Hotel({ params }: Props) {
         </StickyArea>
 
         <div className="relative mt-5 flex flex-col gap-14 lg:mt-12 lg:gap-20">
-          {/* تصاویر اصلی */}
           <Pictures hotelSlug={hotelSlug} />
 
-          {/* اکشن‌های موبایل */}
           <div className="relative -my-8 flex h-16 gap-3 rounded-xl bg-white p-2.5 shadow-xl shadow-black/5 lg:hidden">
             <FavoriteButton hotelSlug={hotelSlug} />
             <div className="grid flex-1 grid-cols-2 gap-3 sm:mr-auto sm:w-60 sm:flex-none">
@@ -150,10 +172,8 @@ export default async function Hotel({ params }: Props) {
             <SectionLinks sectionList={sectionLinks} />
           </div>
 
-          {/* پیکربندی و سرچ‌بار هتل */}
           <Configs hotelSlug={hotelSlug} sectionList={sectionLinks} />
 
-          {/* توضیحات و اطلاعات اولیه */}
           <div>
             <TopBarConfig className="mb-1 lg:mb-2" title={{ type: 'single', text: 'توضیحات هتل' }} />
             <div id="description" className="grid items-start gap-12 lg:grid-cols-2">
@@ -162,7 +182,6 @@ export default async function Hotel({ params }: Props) {
             </div>
           </div>
 
-          {/* لیست اتاق‌ها */}
           <Rooms hotelSlug={hotelSlug} />
 
           <AdditionalDetails hotelSlug={hotelSlug} />
@@ -178,7 +197,6 @@ export default async function Hotel({ params }: Props) {
 
           <FrequentlyQuestions hotelSlug={hotelSlug} />
 
-          {/* بخش‌های سنگین‌تر پایین صفحه به صورت استریمینگ لود می‌شوند تا مانع لود اولیه نشوند */}
           <Suspense fallback={<div className="h-40 w-full animate-pulse rounded-2xl bg-zinc-100" />}>
             <CustomerReviews hotelSlug={hotelSlug} />
           </Suspense>
