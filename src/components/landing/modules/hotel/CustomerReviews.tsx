@@ -40,7 +40,7 @@ export function CustomerReviews(props: Props) {
   return (
     <Section sectionID="customer-reviews" className="relative">
       <TopBarConfig
-        maxLength={2}
+        maxLength={1}
         arraylength={reviewsList.length}
         subtitle={
           reviewsList.length
@@ -59,7 +59,7 @@ export function CustomerReviews(props: Props) {
           <Skeleton className="h-96 rounded-xl lg:h-auto" />
         </div>
       ) : reviewsList.length ? (
-        <div className="grid gap-6 overflow-hidden lg:h-[30rem] lg:grid-cols-[1fr_2fr] lg:gap-8">
+        <div className="grid gap-6 overflow-hidden lg:h-[30rem] lg:grid-cols-[1fr_2fr] lg:gap-8 [&>*]:min-w-0">
           <ReviewsAverage hotelSlug={hotelSlug} />
           <Reviews hotelSlug={hotelSlug} ref={swiperRef} />
         </div>
