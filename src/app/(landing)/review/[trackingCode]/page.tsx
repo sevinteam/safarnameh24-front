@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/utils/axios';
 import { showCMToast } from '@/components/landing/shared/toast';
-import { HiStar, HiOutlineStar } from 'react-icons/hi2';
 import {
+  Star1,
   TickCircle,
   ArrowLeft,
   ArrowRight,
@@ -47,6 +47,46 @@ type ReviewInitData = {
   comment_point_items: PointItem[];
   suggested_comment_items: SuggestedItem[];
 };
+
+const JALALI_MONTHS = [
+  'فروردین',
+  'اردیبهشت',
+  'خرداد',
+  'تیر',
+  'مرداد',
+  'شهریور',
+  'مهر',
+  'آبان',
+  'آذر',
+  'دی',
+  'بهمن',
+  'اسفند',
+];
+
+function toPersianDigits(val: string | number): string {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return String(val).replace(/\d/g, (d) => persianDigits[Number(d)]);
+}
+
+function formatJalaliDateText(dateStr?: string): string {
+  if (!dateStr) return '';
+  const normalized = dateStr
+    .trim()
+    .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .replace(/\//g, '-');
+  const parts = normalized.split('-');
+  if (parts.length !== 3) return dateStr;
+
+  const year = parts[0];
+  const monthIdx = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+
+  if (monthIdx < 0 || monthIdx > 11 || Number.isNaN(day)) {
+    return dateStr;
+  }
+
+  return `${toPersianDigits(day)} ${JALALI_MONTHS[monthIdx]} ${toPersianDigits(year)}`;
+}
 
 const STAR_LABELS: Record<number, { text: string; color: string }> = {
   1: { text: 'بسیار ضعیف', color: 'text-rose-500' },
@@ -282,7 +322,8 @@ export default function PostStayReviewPage({
           <div className="flex items-center gap-1.5">
             <Calendar size={15} color="currentColor" className="text-cs-blue" />
             <span>
-              تاریخ اقامت: {reviewData.check_in_date} الی {reviewData.check_out_date}
+              تاریخ اقامت: {formatJalaliDateText(reviewData.check_in_date)} الی{' '}
+              {formatJalaliDateText(reviewData.check_out_date)}
             </span>
           </div>
           <span className="text-zinc-400">ثبت تجربه سفر</span>
@@ -326,12 +367,12 @@ export default function PostStayReviewPage({
               <h2 className="mb-1 text-base font-black text-zinc-900 lg:text-lg">
                 امتیاز کلی شما به این هتل چند ستاره است؟
               </h2>
-              <p className="mb-6 text-xs font-semibold text-zinc-400">
+              <p className="mb-5 text-xs font-semibold text-zinc-400">
                 برای ثبت امتیاز، روی ستاره‌ها کلیک کنید
               </p>
 
               <div
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200/80 bg-amber-50/70 px-6 py-4 shadow-sm"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200/80 bg-amber-50/70 px-5 py-3 shadow-sm"
                 dir="ltr"
               >
                 {[1, 2, 3, 4, 5].map((s) => {
@@ -346,18 +387,18 @@ export default function PostStayReviewPage({
                       aria-label={`${s} ستاره`}
                       className="p-1 transition-transform hover:scale-110 active:scale-95"
                     >
-                      {filled ? (
-                        <HiStar className="size-10 text-amber-400 drop-shadow-sm" />
-                      ) : (
-                        <HiOutlineStar className="size-10 text-zinc-300" />
-                      )}
+                      <Star1
+                        size={28}
+                        variant={filled ? 'Bold' : 'Outline'}
+                        color={filled ? '#f59e0b' : '#d4d4d8'}
+                      />
                     </button>
                   );
                 })}
               </div>
 
               <div className={`mt-3 text-sm font-black ${STAR_LABELS[stars].color}`}>
-                {STAR_LABELS[stars].text} ({stars} از ۵)
+                {STAR_LABELS[stars].text} ({toPersianDigits(stars)} از ۵)
               </div>
             </div>
 
@@ -377,31 +418,34 @@ export default function PostStayReviewPage({
                         <span className="text-xs font-bold text-zinc-800">
                           {item.title}
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center gap-2">
                           <div className="flex items-center gap-0.5" dir="ltr">
-                            {[1, 2, 3, 4, 5].map((r) => (
-                              <button
-                                key={r}
-                                type="button"
-                                onClick={() =>
-                                  setSuggestedRatings((prev) => ({
-                                    ...prev,
-                                    [item.id]: r,
-                                  }))
-                                }
-                                aria-label={`امتیاز ${r} به ${item.title}`}
-                                className="p-0.5 transition-transform hover:scale-110"
-                              >
-                                {r <= currentVal ? (
-                                  <HiStar className="size-5 text-amber-400" />
-                                ) : (
-                                  <HiOutlineStar className="size-5 text-zinc-300" />
-                                )}
-                              </button>
-                            ))}
+                            {[1, 2, 3, 4, 5].map((r) => {
+                              const filled = r <= currentVal;
+                              return (
+                                <button
+                                  key={r}
+                                  type="button"
+                                  onClick={() =>
+                                    setSuggestedRatings((prev) => ({
+                                      ...prev,
+                                      [item.id]: r,
+                                    }))
+                                  }
+                                  aria-label={`امتیاز ${r} به ${item.title}`}
+                                  className="p-0.5 transition-transform hover:scale-110"
+                                >
+                                  <Star1
+                                    size={16}
+                                    variant={filled ? 'Bold' : 'Outline'}
+                                    color={filled ? '#f59e0b' : '#d4d4d8'}
+                                  />
+                                </button>
+                              );
+                            })}
                           </div>
-                          <span className="min-w-[26px] text-left text-[11px] font-bold text-zinc-500">
-                            {currentVal}/۵
+                          <span className="min-w-[24px] text-left text-[11px] font-bold text-zinc-500">
+                            {toPersianDigits(currentVal)}/۵
                           </span>
                         </div>
                       </div>
