@@ -13,7 +13,7 @@ type Props = {
   reviews: HotelCustomerReview[];
 };
 
-function getEmojiConfig(
+function getFallbackEmoji(
   stars: number,
   id: number,
   moreWeaknesses: boolean,
@@ -21,20 +21,20 @@ function getEmojiConfig(
   const idx = (id || 1) % 2;
   if (stars >= 5) {
     return idx === 0
-      ? { emoji: '😍', bg: 'bg-rose-100' }
-      : { emoji: '❤️', bg: 'bg-red-100' };
+      ? { emoji: '😍', bg: '#ffe4e6' }
+      : { emoji: '❤️', bg: '#fee2e2' };
   }
   if (stars === 4) {
     return idx === 0
-      ? { emoji: '☺️', bg: 'bg-emerald-100' }
-      : { emoji: '👍', bg: 'bg-sky-100' };
+      ? { emoji: '☺️', bg: '#dcfce7' }
+      : { emoji: '👍', bg: '#e0f2fe' };
   }
   if (stars === 3) {
     return moreWeaknesses
-      ? { emoji: '😕', bg: 'bg-amber-100' }
-      : { emoji: '☺️', bg: 'bg-yellow-100' };
+      ? { emoji: '😕', bg: '#fef3c7' }
+      : { emoji: '☺️', bg: '#dcfce7' };
   }
-  return { emoji: '😕', bg: 'bg-slate-200' };
+  return { emoji: '😕', bg: '#fef3c7' };
 }
 
 function ReviewAvatar({ review }: { review: any }) {
@@ -48,17 +48,20 @@ function ReviewAvatar({ review }: { review: any }) {
     ? review.weaknesses.length
     : 0;
 
-  const { emoji, bg } = getEmojiConfig(
+  const fallback = getFallbackEmoji(
     stars,
     Number(review?.id ?? 1),
     weaknessesCount > strengthsCount,
   );
 
-  const showImage = Boolean(review?.user_image) && !imgError;
+  // خواندن مستقیم ایموجی و رنگ پس‌زمینه از بک‌اند
+  const emoji = review?.avatar_emoji || fallback.emoji;
+  const bgColor = review?.avatar_bg || fallback.bg;
+  const showCustomImage = Boolean(review?.user_image) && !imgError;
 
   return (
     <div className="relative shrink-0">
-      {showImage ? (
+      {showCustomImage ? (
         <img
           src={review.user_image}
           alt="avatar"
@@ -67,15 +70,20 @@ function ReviewAvatar({ review }: { review: any }) {
         />
       ) : (
         <div
-          className={`flex size-12 items-center justify-center rounded-full border border-white text-2xl shadow-xs ${bg}`}
+          style={{ backgroundColor: bgColor }}
+          className="flex size-12 items-center justify-center rounded-full border border-white shadow-sm"
         >
-          <span role="img" aria-label="avatar">
+          <span
+            role="img"
+            aria-label="avatar"
+            className="block translate-y-[2px] select-none text-[26px] leading-none"
+          >
             {emoji}
           </span>
         </div>
       )}
 
-      {/* تیک سبز تایید کنار آواتار مثل طرح نمونه */}
+      {/* تیک سبز تایید کنار آواتار */}
       <HiCheckCircle className="absolute -bottom-0.5 -left-0.5 size-4 rounded-full bg-white text-emerald-500" />
     </div>
   );

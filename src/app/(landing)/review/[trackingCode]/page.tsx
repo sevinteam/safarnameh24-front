@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/utils/axios';
 import { showCMToast } from '@/components/landing/shared/toast';
+import { HiStar, HiOutlineStar } from 'react-icons/hi2';
 import {
-  Star1,
   TickCircle,
   ArrowLeft,
   ArrowRight,
@@ -56,6 +56,14 @@ const STAR_LABELS: Record<number, { text: string; color: string }> = {
   5: { text: 'عالی و بی‌نقص', color: 'text-green-600' },
 };
 
+const EMOJI_OPTIONS = [
+  { key: 'love', emoji: '😍', label: 'عالی بود', bg: '#ffe4e6' },
+  { key: 'heart', emoji: '❤️', label: 'دوست داشتم', bg: '#fee2e2' },
+  { key: 'smile', emoji: '☺️', label: 'راضی بودم', bg: '#dcfce7' },
+  { key: 'like', emoji: '👍', label: 'خوب بود', bg: '#e0f2fe' },
+  { key: 'confused', emoji: '😕', label: 'معمولی / ضعیف', bg: '#fef3c7' },
+] as const;
+
 export default function PostStayReviewPage({
   params,
 }: {
@@ -66,6 +74,8 @@ export default function PostStayReviewPage({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [stars, setStars] = useState<number>(5);
   const [hoverStar, setHoverStar] = useState<number>(0);
+  const [avatarStyle, setAvatarStyle] = useState<string>('love');
+  const [userPickedEmoji, setUserPickedEmoji] = useState<boolean>(false);
   const [suggestedRatings, setSuggestedRatings] = useState<Record<number, number>>({});
   const [selectedStrengths, setSelectedStrengths] = useState<number[]>([]);
   const [selectedWeaknesses, setSelectedWeaknesses] = useState<number[]>([]);
@@ -88,7 +98,10 @@ export default function PostStayReviewPage({
       if (reviewData.guest_name && !guestName) {
         setGuestName(reviewData.guest_name);
       }
-      if (reviewData.suggested_comment_items?.length && Object.keys(suggestedRatings).length === 0) {
+      if (
+        reviewData.suggested_comment_items?.length &&
+        Object.keys(suggestedRatings).length === 0
+      ) {
         const initRatings: Record<number, number> = {};
         reviewData.suggested_comment_items.forEach((item) => {
           initRatings[item.id] = 5;
@@ -98,11 +111,22 @@ export default function PostStayReviewPage({
     }
   }, [reviewData]);
 
+  function handleSelectStars(val: number) {
+    setStars(val);
+    if (!userPickedEmoji) {
+      if (val >= 5) setAvatarStyle('love');
+      else if (val === 4) setAvatarStyle('smile');
+      else if (val === 3) setAvatarStyle('like');
+      else setAvatarStyle('confused');
+    }
+  }
+
   const submitMutation = useMutation({
     mutationFn: () => {
       const payload = {
         guest_name: guestName.trim() || 'مسافر زروان تریپ',
         stars,
+        avatar_style: avatarStyle,
         text: text.trim(),
         strength_ids: selectedStrengths,
         weakness_ids: selectedWeaknesses,
@@ -174,7 +198,7 @@ export default function PostStayReviewPage({
             <span className="text-2xl font-black">!</span>
           </div>
           <h1 className="mb-2 text-lg font-black text-zinc-900">امکان ثبت نظر وجود ندارد</h1>
-          <p className="mb-6 text-xs leading-6 font-semibold text-zinc-500">{errMsg}</p>
+          <p className="mb-6 text-xs font-semibold leading-6 text-zinc-500">{errMsg}</p>
           <Link
             href="/"
             className="inline-flex items-center justify-center rounded-xl bg-cs-dark-blue px-6 py-3 text-xs font-bold text-white shadow-md transition hover:opacity-90"
@@ -191,12 +215,14 @@ export default function PostStayReviewPage({
       <main className="container mx-auto max-w-lg px-4 py-20" dir="rtl">
         <div className="rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-lg shadow-emerald-500/5">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-inner">
-            <TickCircle size={36} variant="Bold" />
+            <TickCircle size={36} variant="Bold" color="currentColor" />
           </div>
           <h1 className="mb-2 text-lg font-black text-emerald-800">
-            {submittedSuccess ? 'سپاس از ثبت دیدگاه ارزشمند شما!' : 'شما قبلاً برای این رزرو نظر داده‌اید'}
+            {submittedSuccess
+              ? 'سپاس از ثبت دیدگاه ارزشمند شما!'
+              : 'شما قبلاً برای این رزرو نظر داده‌اید'}
           </h1>
-          <p className="mb-8 text-xs leading-7 font-semibold text-zinc-500">
+          <p className="mb-8 text-xs font-semibold leading-7 text-zinc-500">
             نظر شما با موفقیت در صفحه هتل <strong>{reviewData.hotel.name}</strong> ثبت شد.
           </p>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center">
@@ -223,7 +249,6 @@ export default function PostStayReviewPage({
 
   return (
     <main className="container mx-auto max-w-2xl px-4 py-8 lg:py-12" dir="rtl">
-      
       {/* کارت هتل و مشخصات رزرو */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm">
         {reviewData.hotel.main_image ? (
@@ -245,7 +270,7 @@ export default function PostStayReviewPage({
               </div>
               {reviewData.hotel.city_name ? (
                 <div className="flex items-center gap-1 text-xs font-semibold text-zinc-200">
-                  <Location size={14} />
+                  <Location size={14} color="currentColor" />
                   <span>{reviewData.hotel.city_name}</span>
                 </div>
               ) : null}
@@ -253,10 +278,12 @@ export default function PostStayReviewPage({
           </div>
         ) : null}
 
-        <div className="flex items-center justify-between bg-zinc-50/80 px-5 py-3 text-xs font-bold text-zinc-600 border-t border-zinc-100">
+        <div className="flex items-center justify-between border-t border-zinc-100 bg-zinc-50/80 px-5 py-3 text-xs font-bold text-zinc-600">
           <div className="flex items-center gap-1.5">
-            <Calendar size={15} className="text-cs-blue" />
-            <span>تاریخ اقامت: {reviewData.check_in_date} الی {reviewData.check_out_date}</span>
+            <Calendar size={15} color="currentColor" className="text-cs-blue" />
+            <span>
+              تاریخ اقامت: {reviewData.check_in_date} الی {reviewData.check_out_date}
+            </span>
           </div>
           <span className="text-zinc-400">ثبت تجربه سفر</span>
         </div>
@@ -267,7 +294,7 @@ export default function PostStayReviewPage({
         {[
           { num: 1, label: '۱. امتیاز کل و جزئیات' },
           { num: 2, label: '۲. نقاط قوت و ضعف' },
-          { num: 3, label: '۳. متن نظر و نام' },
+          { num: 3, label: '۳. ایموجی و متن نظر' },
         ].map((item) => {
           const isActive = step === item.num;
           const isDone = step > item.num;
@@ -280,7 +307,7 @@ export default function PostStayReviewPage({
                 isActive
                   ? 'bg-cs-dark-blue text-white shadow-md'
                   : isDone
-                    ? 'bg-emerald-50 text-emerald-700 font-bold'
+                    ? 'bg-emerald-50 font-bold text-emerald-700'
                     : 'bg-zinc-100/70 text-zinc-500 hover:bg-zinc-200/70'
               }`}
             >
@@ -292,7 +319,6 @@ export default function PostStayReviewPage({
 
       {/* بدنه فرم */}
       <div className="rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-sm lg:p-8">
-        
         {/* ================= استپ ۱ ================= */}
         {step === 1 && (
           <div className="space-y-8">
@@ -304,8 +330,8 @@ export default function PostStayReviewPage({
                 برای ثبت امتیاز، روی ستاره‌ها کلیک کنید
               </p>
 
-              <div 
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50/60 border border-amber-100 px-6 py-4 shadow-sm"
+              <div
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200/80 bg-amber-50/70 px-6 py-4 shadow-sm"
                 dir="ltr"
               >
                 {[1, 2, 3, 4, 5].map((s) => {
@@ -316,14 +342,15 @@ export default function PostStayReviewPage({
                       type="button"
                       onMouseEnter={() => setHoverStar(s)}
                       onMouseLeave={() => setHoverStar(0)}
-                      onClick={() => setStars(s)}
-                      className="p-1 transition-transform active:scale-95"
+                      onClick={() => handleSelectStars(s)}
+                      aria-label={`${s} ستاره`}
+                      className="p-1 transition-transform hover:scale-110 active:scale-95"
                     >
-                      <Star1
-                        size={40}
-                        variant={filled ? 'Bold' : 'Outline'}
-                        className={filled ? 'text-amber-400 drop-shadow-sm' : 'text-zinc-300'}
-                      />
+                      {filled ? (
+                        <HiStar className="size-10 text-amber-400 drop-shadow-sm" />
+                      ) : (
+                        <HiOutlineStar className="size-10 text-zinc-300" />
+                      )}
                     </button>
                   );
                 })}
@@ -345,31 +372,37 @@ export default function PostStayReviewPage({
                     return (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between rounded-xl border border-zinc-100 bg-zinc-50/80 px-4 py-3"
+                        className="flex items-center justify-between gap-2 rounded-xl border border-zinc-200/70 bg-zinc-50/80 px-4 py-3"
                       >
                         <span className="text-xs font-bold text-zinc-800">
                           {item.title}
                         </span>
-                        <div className="flex items-center gap-0.5" dir="ltr">
-                          {[1, 2, 3, 4, 5].map((r) => (
-                            <button
-                              key={r}
-                              type="button"
-                              onClick={() =>
-                                setSuggestedRatings((prev) => ({
-                                  ...prev,
-                                  [item.id]: r,
-                                }))
-                              }
-                              className="p-0.5"
-                            >
-                              <Star1
-                                size={18}
-                                variant={r <= currentVal ? 'Bold' : 'Outline'}
-                                className={r <= currentVal ? 'text-amber-400' : 'text-zinc-300'}
-                              />
-                            </button>
-                          ))}
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-0.5" dir="ltr">
+                            {[1, 2, 3, 4, 5].map((r) => (
+                              <button
+                                key={r}
+                                type="button"
+                                onClick={() =>
+                                  setSuggestedRatings((prev) => ({
+                                    ...prev,
+                                    [item.id]: r,
+                                  }))
+                                }
+                                aria-label={`امتیاز ${r} به ${item.title}`}
+                                className="p-0.5 transition-transform hover:scale-110"
+                              >
+                                {r <= currentVal ? (
+                                  <HiStar className="size-5 text-amber-400" />
+                                ) : (
+                                  <HiOutlineStar className="size-5 text-zinc-300" />
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                          <span className="min-w-[26px] text-left text-[11px] font-bold text-zinc-500">
+                            {currentVal}/۵
+                          </span>
                         </div>
                       </div>
                     );
@@ -378,14 +411,14 @@ export default function PostStayReviewPage({
               </div>
             )}
 
-            <div className="flex justify-end pt-4 border-t border-zinc-100">
+            <div className="flex justify-end border-t border-zinc-100 pt-4">
               <button
                 type="button"
                 onClick={() => setStep(2)}
                 className="flex items-center gap-2 rounded-xl bg-cs-dark-blue px-6 py-3 text-xs font-bold text-white shadow-md transition hover:opacity-95"
               >
                 <span>مرحله بعد</span>
-                <ArrowLeft size={16} />
+                <ArrowLeft size={16} color="currentColor" />
               </button>
             </div>
           </div>
@@ -397,7 +430,7 @@ export default function PostStayReviewPage({
             {positiveItems.length > 0 && (
               <div>
                 <div className="mb-3 flex items-center gap-2 text-xs font-extrabold text-emerald-700 lg:text-sm">
-                  <Like1 size={18} variant="Bold" />
+                  <Like1 size={18} variant="Bold" color="currentColor" />
                   <span>نقاط قوت هتل (انتخاب کنید)</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -426,7 +459,7 @@ export default function PostStayReviewPage({
             {negativeItems.length > 0 && (
               <div className="border-t border-zinc-100 pt-6">
                 <div className="mb-3 flex items-center gap-2 text-xs font-extrabold text-rose-600 lg:text-sm">
-                  <Dislike size={18} variant="Bold" />
+                  <Dislike size={18} variant="Bold" color="currentColor" />
                   <span>نقاط ضعف هتل (در صورت وجود انتخاب کنید)</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -452,13 +485,13 @@ export default function PostStayReviewPage({
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
+            <div className="flex items-center justify-between border-t border-zinc-100 pt-4">
               <button
                 type="button"
                 onClick={() => setStep(1)}
                 className="flex items-center gap-2 rounded-xl bg-zinc-100 px-5 py-3 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200"
               >
-                <ArrowRight size={16} />
+                <ArrowRight size={16} color="currentColor" />
                 <span>مرحله قبل</span>
               </button>
 
@@ -468,7 +501,7 @@ export default function PostStayReviewPage({
                 className="flex items-center gap-2 rounded-xl bg-cs-dark-blue px-6 py-3 text-xs font-bold text-white shadow-md transition hover:opacity-95"
               >
                 <span>مرحله بعد</span>
-                <ArrowLeft size={16} />
+                <ArrowLeft size={16} color="currentColor" />
               </button>
             </div>
           </div>
@@ -477,9 +510,48 @@ export default function PostStayReviewPage({
         {/* ================= استپ ۳ ================= */}
         {step === 3 && (
           <div className="space-y-6">
+            {/* انتخاب ایموجی برای آواتار نظر */}
+            <div>
+              <label className="mb-3 block text-xs font-extrabold text-zinc-800">
+                ایموجی حس خود را برای نمایش کنار نظرتان انتخاب کنید
+              </label>
+              <div className="grid grid-cols-5 gap-2 sm:gap-3">
+                {EMOJI_OPTIONS.map((opt) => {
+                  const isSelected = avatarStyle === opt.key;
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => {
+                        setAvatarStyle(opt.key);
+                        setUserPickedEmoji(true);
+                      }}
+                      className={`flex flex-col items-center gap-1.5 rounded-2xl border p-2.5 transition ${
+                        isSelected
+                          ? 'border-cs-dark-blue bg-blue-50/50 shadow-sm ring-2 ring-cs-dark-blue/15'
+                          : 'border-zinc-200 bg-white hover:bg-zinc-50'
+                      }`}
+                    >
+                      <span
+                        style={{ backgroundColor: opt.bg }}
+                        className="flex size-11 items-center justify-center rounded-full"
+                      >
+                        <span className="block translate-y-[2px] text-[24px] leading-none">
+                          {opt.emoji}
+                        </span>
+                      </span>
+                      <span className="text-[10px] font-bold text-zinc-700 sm:text-[11px]">
+                        {opt.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div>
               <label className="mb-2 flex items-center gap-2 text-xs font-extrabold text-zinc-800">
-                <User size={16} className="text-cs-blue" />
+                <User size={16} color="currentColor" className="text-cs-blue" />
                 <span>نام نمایشی شما در بخش نظرات هتل</span>
               </label>
               <input
@@ -493,7 +565,7 @@ export default function PostStayReviewPage({
 
             <div>
               <label className="mb-2 flex items-center gap-2 text-xs font-extrabold text-zinc-800">
-                <MessageText1 size={16} className="text-cs-blue" />
+                <MessageText1 size={16} color="currentColor" className="text-cs-blue" />
                 <span>تجربه خود از اقامت در این هتل را بنویسید</span>
               </label>
               <textarea
@@ -505,13 +577,13 @@ export default function PostStayReviewPage({
               />
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
+            <div className="flex items-center justify-between border-t border-zinc-100 pt-4">
               <button
                 type="button"
                 onClick={() => setStep(2)}
                 className="flex items-center gap-2 rounded-xl bg-zinc-100 px-5 py-3 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200"
               >
-                <ArrowRight size={16} />
+                <ArrowRight size={16} color="currentColor" />
                 <span>مرحله قبل</span>
               </button>
 
@@ -521,7 +593,7 @@ export default function PostStayReviewPage({
                 onClick={() => submitMutation.mutate()}
                 className="flex items-center gap-2 rounded-xl bg-emerald-600 px-7 py-3 text-xs font-black text-white shadow-md transition hover:bg-emerald-700 disabled:opacity-50"
               >
-                <TickCircle size={18} variant="Bold" />
+                <TickCircle size={18} variant="Bold" color="currentColor" />
                 <span>
                   {submitMutation.isPending ? 'در حال ثبت...' : 'ثبت نهایی نظر'}
                 </span>
