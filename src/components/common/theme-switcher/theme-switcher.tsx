@@ -15,7 +15,7 @@ import {
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-import { THEME_OPTIONS } from '@/lib/constants/general';
+import { THEME_OPTIONS } from '@/constants/general';
 import ThemeSwitcherTrigger from './theme-switcher-trigger';
 import { SelectableDropdownMenuItem } from '../dropdown-menu-item-select';
 

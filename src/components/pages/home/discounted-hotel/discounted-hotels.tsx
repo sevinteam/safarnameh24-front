@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper/types';
 
 import { ArrowLeft, ArrowRight, BadgePercent } from 'lucide-react';
-import { TOP_CITIES } from '@/lib/constants/general';
+import { TOP_CITIES } from '@/constants/general';
 
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
@@ -15,7 +15,7 @@ import { HotelCard } from '@/components/common/hotel-card/organisms/hotel-card.m
 
 import { SectionTitle } from '@/components/common/section-topbar/section-title';
 import { SectionNavigation } from '@/components/common/section-topbar/section-navigation';
-import { MOCK_HOTELS } from '@/lib/constants/hotel-card';
+import { MOCK_HOTELS } from '@/constants/hotel-card';
 
 // ------------------------------
 

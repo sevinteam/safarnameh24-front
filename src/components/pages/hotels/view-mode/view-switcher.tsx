@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { ViewMode } from './types';
 import { VIEW_OPTIONS } from './constants';
 

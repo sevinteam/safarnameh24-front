@@ -1,4 +1,4 @@
-import { MOCK_HOTELS } from '@/lib/constants/hotel-card';
+import { MOCK_HOTELS } from '@/constants/hotel-card';
 import HotelCard from '@/components/common/hotel-card/organisms/hotel-card.secondary';
 
 // ------------------------------

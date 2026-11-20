@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { AuthFormValues } from '../model/types';
 import { useAuthModal } from '../model/auth-modal-context';
-import { useWebOtp } from '@/lib/hooks/use-web-otp';
+import { useWebOtp } from '@/hooks/use-web-otp';
 import { OtpCountdown } from './otp-countdown';
 import {
   InputOTP,

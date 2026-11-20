@@ -7,12 +7,12 @@ import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper/types';
 
-import { TOP_CITIES } from '@/lib/constants/general';
+import { TOP_CITIES } from '@/constants/general';
 
 import { HotelCard } from '@/components/common/hotel-card/organisms/hotel-card.main';
 import { SectionTitle } from '@/components/common/section-topbar/section-title';
 import { SectionNavigation } from '@/components/common/section-topbar/section-navigation';
-import { MOCK_HOTELS } from '@/lib/constants/hotel-card';
+import { MOCK_HOTELS } from '@/constants/hotel-card';
 
 // ------------------------------
 

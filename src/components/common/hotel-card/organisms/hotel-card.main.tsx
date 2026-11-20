@@ -3,9 +3,9 @@ import Image from 'next/image';
 
 import { MapPin, Percent, Star } from 'lucide-react';
 
-import { cn, formatNumber, getRatingTier } from '@/lib/utils';
+import { cn, formatNumber, getRatingTier } from '@/utils';
 import hotel_image from '@/assets/images/background/hero-3.jpg';
-import { HotelCard as HotelCardProps } from '@/lib/types/hotel';
+import { HotelCard as HotelCardProps } from '@/types/hotel';
 
 type Props = HotelCardProps & {
   className?: string;

@@ -1,4 +1,4 @@
-import { content } from '@/lib/constants/footer';
+import { content } from '@/constants/footer';
 
 // ------------------------------
 

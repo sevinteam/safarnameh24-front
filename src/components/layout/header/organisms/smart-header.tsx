@@ -10,10 +10,10 @@ import { Button } from '@/components/ui/button';
 import { ClipboardCheck, Headphones } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/common/theme-switcher';
 
-import { useSmartScrollHeader } from '@/lib/hooks/use-smart-scroll-header';
+import { useSmartScrollHeader } from '@/hooks/use-smart-scroll-header';
 
 import dynamic from 'next/dynamic';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 const StickySearchBar = dynamic(
   () => import('../../sticky-search-bar/sticky-search-bar'),

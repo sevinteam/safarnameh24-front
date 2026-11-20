@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { Check } from 'lucide-react';
 
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';

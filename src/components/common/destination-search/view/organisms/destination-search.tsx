@@ -22,7 +22,7 @@ import {
 import { ArrowRight } from 'lucide-react';
 
 import { SearchInput } from '../molecules/search-input';
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { DestinationList } from '../molecules/destination-list';
 
 import { useDestination } from '../../model/destination-search-context';

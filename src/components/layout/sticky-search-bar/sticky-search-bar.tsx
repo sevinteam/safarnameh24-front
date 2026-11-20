@@ -6,12 +6,12 @@ import SheetWrapper from './sheet-wrapper';
 import { usePathname } from 'next/navigation';
 import SearchBarTrigger from './search-bar-trigger';
 
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { DatePicker } from '@/components/common/date-picker';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { DestinationSearch } from '@/components/common/destination-search';
 import SubmitButton from '@/components/pages/home/hero-section/submit-button';
-import { useSmartScrollHeader } from '@/lib/hooks/use-smart-scroll-header';
+import { useSmartScrollHeader } from '@/hooks/use-smart-scroll-header';
 import SortWrapper from '@/components/pages/hotels/sorting/sort-wrapper';
 import { Button } from '@/components/ui/button';
 import { Map, SlidersHorizontal } from 'lucide-react';

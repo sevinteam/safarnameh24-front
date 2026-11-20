@@ -26,7 +26,7 @@ import Brand from '@/components/common/brand';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { content } from '@/lib/constants/header';
+import { content } from '@/constants/header';
 
 import { ThemeSwitcher } from '@/components/common/theme-switcher';
 import { LoginTrigger } from './login-trigger';

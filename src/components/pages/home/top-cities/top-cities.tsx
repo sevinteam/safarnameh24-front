@@ -8,7 +8,7 @@ import { Swiper as SwiperType } from 'swiper/types';
 import { ArrowLeft, ArrowRight, User } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from 'cn';
-import { TOP_CITIES } from '@/lib/constants/general';
+import { TOP_CITIES } from '@/constants/general';
 
 import heroImage_1 from '@/assets/images/background/hero-3.jpg';
 import { Button } from '@/components/ui/button';

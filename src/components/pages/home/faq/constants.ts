@@ -1,4 +1,4 @@
-import { FAQ } from '@/lib/types/general';
+import { FAQ } from '@/types/general';
 
 // ------------------------------
 

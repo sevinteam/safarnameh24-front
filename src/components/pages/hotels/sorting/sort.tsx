@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 import { useSortQuery } from './use-sort-query';
 import { SortOptionButton } from './sort-option-button';

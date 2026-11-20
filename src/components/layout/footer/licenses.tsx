@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { content } from '@/lib/constants/footer';
+import { content } from '@/constants/footer';
 
 // ------------------------------
 

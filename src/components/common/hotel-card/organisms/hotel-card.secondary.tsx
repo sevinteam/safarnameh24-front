@@ -3,9 +3,9 @@ import Image from 'next/image';
 
 import { DoorOpen, MapPin, Percent, Star, Utensils } from 'lucide-react';
 
-import { cn, formatNumber, getRatingTier } from '@/lib/utils';
+import { cn, formatNumber, getRatingTier } from '@/utils';
 import hotel_image from '@/assets/images/background/hero-2.jpg';
-import { HotelCard as HotelCardProps } from '@/lib/types/hotel';
+import { HotelCard as HotelCardProps } from '@/types/hotel';
 import { Button } from '@/components/ui/button';
 import { hotelAmenities } from './constants';
 

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 import { routes } from '@/config/routes';
 import { SITE_CONFIG } from '@/config/site';

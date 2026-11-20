@@ -3,7 +3,7 @@
 import CalendarSheet from './calendar-sheet';
 import CalendarDialog from './calendar-dialog';
 
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 type Props = {};
 

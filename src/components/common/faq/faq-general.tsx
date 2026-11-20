@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { FaqItem } from './faq-item';
 
-import { FAQ as FAQ_Type } from '@/lib/types/general';
+import { FAQ as FAQ_Type } from '@/types/general';
 import { Accordion } from '@/components/ui/accordion';
 
 type Props = {

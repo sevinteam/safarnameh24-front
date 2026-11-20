@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/accordion';
 
 import Link from 'next/link';
-import { content } from '@/lib/constants/footer';
+import { content } from '@/constants/footer';
 
 // ------------------------------
 

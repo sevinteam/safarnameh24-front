@@ -1,4 +1,4 @@
-import { CONTACT } from '@/lib/constants/general';
+import { CONTACT } from '@/constants/general';
 import { ThemeTabs } from '@/components/common/theme-switcher';
 import { SITE_CONFIG } from '@/config/site';
 

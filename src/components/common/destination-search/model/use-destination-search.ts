@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { Destination } from './types';
 import { MOCK_GLOBAL_DESTINATIONS } from './constants';
-import { useDebounce } from '@/lib/hooks/use-debounce';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface UseDestinationSearchCoreProps {
   onSelect: (item: Destination) => void;

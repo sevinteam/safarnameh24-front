@@ -4,9 +4,9 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
-import { FAQ as FAQItemType } from '@/lib/types/general';
+import { FAQ as FAQItemType } from '@/types/general';
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion';
 
 type Props = AccordionPrimitive.Item.Props & {

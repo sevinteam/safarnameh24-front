@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
-import { SOCIAL_MEDIA } from '@/lib/constants/general';
+import { SOCIAL_MEDIA } from '@/constants/general';
 
 // ------------------------------
 

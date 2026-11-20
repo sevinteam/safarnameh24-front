@@ -1,12 +1,12 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 import { PhoneCall } from 'lucide-react';
 import { SupportArea } from './support-area';
 import { ScrollToTop } from './/scroll-to-top';
 
-import { useSmartScrollHeader } from '@/lib/hooks/use-smart-scroll-header';
+import { useSmartScrollHeader } from '@/hooks/use-smart-scroll-header';
 
 type Props = {
   className?: string;
@@ -18,7 +18,6 @@ export const FloatingActions = ({ className }: Props) => {
   const { isCollapsed } = useSmartScrollHeader({
     scrollDownThreshold: 35,
     scrollUpThreshold: 15,
-    topThreshold: 0,
   });
 
   return (

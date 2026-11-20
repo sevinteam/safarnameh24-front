@@ -1,4 +1,4 @@
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { DestinationState } from '../../model/types';
 import DestinationSearchDialog from './destination-search-dialog';
 import DestinationSearchDrawer from './destination-search-drawer';

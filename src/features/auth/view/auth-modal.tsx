@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthFormValues } from '../model/types';
 import { useAuthModal } from '../model/auth-modal-context';
 
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { normalizeIranianMobile } from '../model/utils';
 
 import { AuthHeader } from './auth-header';
