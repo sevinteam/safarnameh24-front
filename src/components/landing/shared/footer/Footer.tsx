@@ -1,4 +1,3 @@
-
 import Logo from './Logo';
 import Copyright from './Copyright';
 import Description from './Description';
@@ -43,10 +42,14 @@ export function Footer() {
           xl:hidden
         "
       >
-        <Logo />
+        <div className="contents [&_*]:![font-family:inherit]">
+          <Logo />
+        </div>
         <Description />
         <QuickAccess />
-        <CommunicationWays />
+        <div className="contents [&_*]:![font-family:inherit]">
+          <CommunicationWays />
+        </div>
         <IdentityBadges />
         <SocialMedias />
         <Copyright />
@@ -90,7 +93,9 @@ export function Footer() {
             shadow-[0_1rem_1rem_rgba(0,0,0,0.02)]
           "
         >
-          <Logo />
+          <div className="contents [&_*]:![font-family:inherit]">
+            <Logo />
+          </div>
 
           <Description />
 
@@ -112,7 +117,7 @@ export function Footer() {
           "
         >
           {/* Communication Ways */}
-          <div className="w-1/2">
+          <div className="w-1/2 [&_*]:![font-family:inherit]">
             <CommunicationWays />
           </div>
 
