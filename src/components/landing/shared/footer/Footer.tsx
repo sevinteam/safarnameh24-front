@@ -40,16 +40,13 @@ export function Footer() {
           border-zinc-200
           xl:pb-8
           xl:hidden
+          [&_*]:![font-family:inherit]
         "
       >
-        <div className="contents [&_*]:![font-family:inherit]">
-          <Logo />
-        </div>
+        <Logo />
         <Description />
         <QuickAccess />
-        <div className="contents [&_*]:![font-family:inherit]">
-          <CommunicationWays />
-        </div>
+        <CommunicationWays />
         <IdentityBadges />
         <SocialMedias />
         <Copyright />
@@ -91,11 +88,10 @@ export function Footer() {
             flex-col
             rounded-xl
             shadow-[0_1rem_1rem_rgba(0,0,0,0.02)]
+            [&_*]:![font-family:inherit]
           "
         >
-          <div className="contents [&_*]:![font-family:inherit]">
-            <Logo />
-          </div>
+          <Logo />
 
           <Description />
 
