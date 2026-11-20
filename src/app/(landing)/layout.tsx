@@ -9,10 +9,17 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://zarvantrip.com'),
   title: {
     default: 'زروان تریپ | مرجع رزرو آنلاین هتل‌های داخلی و خارجی',
-    template: '%s | زروان تریپ',
+    template: '%s', // حذف پسوند تکراری زروان تریپ
   },
-  description: 'با زروان تریپ، بهترین هتل‌ها را با قیمت مناسب رزرو کنید. اقامتی راحت و بی‌دغدغه در هتل‌های منتخب با پشتیبانی ۲۴ ساعته.',
-  keywords: ['رزرو هتل', 'زروان تریپ', 'ZarvanTrip', 'بهترین هتل ها', 'رزرو آنلاین هتل'],
+  description:
+    'با زروان تریپ، بهترین هتل‌ها را با قیمت مناسب رزرو کنید. اقامتی راحت و بی‌دغدغه در هتل‌های منتخب با پشتیبانی ۲۴ ساعته.',
+  keywords: [
+    'رزرو هتل',
+    'زروان تریپ',
+    'ZarvanTrip',
+    'بهترین هتل ها',
+    'رزرو آنلاین هتل',
+  ],
   authors: [{ name: 'ZarvanTrip Team' }],
   robots: {
     index: true,
@@ -38,9 +45,7 @@ export default function LandingLayout(props: Props) {
         <Header />
 
         {/* برای بهتر شدن سئو، محتوا را داخل تگ main اصلی قرار دادیم */}
-        <section className="mx-5 mb-20">
-          {props.children}
-        </section>
+        <section className="mx-5 mb-20">{props.children}</section>
 
         <BottomBar />
         <Footer />
