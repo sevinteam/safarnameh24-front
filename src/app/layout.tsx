@@ -1,11 +1,14 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import Script from 'next/script';
 
 import MainWrapper from '@/components/landing/shared/MainWrapper';
 import { cn } from '@/utils/utils';
 
 // ---------------------------------------------------
+
+const GTM_ID = 'GTM-PFSBR64';
 
 // Local font
 const interFont = localFont({
@@ -90,7 +93,6 @@ const interFont = localFont({
       weight: '800',
       style: 'italic',
     },
-
     {
       path: '../../public/font/inter/Inter_18pt-Black.ttf',
       weight: '900',
@@ -145,6 +147,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
+      <head>
+        {/* Google Tag Manager */}
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${GTM_ID}');
+          `}
+        </Script>
+      </head>
       <body
         className={cn(
           interFont.variable,
@@ -153,6 +167,16 @@ export default function RootLayout({
         )}
         suppressHydrationWarning
       >
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
         <MainWrapper>{children}</MainWrapper>
       </body>
     </html>
