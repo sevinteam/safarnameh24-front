@@ -12,54 +12,85 @@ export const dynamic = 'force-dynamic';
 // متادیتا برای سئو
 export const metadata: Metadata = {
   title: 'قوانین و مقررات زروان تریپ | شرایط رزرو هتل',
-  description: 'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
+  description:
+    'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
   alternates: { canonical: 'https://zarvantrip.com/rules' },
 };
 
-// تابع دریافت داده در سمت سرور با مدیریت ۱۰۰٪ ایمن خطاها
+// تابع دریافت داده در سمت سرور با مدیریت کامل خطا و جلوگیری از اسلش اضافه
 async function getRules() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
+  const rawBaseUrl =
+    process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
+  const baseUrl = rawBaseUrl.replace(/\/+$/, '');
+  const url = `${baseUrl}/config/rules/`;
 
   try {
-    const res = await fetch(`${baseUrl}/config/rules/`, { 
-      cache: 'no-store', // لغو کش برای جلوگیری از تداخل با Next.js و دریافت دیتای زنده
+    const res = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'Mozilla/5.0 (compatible; ZarvanTripFrontend/1.0)',
+      },
     });
 
     if (!res.ok) {
-      return [];
+      console.error(`[Rules API Error] URL: ${url} | Status: ${res.status}`);
+      return null;
     }
 
-    return await res.json();
-  } catch (error) {
-    console.error('خطا در ارتباط سرور به بک‌اند قوانین:', error);
-    return []; // بازگرداندن آرایه خالی به جای پرتاب خطا
+    const json = await res.json();
+    console.log(
+      '[Rules API Success] Structure:',
+      Array.isArray(json) ? `Array(${json.length})` : Object.keys(json || {})
+    );
+    return json;
+  } catch (error: any) {
+    console.error(
+      `[Rules API Catch] URL: ${url} | Error:`,
+      error?.message || error
+    );
+    return null;
   }
+}
+
+// استخراج هوشمند آرایه قوانین از هر ساختار احتمالی بک‌اند
+function extractRulesArray(response: any): any[] {
+  if (!response) return [];
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.results)) return response.results;
+  if (Array.isArray(response?.result)) return response.result;
+  if (Array.isArray(response?.rules)) return response.rules;
+  if (Array.isArray(response?.data?.results)) return response.data.results;
+
+  if (typeof response === 'object') {
+    const firstArray = Object.values(response).find((val) =>
+      Array.isArray(val)
+    );
+    if (firstArray) return firstArray as any[];
+  }
+
+  return [];
 }
 
 export default async function Rules() {
   const response = await getRules();
-  
-  // استخراج کاملاً ایمن داده‌ها 
-  let data: any[] = [];
-  if (Array.isArray(response)) {
-    data = response;
-  } else if (response?.data && Array.isArray(response.data)) {
-    data = response.data;
-  } else if (response?.results && Array.isArray(response.results)) {
-    data = response.results;
-  }
+  const data = extractRulesArray(response);
 
   const navList = data.map((item: any, index: number) => ({
     id: String(index),
-    tab_title: item?.tab_title || '',
+    tab_title: item?.tab_title || item?.title || '',
   }));
 
   const totalDuration = data.reduce((sum: number, item: any) => {
-    const plainText = (item?.text || '').replace(/<[^>]*>/g, '');
+    const plainText = (item?.text || item?.content || '').replace(
+      /<[^>]*>/g,
+      ''
+    );
     return sum + Math.ceil(plainText.length / 1000);
   }, 0);
 
-  // تابع خنثی با تگ سرور که بدون خطا به کلاینت پاس داده می‌شود
+  // تابع خنثی برای جلوگیری از خطای پاس دادن تابع از سرور به کلاینت
   async function dummySetActive() {
     'use server';
   }
@@ -96,12 +127,11 @@ export default async function Rules() {
         {data.length > 0 ? (
           data.map((section: any, index: number) => (
             <Section
-              key={index}
+              key={section?.id ?? index}
               sectionIsFirst={index === 0}
               section={{ id: String(index), ...section }}
               firstSectionID={index === 0 ? String(index) : null}
-              // ارسال تابع مجاز سروری
-              setActiveSection={dummySetActive as any} 
+              setActiveSection={dummySetActive as any}
             />
           ))
         ) : (
