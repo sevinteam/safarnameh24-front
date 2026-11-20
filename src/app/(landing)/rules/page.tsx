@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://zarvantrip.com/rules' },
 };
 
-// تابع دریافت داده در سمت سرور با مدیریت کامل خطا و جلوگیری از اسلش اضافه
+// تابع دریافت داده در سمت سرور همراه با گزارش دقیق خطا برای دیباگ
 async function getRules() {
   const rawBaseUrl =
     process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
@@ -34,63 +34,49 @@ async function getRules() {
     });
 
     if (!res.ok) {
-      console.error(`[Rules API Error] URL: ${url} | Status: ${res.status}`);
-      return null;
+      return {
+        data: [],
+        debug: `Status: ${res.status} | URL: ${url}`,
+      };
     }
 
     const json = await res.json();
-    console.log(
-      '[Rules API Success] Structure:',
-      Array.isArray(json) ? `Array(${json.length})` : Object.keys(json || {})
-    );
-    return json;
+
+    let list: any[] = [];
+    if (Array.isArray(json)) {
+      list = json;
+    } else if (Array.isArray(json?.data)) {
+      list = json.data;
+    } else if (Array.isArray(json?.results)) {
+      list = json.results;
+    }
+
+    return {
+      data: list,
+      debug: `OK (${res.status}) | Length: ${list.length} | URL: ${url}`,
+    };
   } catch (error: any) {
-    console.error(
-      `[Rules API Catch] URL: ${url} | Error:`,
-      error?.message || error
-    );
-    return null;
+    return {
+      data: [],
+      debug: `Fetch Error: ${error?.cause?.code || error?.message || 'Unknown'} | URL: ${url}`,
+    };
   }
-}
-
-// استخراج هوشمند آرایه قوانین از هر ساختار احتمالی بک‌اند
-function extractRulesArray(response: any): any[] {
-  if (!response) return [];
-  if (Array.isArray(response)) return response;
-  if (Array.isArray(response?.data)) return response.data;
-  if (Array.isArray(response?.results)) return response.results;
-  if (Array.isArray(response?.result)) return response.result;
-  if (Array.isArray(response?.rules)) return response.rules;
-  if (Array.isArray(response?.data?.results)) return response.data.results;
-
-  if (typeof response === 'object') {
-    const firstArray = Object.values(response).find((val) =>
-      Array.isArray(val)
-    );
-    if (firstArray) return firstArray as any[];
-  }
-
-  return [];
 }
 
 export default async function Rules() {
-  const response = await getRules();
-  const data = extractRulesArray(response);
+  const { data, debug } = await getRules();
 
   const navList = data.map((item: any, index: number) => ({
     id: String(index),
-    tab_title: item?.tab_title || item?.title || '',
+    tab_title: item?.tab_title || '',
   }));
 
   const totalDuration = data.reduce((sum: number, item: any) => {
-    const plainText = (item?.text || item?.content || '').replace(
-      /<[^>]*>/g,
-      ''
-    );
+    const plainText = (item?.text || '').replace(/<[^>]*>/g, '');
     return sum + Math.ceil(plainText.length / 1000);
   }, 0);
 
-  // تابع خنثی برای جلوگیری از خطای پاس دادن تابع از سرور به کلاینت
+  // تابع خنثی با تگ سرور که بدون خطا به کلاینت پاس داده می‌شود
   async function dummySetActive() {
     'use server';
   }
@@ -136,7 +122,13 @@ export default async function Rules() {
           ))
         ) : (
           <div className="py-20 text-center text-zinc-500 font-semibold bg-white rounded-2xl border border-zinc-100 shadow-sm">
-            در حال حاضر قوانین و مقرراتی ثبت نشده است یا سرور در دسترس نمی‌باشد.
+            <p>
+              در حال حاضر قوانین و مقرراتی ثبت نشده است یا سرور در دسترس نمی‌باشد.
+            </p>
+            {/* این خط موقتی است؛ بعد از رفع مشکل حذف کنید */}
+            <p dir="ltr" className="mt-4 text-xs text-red-500 font-mono">
+              {debug}
+            </p>
           </div>
         )}
       </div>
