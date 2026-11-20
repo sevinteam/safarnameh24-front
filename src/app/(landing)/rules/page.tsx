@@ -17,10 +17,17 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://zarvantrip.com/rules' },
 };
 
-// تابع دریافت داده در سمت سرور همراه با گزارش دقیق خطا برای دیباگ
+// تابع دریافت داده در سمت سرور با مدیریت امن آدرس و خطاها
 async function getRules() {
+  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const isLocalUrl =
+    envUrl.includes('127.0.0.1') || envUrl.includes('localhost');
+
   const rawBaseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cps.zarvantrip.com/api/v1';
+    !envUrl || (process.env.NODE_ENV === 'production' && isLocalUrl)
+      ? 'https://cps.zarvantrip.com/api/v1'
+      : envUrl;
+
   const baseUrl = rawBaseUrl.replace(/\/+$/, '');
   const url = `${baseUrl}/config/rules/`;
 
@@ -34,37 +41,25 @@ async function getRules() {
     });
 
     if (!res.ok) {
-      return {
-        data: [],
-        debug: `Status: ${res.status} | URL: ${url}`,
-      };
+      console.error(`[Rules API Error] Status: ${res.status} | URL: ${url}`);
+      return [];
     }
 
     const json = await res.json();
 
-    let list: any[] = [];
-    if (Array.isArray(json)) {
-      list = json;
-    } else if (Array.isArray(json?.data)) {
-      list = json.data;
-    } else if (Array.isArray(json?.results)) {
-      list = json.results;
-    }
+    if (Array.isArray(json)) return json;
+    if (Array.isArray(json?.data)) return json.data;
+    if (Array.isArray(json?.results)) return json.results;
 
-    return {
-      data: list,
-      debug: `OK (${res.status}) | Length: ${list.length} | URL: ${url}`,
-    };
-  } catch (error: any) {
-    return {
-      data: [],
-      debug: `Fetch Error: ${error?.cause?.code || error?.message || 'Unknown'} | URL: ${url}`,
-    };
+    return [];
+  } catch (error) {
+    console.error(`[Rules API Catch] URL: ${url}`, error);
+    return [];
   }
 }
 
 export default async function Rules() {
-  const { data, debug } = await getRules();
+  const data = await getRules();
 
   const navList = data.map((item: any, index: number) => ({
     id: String(index),
@@ -122,13 +117,7 @@ export default async function Rules() {
           ))
         ) : (
           <div className="py-20 text-center text-zinc-500 font-semibold bg-white rounded-2xl border border-zinc-100 shadow-sm">
-            <p>
-              در حال حاضر قوانین و مقرراتی ثبت نشده است یا سرور در دسترس نمی‌باشد.
-            </p>
-            {/* این خط موقتی است؛ بعد از رفع مشکل حذف کنید */}
-            <p dir="ltr" className="mt-4 text-xs text-red-500 font-mono">
-              {debug}
-            </p>
+            در حال حاضر قوانین و مقرراتی ثبت نشده است یا سرور در دسترس نمی‌باشد.
           </div>
         )}
       </div>
