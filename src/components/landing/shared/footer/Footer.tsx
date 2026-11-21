@@ -50,7 +50,9 @@ export function Footer() {
         <IdentityBadges />
         <SocialMedias />
         <Copyright />
-        <WebsiteIdentity />
+        <div className="w-full mt-1">
+          <WebsiteIdentity />
+        </div>
       </footer>
 
       {/* Large-Device */}
@@ -97,7 +99,10 @@ export function Footer() {
 
           <Copyright />
 
-          <WebsiteIdentity />
+          {/* ایجاد فاصله مناسب بین متن کپی‌رایت و دکمه توسعه‌دهنده */}
+          <div className="w-full mt-3.5">
+            <WebsiteIdentity />
+          </div>
         </div>
 
         {/* Right-Bottom - Communication & Social */}
