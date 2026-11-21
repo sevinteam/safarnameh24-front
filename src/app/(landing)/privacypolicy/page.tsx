@@ -83,7 +83,7 @@ export default function PrivacyPolicy() {
               <Link href="/contact-us" className="text-cs-blue hover:underline">
                 تماس با ما
               </Link>{' '}
-              یا شماره تلفن پشتیبانی (۰۲۱۲۲۳۴۷۶۱۳) با ما در ارتباط باشید.
+              یا شماره تلفن پشتیبانی (021-7745653) با ما در ارتباط باشید.
             </p>
           </section>
 
