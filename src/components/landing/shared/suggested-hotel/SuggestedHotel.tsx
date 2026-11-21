@@ -18,6 +18,7 @@ type Props = {
       original_total_price?: number;
       discount_value?: number;
       discount_date?: string;
+      discount_type?: string;
     };
   };
   showTimer?: boolean;
@@ -45,19 +46,30 @@ export function SuggestedHotel(props: Props) {
     average_score,
   } = hotel;
 
-  // دریافت قیمت نهایی (اولویت با قیمت بعد از تخفیف در price_info است)
+  // تشخیص اینکه آیا هتل تخفیف لحظه آخری دارد یا خیر
+  const isLastMinute = Boolean(
+    (hotel as any)?.is_last_minute_active ||
+      (hotel as any)?.has_last_minute ||
+      (hotel as any)?.is_last_minute ||
+      (hotel as any)?.has_hotel_last_minute ||
+      Number((hotel as any)?.last_minute_discount_percent ?? 0) > 0 ||
+      Number((hotel as any)?.last_minute_discount ?? 0) > 0
+  );
+
+  // قیمت نهایی بعد از تخفیف
   const finalPrice =
     hotel.price_info?.total_price ??
     (hotel as any).total_price ??
     (hotel as any).min_price ??
     0;
 
-  // دریافت درصد تخفیف و انقضا
+  // درصد تخفیف
   const effectiveDiscountPercentage =
     hotel.price_info?.discount_value ??
     (hotel as any).discount_percentage ??
     0;
 
+  // تاریخ انقضای تخفیف برای تایمر
   const effectiveDiscountExpiry =
     hotel.price_info?.discount_date ??
     (hotel as any).discount_expiry;
@@ -89,11 +101,16 @@ export function SuggestedHotel(props: Props) {
           </div>
         )}
 
-        {showDiscount && effectiveDiscountPercentage > 0 && (
+        {/* 
+            اگر تخفیف لحظه آخری باشد (isLastMinute)، درصد تخفیف مخفی می‌شود
+            و درصد فقط برای تخفیف‌های درصدی معمولی یا تایمردار نمایش داده می‌شود 
+        */}
+        {showDiscount && !isLastMinute && effectiveDiscountPercentage > 0 && (
           <DiscountPercentage discountPercentage={effectiveDiscountPercentage} />
         )}
 
-        {showTimer && formattedDeadline && (
+        {/* تایمر تخفیف (در صورت وجود تاریخ انقضا و اگر نیاز باشد) */}
+        {showTimer && formattedDeadline && !isLastMinute && (
           <DynamicSuggestedHotelTimer timer={formattedDeadline} />
         )}
       </div>
@@ -112,9 +129,9 @@ export function SuggestedHotel(props: Props) {
             <span>استان</span>
 
             <div className="flex-center gap-0.5">
-              <span>{city.province}</span>
+              <span>{city?.province}</span>
               <span>,</span>
-              <span>{city.name}</span>
+              <span>{city?.name}</span>
             </div>
           </div>
 
