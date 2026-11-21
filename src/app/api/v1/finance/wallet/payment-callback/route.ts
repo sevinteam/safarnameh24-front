@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_WALLET_CALLBACK = 'https://cps.zarvantrip.com/api/v1/finance/wallet/payment-callback/';
+const BACKEND_WALLET_CALLBACK = 'https://cps.safarnameh24.com/api/v1/finance/wallet/payment-callback/';
 
 async function forwardWalletCallback(req: NextRequest, method: 'GET' | 'POST') {
   try {
@@ -27,12 +27,12 @@ async function forwardWalletCallback(req: NextRequest, method: 'GET' | 'POST') {
     }
 
     return NextResponse.redirect(
-      'https://zarvantrip.com/dashboard/financial/wallet?payment_status=unsuccessfull&amount=0',
+      'https://safarnameh24.com/dashboard/financial/wallet?payment_status=unsuccessfull&amount=0',
       { status: 303 },
     );
   } catch (err) {
     return NextResponse.redirect(
-      'https://zarvantrip.com/dashboard/financial/wallet?payment_status=unsuccessfull&amount=0',
+      'https://safarnameh24.com/dashboard/financial/wallet?payment_status=unsuccessfull&amount=0',
       { status: 303 },
     );
   }

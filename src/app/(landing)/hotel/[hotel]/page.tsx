@@ -68,14 +68,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (seo && seo.title_tag) {
     return {
       title: seo.title_tag,
-      description: seo.description || `رزرو هتل در زروان تریپ`,
+      description: seo.description || `رزرو هتل در سفرنامه ۲۴ `,
       keywords: Array.isArray(seo.keywords) ? seo.keywords : [],
       robots: {
         index: !seo.no_index,
         follow: !seo.no_index,
       },
       alternates: {
-        canonical: seo.canonical_url || `https://zarvantrip.com/hotel/${hotelSlug}`,
+        canonical: seo.canonical_url || `https://safarnameh24.com/hotel/${hotelSlug}`,
       },
       openGraph: {
         title: seo.og_title || seo.title_tag,
@@ -90,20 +90,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // اگر دیتای سئو نبود، اما اطلاعات پایه هتل لود شد (تایتل پویا بر اساس نام هتل)
   if (hotelData && hotelData.name) {
     return {
-      title: `رزرو هتل ${hotelData.name} با بهترین قیمت | زروان تریپ`,
-      description: `رزرو آنلاین و اطلاعات کامل هتل ${hotelData.name} ${hotelData.city_name ? `در ${hotelData.city_name}` : ''} با تخفیف ویژه در زروان تریپ.`,
+      title: `رزرو هتل ${hotelData.name} با بهترین قیمت | سفرنامه ۲۴ `,
+      description: `رزرو آنلاین و اطلاعات کامل هتل ${hotelData.name} ${hotelData.city_name ? `در ${hotelData.city_name}` : ''} با تخفیف ویژه در سفرنامه ۲۴ .`,
       alternates: {
-        canonical: `https://zarvantrip.com/hotel/${hotelSlug}`,
+        canonical: `https://safarnameh24.com/hotel/${hotelSlug}`,
       }
     };
   }
 
   // حالت سقوط نهایی (Fallback) به جای نمایش تایتل صفحه اصلی، از نام اسلاگ استفاده می‌کند
   return {
-    title: `رزرو هتل ${decodedSlug} | زروان تریپ`,
-    description: `رزرو آنلاین هتل ${decodedSlug} با بهترین قیمت و پشتیبانی ۲۴ ساعته در زروان تریپ.`,
+    title: `رزرو هتل ${decodedSlug} | سفرنامه ۲۴ `,
+    description: `رزرو آنلاین هتل ${decodedSlug} با بهترین قیمت و پشتیبانی ۲۴ ساعته در سفرنامه ۲۴ .`,
     alternates: {
-      canonical: `https://zarvantrip.com/hotel/${hotelSlug}`,
+      canonical: `https://safarnameh24.com/hotel/${hotelSlug}`,
     }
   };
 }
@@ -123,7 +123,7 @@ export default async function Hotel({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'Hotel',
     name: hotelData.name,
-    description: hotelData.description || `رزرو هتل ${hotelData.name} در زروان تریپ`,
+    description: hotelData.description || `رزرو هتل ${hotelData.name} در سفرنامه ۲۴ `,
     starRating: {
       '@type': 'Rating',
       ratingValue: hotelData.stars || 3,

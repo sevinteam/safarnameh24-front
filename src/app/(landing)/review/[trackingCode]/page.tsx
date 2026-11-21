@@ -164,7 +164,7 @@ export default function PostStayReviewPage({
   const submitMutation = useMutation({
     mutationFn: () => {
       const payload = {
-        guest_name: guestName.trim() || 'مسافر زروان تریپ',
+        guest_name: guestName.trim() || 'مسافر سفرنامه ۲۴ ',
         stars,
         avatar_style: avatarStyle,
         text: text.trim(),
@@ -276,7 +276,7 @@ export default function PostStayReviewPage({
               href="/"
               className="rounded-xl bg-zinc-100 px-6 py-3 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200"
             >
-              صفحه اصلی زروان تریپ
+              صفحه اصلی سفرنامه ۲۴ 
             </Link>
           </div>
         </div>
