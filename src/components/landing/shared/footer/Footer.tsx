@@ -97,9 +97,12 @@ export function Footer() {
 
           <Description />
 
-          <Copyright />
+          {/* ایجاد فاصله بین متن توضیحات بالا و متن کپی‌رایت */}
+          <div className="mt-3.5">
+            <Copyright />
+          </div>
 
-          {/* ایجاد فاصله مناسب بین متن کپی‌رایت و دکمه توسعه‌دهنده */}
+          {/* فاصله دکمه توسعه‌دهنده از متن کپی‌رایت */}
           <div className="w-full mt-3.5">
             <WebsiteIdentity />
           </div>
