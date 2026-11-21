@@ -50,7 +50,7 @@ export function Footer() {
         <IdentityBadges />
         <SocialMedias />
         <Copyright />
-        <div className="w-full mt-1">
+        <div className="w-full mt-2">
           <WebsiteIdentity />
         </div>
       </footer>
@@ -84,7 +84,8 @@ export function Footer() {
         <div
           className="
             bg-white
-            p-6
+            px-6
+            py-4
             row-span-2
             flex
             flex-col
@@ -97,14 +98,13 @@ export function Footer() {
 
           <Description />
 
-          {/* ایجاد فاصله بین متن توضیحات بالا و متن کپی‌رایت */}
-          <div className="mt-3.5">
+          {/* بخش کپی‌رایت و دکمه در انتهای کادر با فاصله‌ی متناسب */}
+          <div className="mt-auto pt-2">
             <Copyright />
-          </div>
 
-          {/* فاصله دکمه توسعه‌دهنده از متن کپی‌رایت */}
-          <div className="w-full mt-3.5">
-            <WebsiteIdentity />
+            <div className="w-full mt-2">
+              <WebsiteIdentity />
+            </div>
           </div>
         </div>
 
