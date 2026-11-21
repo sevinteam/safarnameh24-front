@@ -3,7 +3,6 @@
 import 'swiper/css';
 import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Swiper as SwiperType } from 'swiper/types';
 
 import Link from 'next/link';
 import { useRef } from 'react';
@@ -26,7 +25,8 @@ type ApiResponse = {
 // -----------------------------------------------
 
 export function BestHotels() {
-  const swiperRef = useRef<SwiperType>(null);
+  // استفاده از تایپ امن برای جلوگیری از ارور نبود تعاریف تایپ Swiper
+  const swiperRef = useRef<any>(null);
 
   const { data, status } = useQuery<ApiResponse>({
     queryKey: ['best-hotels'],
@@ -39,7 +39,7 @@ export function BestHotels() {
     <div className="-ml-5 lg:ml-0">
       <TopBarConfig
         maxLength={6}
-        arraylength={data?.data.length}
+        arraylength={data?.data?.length ?? 0}
         prevClickFunc={() => swiperRef.current?.slidePrev()}
         nextClickFunc={() => swiperRef.current?.slideNext()}
         title={{ type: 'single', text: 'هتل های برتر ایران' }}
@@ -66,12 +66,14 @@ export function BestHotels() {
             1280: { slidesPerView: 6, slidesOffsetAfter: 0 },
           }}
           modules={[Navigation]}
-          onSwiper={(swiper) => (swiperRef.current = swiper)}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
           className="bestHotels-swiper h-32 lg:h-36"
         >
           {data?.data?.map((hotel, index) => (
             <SwiperSlide
-              key={index}
+              key={hotel?.hotel_slug || index}
               className="max-w-40 select-none xl:max-w-full"
             >
               <Link
@@ -82,13 +84,13 @@ export function BestHotels() {
                   <Image
                     width={200}
                     height={200}
-                    alt={'hotel-logo'}
+                    alt="hotel-logo"
                     src={hotel.image_logo_hotel}
                     className="full-size object-contain"
                   />
                 )}
 
-                <div className="absolute -z-10 bottom-1 left-1/2 h-10 w-20 -translate-x-1/2 rounded-xl bg-cs-red transition-all delay-100 duration-200 ease-in-out group-hover:-bottom-2"></div>
+                <div className="absolute -z-10 bottom-1 left-1/2 h-10 w-20 -translate-x-1/2 rounded-xl bg-cs-red transition-all delay-100 duration-200 ease-in-out group-hover:-bottom-2" />
               </Link>
             </SwiperSlide>
           ))}
