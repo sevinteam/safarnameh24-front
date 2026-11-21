@@ -28,7 +28,7 @@ const SORT_OPTIONS: readonly SortOption[] = [
     value: 'recommended',
     label: 'پیشنهادی',
     description: 'ترکیبی از محبوبیت، امتیاز مسافران و ارزش خرید',
-    // icon: Sparkles,
+    icon: Sparkles,
     isPrimary: true,
   },
   {

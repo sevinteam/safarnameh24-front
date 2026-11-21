@@ -1,6 +1,5 @@
-import { CONTACT } from '@/constants/general';
-import { ThemeTabs } from '@/components/common/theme-switcher';
 import { SITE_CONFIG } from '@/config/site';
+import { ThemeTabs } from '@/components/common/theme-switcher';
 
 // ------------------------------
 
@@ -19,7 +18,7 @@ export function Contact() {
       </div>
 
       <div className="flex flex-wrap gap-4 lg:w-1/2 lg:justify-end lg:gap-x-8 xl:w-2/3">
-        {CONTACT.map((item, i) => (
+        {SITE_CONFIG.contacts.map((item, i) => (
           <div key={item.type + i} className="flex items-center gap-2">
             {item.icon && (
               <item.icon className="text-muted-foreground size-4.5 shrink-0" />

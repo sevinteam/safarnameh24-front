@@ -1,6 +1,13 @@
 import logoImage from '@/assets/images/logo/logo.png';
 import iconImage from '@/assets/images/logo/icon.png';
 
+import telegram from '@/assets/images/social-media/pack-2/telegram.svg';
+import whatsapp from '@/assets/images/social-media/pack-2/whatsapp.svg';
+import linkedin from '@/assets/images/social-media/pack-2/linkedin.svg';
+import instagram from '@/assets/images/social-media/pack-2/instagram.svg';
+
+import { Mail, MapPin, PhoneCall } from 'lucide-react';
+
 // ------------------------------
 
 export const SITE_CONFIG = {
@@ -22,19 +29,100 @@ export const SITE_CONFIG = {
   locale: 'fa-IR',
   direction: 'rtl',
 
-  contact: {
-    phone: '',
-    email: '',
-    address: '',
-    zipCode: '',
-  },
+  social_media: [
+    {
+      label: {
+        en: 'telegram',
+        fa: 'تلگرام',
+      },
+      image: {
+        src: telegram,
+        alt: '',
+      },
+      href: '#',
+      icon: undefined,
+      type: 'telegram',
+    },
+    {
+      label: {
+        en: 'instagram',
+        fa: 'اینستاگرام',
+      },
+      image: {
+        src: instagram,
+        alt: '',
+      },
+      href: 'https://www.instagram.com/sevinhostir/',
+      type: 'instagram',
+      icon: undefined,
+    },
+    {
+      label: {
+        en: 'whatsapp',
+        fa: 'واتساپ',
+      },
+      image: {
+        src: whatsapp,
+        alt: '',
+      },
+      href: '#',
+      type: 'whatsapp',
+      icon: undefined,
+    },
+    {
+      label: {
+        en: 'linkedin',
+        fa: 'لینکدین',
+      },
+      image: {
+        src: linkedin,
+        alt: '',
+      },
+      href: '#',
+      type: 'linkedin',
+      icon: undefined,
+    },
+  ],
 
-  socialMedia: {
-    instagram: '',
-    telegram: '',
-    linkedin: '',
-    whatsapp: '',
-  },
+  contacts: [
+    {
+      icon: PhoneCall,
+      image: undefined,
+      type: 'phone-number',
+      value: '021-91301614',
+      label: 'شماره تماس شرکت',
+      actionLabel: 'تماس با ما',
+      href: 'tel:02191301614',
+    },
+    {
+      icon: PhoneCall,
+      image: undefined,
+      type: 'phone-number',
+      value: '09120759419',
+      label: 'شماره تماس همراه',
+      actionLabel: 'تماس با ما',
+      href: 'tel:09120759419',
+    },
+    {
+      icon: Mail,
+      image: undefined,
+      type: 'email',
+      label: 'ایمیل',
+      value: 'info@my.sevinhost.ir',
+      actionLabel: 'ارسال ایمیل',
+      href: 'mailto:info@my.sevinhost.ir',
+    },
+    {
+      icon: MapPin,
+      image: undefined,
+      type: 'address',
+      label: 'دفتر مرکزی',
+      value:
+        'تهران - جنت آباد مرکزی شاهین شمالی بیست متری گلستان شرقی کوچه معینی نبش رحیم بزی پلاک ۲۰ واحد ۲۰',
+      actionLabel: undefined,
+      href: undefined,
+    },
+  ],
 
   version: '1.0.0',
   versionName: 'alpha-refactored',

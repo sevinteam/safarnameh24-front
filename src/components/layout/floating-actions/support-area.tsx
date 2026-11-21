@@ -47,7 +47,7 @@ export function SupportArea(props: Props) {
             variant={variant}
             onClick={handleClick}
             aria-label={tooltipText}
-            className={cn('bg-brand rounded-full', className)}
+            className={cn('rounded-full', className)}
             {...restProps}
           />
         }

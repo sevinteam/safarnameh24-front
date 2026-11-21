@@ -1,2 +1,1 @@
-export * from './organisms/header';
-export * from './organisms/smart-header';
+export * from './view/organisms/header';

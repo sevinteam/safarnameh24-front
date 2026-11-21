@@ -46,11 +46,11 @@ export function HotelCard(props: Props) {
     <Link
       href={formattedInfo.hotelLink}
       className={cn(
-        'bg-card flex h-94 flex-col overflow-hidden rounded-2xl border',
+        'bg-card flex h-98 flex-col overflow-hidden rounded-2xl border p-2.5',
         className,
       )}
     >
-      <div className="relative h-44 overflow-hidden border-b">
+      <div className="relative h-44 overflow-hidden rounded-xl">
         {/* Placeholders */}
         <div className="absolute inset-3 z-20">
           {formattedInfo.discountExists && (
@@ -70,7 +70,7 @@ export function HotelCard(props: Props) {
         />
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="mt-4 flex flex-1 flex-col p-1.5">
         {/* Hotel-Name */}
         <p
           title={formattedInfo.name}

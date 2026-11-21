@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
-import { SOCIAL_MEDIA } from '@/constants/general';
+import { SITE_CONFIG } from '@/config/site';
 
 // ------------------------------
 
@@ -20,7 +20,7 @@ export function SocialMedia() {
       </span>
 
       <div className="flex flex-wrap gap-4">
-        {SOCIAL_MEDIA?.map(
+        {SITE_CONFIG.social_media?.map(
           (item) =>
             item.href && (
               <Tooltip key={item.type}>

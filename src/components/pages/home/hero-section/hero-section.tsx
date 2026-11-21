@@ -8,20 +8,17 @@ import 'swiper/css/effect-fade';
 
 import Image from 'next/image';
 import HeroSearch from './hero-search';
+import { cover_pictures } from './constants';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
-
-import heroImage_1 from '@/assets/images/background/hero-1.jpg';
-import heroImage_2 from '@/assets/images/background/hero-2.jpg';
-import heroImage_3 from '@/assets/images/background/hero-3.jpg';
 
 // ------------------------------
 
 export function HeroSection() {
   return (
-    <section className="-mx-4 -mt-8 xl:mt-0">
-      <div className="hidden h-110 overflow-hidden sm:block xl:rounded-[3rem]">
+    <section className="-mx-4 -mt-8 xl:-mt-2">
+      <div className="hidden h-120 overflow-hidden sm:block xl:rounded-[3rem]">
         <Swiper
           autoplay={{
             delay: 8000,
@@ -36,7 +33,7 @@ export function HeroSection() {
           modules={[Pagination, Autoplay, EffectFade]}
           className="swiper-hero-section bg-input size-full"
         >
-          {[heroImage_1, heroImage_2, heroImage_3]?.map((slide, index) => (
+          {cover_pictures?.map((slide, index) => (
             <SwiperSlide key={index}>
               <Image
                 fill

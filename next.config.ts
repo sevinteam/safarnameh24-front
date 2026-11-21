@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
 
   // Remove Next.js powered-by response header for cleaner security headers
   poweredByHeader: false,
+  experimental: {
+    agentUpgrade: 'security',
+  },
 
   images: {
     remotePatterns: [

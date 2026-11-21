@@ -11,8 +11,9 @@ import {
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-import { DatePicker } from '@/components/common/date-picker';
+import { DatePicker, useDatePicker } from '@/components/common/date-picker';
 import { DestinationSearch } from '@/components/common/destination-search';
+import { cn } from 'cn';
 
 type Props = {
   open: boolean;
@@ -24,9 +25,16 @@ type Props = {
 export default function SheetWrapper(props: Props) {
   const { open, onOpenChange } = props;
 
+  const { selectedDates } = useDatePicker();
+
+  const datesIsSelected = selectedDates?.length === 2;
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className={'w-full! gap-0'} showCloseButton={false}>
+      <SheetContent
+        className={'w-full! gap-0 lg:hidden'}
+        showCloseButton={false}
+      >
         <SheetHeader className="flex-row gap-2.5 border-b px-4 py-6">
           <SheetClose className={'flex'}>
             <ArrowRight className="size-5" />
@@ -39,13 +47,18 @@ export default function SheetWrapper(props: Props) {
           <SheetDescription className={'hidden'} />
         </SheetHeader>
 
-        <div className="grid gap-6 px-4 py-8">
+        <div
+          className={cn('grid px-4 py-8', datesIsSelected ? 'gap-8' : 'gap-6')}
+        >
           <DestinationSearch />
           <DatePicker />
         </div>
 
         <SheetFooter className="border-t">
-          <Button>بروزرسانی جستجو</Button>
+          <SheetClose
+            className={'flex'}
+            render={<Button>بروزرسانی جستجو</Button>}
+          ></SheetClose>
         </SheetFooter>
       </SheetContent>
     </Sheet>

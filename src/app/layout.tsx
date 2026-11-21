@@ -6,6 +6,8 @@ import { inter_font, hezargan_font, iransans_font } from '@/theme/font';
 
 export const metadata = metadataConfig;
 
+// ------------------------------
+
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html

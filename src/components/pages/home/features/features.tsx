@@ -64,7 +64,7 @@ export function Features() {
 
         spaceBetween={24}
         modules={[Pagination]}
-        className="swiper-pagination-custom"
+        className="swiper-pagination-custom xl:pb-0!"
         pagination={{ clickable: true, dynamicBullets: true }}
       >
         {HOTEL_FEATURES.map((service, index) => (

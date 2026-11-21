@@ -26,7 +26,7 @@ import Brand from '@/components/common/brand';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { content } from '@/constants/header';
+import { NAV_ITEMS } from '../../model/constants';
 
 import { ThemeSwitcher } from '@/components/common/theme-switcher';
 import { LoginTrigger } from './login-trigger';
@@ -52,7 +52,7 @@ export default function Menu() {
         className={'w-full! gap-0 rounded-none'}
       >
         <SheetHeader className="h-20 flex-row items-center gap-2 border-b">
-          <Brand showTitle />
+          <SheetClose nativeButton={false} render={<Brand showTitle />} />
           <ThemeSwitcher className="mr-auto" />
 
           <SheetClose
@@ -68,29 +68,35 @@ export default function Menu() {
         </SheetHeader>
 
         <div className="flex flex-1 flex-col overflow-auto p-4">
-          {content.navbar.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
 
             return (
-              <Button
+              <SheetClose
                 key={item.id}
-                nativeButton={false}
-                variant={item.href === pathname ? 'secondary' : 'link'}
-                className={'h-12 w-full justify-start gap-2.5 font-semibold'}
                 render={
-                  <Link href={item.href}>
-                    <Icon />
-                    <span>{item.label}</span>
+                  <Button
+                    nativeButton={false}
+                    variant={item.href === pathname ? 'secondary' : 'link'}
+                    className={
+                      'h-14 w-full justify-start gap-2.5 font-semibold'
+                    }
+                    render={
+                      <Link href={item.href}>
+                        <Icon />
+                        <span>{item.label}</span>
 
-                    <ChevronLeft className="mr-auto" />
-                  </Link>
+                        <ChevronLeft className="mr-auto" />
+                      </Link>
+                    }
+                  />
                 }
               />
             );
           })}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 border-t p-4">
+        {/* <div className="grid grid-cols-2 gap-3 border-t p-4">
           <div className="hidden lg:block">
             <ThemeSwitcher />
           </div>
@@ -109,7 +115,7 @@ export default function Menu() {
             variant="full-width"
             className="col-span-2 h-12 justify-start gap-2.5 px-5"
           />
-        </div>
+        </div> */}
       </SheetContent>
     </Sheet>
   );

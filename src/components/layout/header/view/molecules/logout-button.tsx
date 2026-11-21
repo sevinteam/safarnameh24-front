@@ -1,9 +1,9 @@
 'use client';
 
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { LogOut } from 'lucide-react';
 
-import { authInternalApi } from '@/lib/axios';
+// import { authInternalApi } from '@/lib/axios';
 import { toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 
@@ -16,7 +16,8 @@ export default function LogoutButton() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      await authInternalApi.post('/auth/logout/');
+      // await authInternalApi.post('/auth/logout/');
+      await axios.post('/auth/logout/');
     },
     onSuccess: () => {
       // User is no longer authenticated

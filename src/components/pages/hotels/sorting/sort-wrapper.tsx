@@ -71,7 +71,7 @@ export default function SortWrapper(props: Props) {
             </DrawerDescription>
           </DrawerHeader>
 
-          <div className="p-4">
+          <div className="mt-4 border-t border-dashed p-4">
             <RadioGroup
               value={activeSort}
               className={'gap-0'}
@@ -84,9 +84,9 @@ export default function SortWrapper(props: Props) {
                 return (
                   <DrawerClose
                     key={option.value}
-                    className="flex items-center gap-3 py-2.5"
+                    className="flex h-10 items-center gap-2.5"
                   >
-                    {Icon && <Icon className="size-4.5 shrink-0" />}
+                    {Icon && <Icon className="size-5 shrink-0" />}
                     <Label
                       htmlFor={option.value}
                       className="flex-1 font-semibold"

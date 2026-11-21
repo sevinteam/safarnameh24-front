@@ -12,7 +12,7 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { useEffect, useId, useState } from 'react';
 import { LayoutGroup, motion } from 'framer-motion';
-import { THEME_OPTIONS } from '@/constants/general';
+import { THEME_OPTIONS } from '@/config/data/general';
 
 type Props = {
   className?: string;

@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { content } from '@/constants/header';
+import { NAV_ITEMS } from '../../model/constants';
 
 // ------------------------------
 
@@ -13,7 +13,7 @@ export default function Navbar() {
 
   return (
     <div className="hidden items-center lg:flex">
-      {content.navbar.map((item) => (
+      {NAV_ITEMS.map((item) => (
         <Button
           key={item.id}
           nativeButton={false}

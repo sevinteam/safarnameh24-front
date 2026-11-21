@@ -19,18 +19,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { User } from 'lucide-react';
-import { useMediaQuery } from '@/hooks';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import LogoutButton from './logout-button';
 
 import { Label } from '@/components/ui/label';
-import { User as TUser } from '@/types/general';
+// import { User as TUser } from '@/types/general';
 import { Button } from '@/components/ui/button';
 
 import { Separator } from '@/components/ui/separator';
-import { userOptions } from '@/config/constants/general';
+// import { userOptions } from '@/config/constants/general';
 
 type Props = {
-  info: TUser;
+  // info: TUser;
+  info: any;
 };
 
 // ---------------------------------
@@ -63,7 +64,7 @@ export default function UserInfo({ info }: Props) {
 
           <Separator />
 
-          <DrawerFooter className="mt-4">
+          {/* <DrawerFooter className="mt-4">
             {userOptions.map((item) => {
               const Icon = item.icon;
 
@@ -83,7 +84,7 @@ export default function UserInfo({ info }: Props) {
             })}
 
             <LogoutButton />
-          </DrawerFooter>
+          </DrawerFooter> */}
         </DrawerContent>
       </Drawer>
     );
@@ -113,7 +114,7 @@ export default function UserInfo({ info }: Props) {
 
           <DropdownMenuSeparator />
 
-          {userOptions.map((item) => {
+          {/* {userOptions.map((item) => {
             const Icon = item.icon;
 
             return (
@@ -122,7 +123,7 @@ export default function UserInfo({ info }: Props) {
                 <span>{item.label}</span>
               </DropdownMenuItem>
             );
-          })}
+          })} */}
 
           <LogoutButton />
         </DropdownMenuGroup>

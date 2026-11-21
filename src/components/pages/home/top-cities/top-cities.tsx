@@ -5,13 +5,11 @@ import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper/types';
 
-import { ArrowLeft, ArrowRight, User } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from 'cn';
-import { TOP_CITIES } from '@/constants/general';
+import { TOP_CITIES } from '@/config/data/general';
 
 import heroImage_1 from '@/assets/images/background/hero-3.jpg';
-import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
 import Link from 'next/link';
 import { SectionTitle } from '@/components/common/section-topbar/section-title';

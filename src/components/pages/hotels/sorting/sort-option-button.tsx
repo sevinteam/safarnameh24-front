@@ -31,7 +31,9 @@ export const SortOptionButton = ({
       className={'h-9 gap-1.5 rounded-lg px-3'}
       variant={isActive ? 'default' : 'secondary'}
     >
-      {Icon && <Icon className="size-4 shrink-0" />}
+      {Icon && option.value !== 'recommended' && (
+        <Icon className="size-4 shrink-0" />
+      )}
       <span>{label}</span>
     </Button>
   );

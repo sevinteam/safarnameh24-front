@@ -111,7 +111,7 @@ export default function CalendarSheet() {
         </div>
 
         <SheetFooter className="p-0">
-          <div className="grid grid-cols-[2fr_1fr] gap-3 border-t p-5">
+          <div className="grid grid-cols-[2fr_1fr] gap-3 border-t p-4">
             <ConfirmButton />
             <ClearButton />
           </div>

@@ -2,7 +2,7 @@
 
 import { cn } from '@/utils';
 
-import { PhoneCall } from 'lucide-react';
+import { ClipboardCheck, Hotel, PhoneCall } from 'lucide-react';
 import { SupportArea } from './support-area';
 import { ScrollToTop } from './/scroll-to-top';
 
@@ -33,16 +33,14 @@ export const FloatingActions = ({ className }: Props) => {
       )}
     >
       <SupportArea
-        variant={'default'}
-        tooltipText="تماس با ما"
-        className={
-          'bg-emerald-600 text-white hover:bg-emerald-500/90 lg:size-11'
-        }
+        variant={'secondary'}
+        tooltipText="پیگیری رزرو"
+        className={'lg:size-11'}
       >
-        <PhoneCall />
+        <ClipboardCheck className="size-4 lg:size-5" />
       </SupportArea>
 
-      <SupportArea className={'text-white lg:size-11'} />
+      <SupportArea className={'bg-brand text-white lg:size-11'} />
       <ScrollToTop variant={'default'} className={'rounded-full lg:size-11'} />
     </aside>
   );

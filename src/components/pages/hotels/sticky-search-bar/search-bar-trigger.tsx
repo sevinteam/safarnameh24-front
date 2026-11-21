@@ -20,24 +20,28 @@ export default function SearchBarTrigger(props: Props) {
 
   return (
     <div className="flex h-20 w-full items-center gap-4 px-4 sm:gap-8 md:mx-auto md:w-fit">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm">
-          {/* <Hotel className="text-muted-foreground size-4 sm:size-6" /> */}
-
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center gap-2">
           {destination ? (
-            <span className="font-semibold">* هتل‌ های {destination.name}</span>
+            <span className="font-semibold">
+              {destination.type === 'city'
+                ? `رزرو هتل های ${destination.name}`
+                : `هتل ${destination.name} ${destination.city}`}
+            </span>
           ) : (
             <span className="font-medium">بدون مقصد</span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-sm">
-          <CalendarRange className="text-muted-foreground size-4" />
-
+        <div className="flex items-center gap-2">
           {datesIsSelected ? (
-            <span className="font-semibold">
-              {`${selectedDates[0].format('DD MMMM')} تا ${selectedDates[1].format('DD MMMM')}`}
-            </span>
+            <div className="flex items-center gap-1.5 font-semibold">
+              <span>{selectedDates[0].format('DD MMMM')}</span>
+
+              <span className="text-muted-foreground">-</span>
+
+              <span>{selectedDates[1].format('DD MMMM')}</span>
+            </div>
           ) : (
             <span className="font-medium">بدون تاریخ اقامت</span>
           )}

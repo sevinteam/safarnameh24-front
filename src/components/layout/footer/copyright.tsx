@@ -19,8 +19,8 @@ export function Copyright() {
           className="font-secondary flex items-center gap-1 capitalize lg:mr-auto"
         >
           <span className="text-muted-foreground">designed & developed by</span>
-          <span className="text-brand-foreground bg-brand/10 hover:bg-brand/15 cursor-pointer rounded-lg py-1 ps-2 pe-3 uppercase select-none">
-            🔥 sevin team
+          <span className="text-brand-foreground cursor-pointer uppercase hover:underline">
+            sevin team
           </span>
         </p>
       </div>

@@ -1,4 +1,3 @@
-import { SmartHeader } from '@/features/smart-header/header-wrapper';
 import {
   FAQ,
   Features,
@@ -10,14 +9,13 @@ import {
 } from '@/components/pages/home';
 
 import { Suspense } from 'react';
+import { Container } from '@/components/layout/container';
 
 // ------------------------------
 
 export default function Home() {
   return (
-    <div className="space-y-20 lg:space-y-24">
-      {/* <SmartHeader /> */}
-
+    <Container className="space-y-20 lg:space-y-24" spacing={'page'}>
       <Suspense>
         <HeroSection />
       </Suspense>
@@ -28,6 +26,6 @@ export default function Home() {
       <DiscountedHotels />
       <TopHotels />
       <FAQ />
-    </div>
+    </Container>
   );
 }
