@@ -12,7 +12,14 @@ import { DynamicSuggestedHotelTimer } from './SuggestedHotelTimer';
 import { useState } from 'react';
 
 type Props = {
-  hotel: Hotel;
+  hotel: Hotel & {
+    price_info?: {
+      total_price?: number;
+      original_total_price?: number;
+      discount_value?: number;
+      discount_date?: string;
+    };
+  };
   showTimer?: boolean;
   showDiscount?: boolean;
   bestType?: 'suggested' | 'amazing';
@@ -22,29 +29,45 @@ type Props = {
 
 export function SuggestedHotel(props: Props) {
   const {
-    hotel: {
-      city,
-      name,
-      slug,
-      stars,
-      rating,
-      main_image,
-      total_price,
-      average_score,
-      discount_expiry,
-      discount_percentage,
-    },
+    hotel,
     bestType,
     showTimer = true,
     showDiscount = true,
   } = props;
 
+  const {
+    city,
+    name,
+    slug,
+    stars,
+    rating,
+    main_image,
+    average_score,
+  } = hotel;
+
+  // دریافت قیمت نهایی (اولویت با قیمت بعد از تخفیف در price_info است)
+  const finalPrice =
+    hotel.price_info?.total_price ??
+    (hotel as any).total_price ??
+    (hotel as any).min_price ??
+    0;
+
+  // دریافت درصد تخفیف و انقضا
+  const effectiveDiscountPercentage =
+    hotel.price_info?.discount_value ??
+    (hotel as any).discount_percentage ??
+    0;
+
+  const effectiveDiscountExpiry =
+    hotel.price_info?.discount_date ??
+    (hotel as any).discount_expiry;
+
   const [isClicked, setClicked] = useState(false);
 
   const pathname = usePathname();
   const formattedDeadline =
-    discount_expiry &&
-    moment.from(discount_expiry, 'fa', 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
+    effectiveDiscountExpiry &&
+    moment.from(effectiveDiscountExpiry, 'fa', 'jYYYY/jMM/jDD').format('YYYY-MM-DD');
 
   return (
     <div className="rounded-xl bg-white p-2 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)]">
@@ -66,11 +89,13 @@ export function SuggestedHotel(props: Props) {
           </div>
         )}
 
-        {showDiscount && (
-          <DiscountPercentage discountPercentage={discount_percentage} />
+        {showDiscount && effectiveDiscountPercentage > 0 && (
+          <DiscountPercentage discountPercentage={effectiveDiscountPercentage} />
         )}
 
-        {showTimer && <DynamicSuggestedHotelTimer timer={formattedDeadline} />}
+        {showTimer && formattedDeadline && (
+          <DynamicSuggestedHotelTimer timer={formattedDeadline} />
+        )}
       </div>
 
       {/* Hotel-Information */}
@@ -116,7 +141,7 @@ export function SuggestedHotel(props: Props) {
           <span>شروع قیمت اتاق :</span>
 
           <div className="flex items-center gap-1 font-bold">
-            <span>{total_price ? numberSeparation(total_price) : 0}</span>
+            <span>{finalPrice ? numberSeparation(finalPrice) : 0}</span>
             <span>تومان</span>
           </div>
         </div>
