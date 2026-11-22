@@ -40,6 +40,7 @@ type ReviewInitData = {
     id: number;
     name: string;
     slug: string;
+    city_slug?: string | null;
     stars: number;
     city_name: string;
     main_image: string;
@@ -251,6 +252,8 @@ export default function PostStayReviewPage({
   }
 
   if (submittedSuccess || reviewData.already_reviewed) {
+    const hotelCitySlug = reviewData.hotel.city_slug || 'iran';
+
     return (
       <main className="container mx-auto max-w-lg px-4 py-20" dir="rtl">
         <div className="rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-lg shadow-emerald-500/5">
@@ -267,7 +270,7 @@ export default function PostStayReviewPage({
           </p>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center">
             <Link
-              href={`/hotel/${reviewData.hotel.slug}#customer-reviews`}
+              href={`/hotel/${encodeURIComponent(hotelCitySlug)}/${reviewData.hotel.slug}#customer-reviews`}
               className="rounded-xl bg-cs-dark-blue px-6 py-3 text-xs font-bold text-white shadow-md transition hover:opacity-90"
             >
               مشاهده نظر در صفحه هتل

@@ -12,10 +12,12 @@ type Hotel = {
   star: number;
   city: string;
   hotel: string;
+  citySlug?: string;
 };
 
 type City = {
   city: string;
+  citySlug?: string;
   province: string;
   residence: number;
 };
@@ -41,6 +43,7 @@ export default function CityOrHotelItem(props: Props) {
         type: 'hotel',
         payload: {
           city: props.info.city,
+          citySlug: props.info.citySlug || '',
           hotel: props.info.hotel,
           hotelSlug: props.info.slug,
         },
@@ -50,6 +53,7 @@ export default function CityOrHotelItem(props: Props) {
         type: 'city',
         payload: {
           city: props.info.city,
+          citySlug: props.info.citySlug || '',
           province: props.info.province,
         },
       });

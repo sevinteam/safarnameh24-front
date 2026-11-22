@@ -46,6 +46,11 @@ export function SuggestedHotel(props: Props) {
     average_score,
   } = hotel;
 
+  const citySlug =
+    (city as { slug?: string } | undefined)?.slug ||
+    (hotel as any)?.city_slug ||
+    'iran';
+
   // تشخیص اینکه آیا هتل تخفیف لحظه آخری دارد یا خیر
   const isLastMinute = Boolean(
     (hotel as any)?.is_last_minute_active ||
@@ -165,7 +170,7 @@ export function SuggestedHotel(props: Props) {
 
         {/* Hotel-Reservation */}
         <Link
-          href={`/hotel/${slug}`}
+          href={`/hotel/${encodeURIComponent(citySlug)}/${slug}`}
           onClick={() => setClicked(true)}
           className="flex-center mt-2 h-10 rounded-[11px] bg-cs-dark-blue text-zinc-100 transition-colors duration-200 ease-in-out hover:text-zinc-100"
         >

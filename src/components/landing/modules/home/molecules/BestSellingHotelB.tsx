@@ -20,9 +20,14 @@ export default function BestSellingHotelB(props: Props) {
     },
   } = props;
 
+  const citySlug =
+    (city as { slug?: string } | undefined)?.slug ||
+    (props.hotel as any)?.city_slug ||
+    'iran';
+
   return (
     <Link
-      href={`/hotel/${slug}`}
+      href={`/hotel/${encodeURIComponent(citySlug)}/${slug}`}
       className="relative bg-white h-[21rem] p-3 flex flex-col gap-3 rounded-2xl shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)]"
     >
       {/* Image */}

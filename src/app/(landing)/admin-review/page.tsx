@@ -34,6 +34,7 @@ type HotelOption = {
   id: number;
   name: string;
   slug: string;
+  city_slug?: string | null;
   stars: number;
   status: string;
   city_name: string;
@@ -49,6 +50,7 @@ type AdminReviewInitData = {
 type SubmittedResult = {
   comment_id: number;
   hotel_slug: string;
+  city_slug?: string | null;
   hotel_name: string;
   created_jalali: string;
 };
@@ -277,6 +279,11 @@ export default function AdminHotelReviewPage() {
   }
 
   if (submittedResult) {
+    const hotelCitySlug =
+      submittedResult.city_slug ||
+      selectedHotel?.city_slug ||
+      'iran';
+
     return (
       <main className="container mx-auto max-w-lg px-4 py-20" dir="rtl">
         <div className="rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-lg shadow-emerald-500/5">
@@ -311,7 +318,7 @@ export default function AdminHotelReviewPage() {
               انتخاب هتل دیگر و ثبت نظر جدید
             </button>
             <Link
-              href={`/hotel/${submittedResult.hotel_slug}#customer-reviews`}
+              href={`/hotel/${encodeURIComponent(hotelCitySlug)}/${submittedResult.hotel_slug}#customer-reviews`}
               className="rounded-xl bg-cs-dark-blue px-6 py-3 text-xs font-bold text-white shadow-md transition hover:opacity-90"
             >
               مشاهده نظر در صفحه هتل

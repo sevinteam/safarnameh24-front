@@ -15,6 +15,7 @@ import { generalInstance, isEmptyOrInvalid } from '@/utils/services';
 
 type Data = {
   hotel_slug: string;
+  city_slug?: string | null;
   image_logo_hotel: string;
 };
 
@@ -71,29 +72,32 @@ export function BestHotels() {
           }}
           className="bestHotels-swiper h-32 lg:h-36"
         >
-          {data?.data?.map((hotel, index) => (
-            <SwiperSlide
-              key={hotel?.hotel_slug || index}
-              className="max-w-40 select-none xl:max-w-full"
-            >
-              <Link
-                href={`/hotel/${hotel.hotel_slug}`}
-                className="flex-center group relative h-28 rounded-xl bg-white p-4 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)] xl:h-32 xl:p-6"
+          {data?.data?.map((hotel, index) => {
+            const citySlug = hotel?.city_slug || 'iran';
+            return (
+              <SwiperSlide
+                key={hotel?.hotel_slug || index}
+                className="max-w-40 select-none xl:max-w-full"
               >
-                {hotel?.image_logo_hotel && (
-                  <Image
-                    width={200}
-                    height={200}
-                    alt="hotel-logo"
-                    src={hotel.image_logo_hotel}
-                    className="full-size object-contain"
-                  />
-                )}
+                <Link
+                  href={`/hotel/${encodeURIComponent(citySlug)}/${hotel.hotel_slug}`}
+                  className="flex-center group relative h-28 rounded-xl bg-white p-4 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)] xl:h-32 xl:p-6"
+                >
+                  {hotel?.image_logo_hotel && (
+                    <Image
+                      width={200}
+                      height={200}
+                      alt="hotel-logo"
+                      src={hotel.image_logo_hotel}
+                      className="full-size object-contain"
+                    />
+                  )}
 
-                <div className="absolute -z-10 bottom-1 left-1/2 h-10 w-20 -translate-x-1/2 rounded-xl bg-cs-red transition-all delay-100 duration-200 ease-in-out group-hover:-bottom-2" />
-              </Link>
-            </SwiperSlide>
-          ))}
+                  <div className="absolute -z-10 bottom-1 left-1/2 h-10 w-20 -translate-x-1/2 rounded-xl bg-cs-red transition-all delay-100 duration-200 ease-in-out group-hover:-bottom-2" />
+                </Link>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       )}
     </div>

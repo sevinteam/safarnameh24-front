@@ -46,7 +46,8 @@ export const MHotelCard = memo(function MHotelCard(props: Props) {
   if (passengers) queryParams.set('passengers', passengers);
 
   const queryString = queryParams.toString();
-  const navigationLink = `/hotel/${slug}${queryString ? `?${queryString}` : ''}`;
+  const citySlug = (city as { slug?: string } | undefined)?.slug || 'iran';
+  const navigationLink = `/hotel/${encodeURIComponent(citySlug)}/${slug}${queryString ? `?${queryString}` : ''}`;
 
   // ۲. استخراج ایمن نام استان
   const provinceName =

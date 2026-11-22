@@ -1,7 +1,7 @@
 'use client';
 
 import { Room } from '@/types/landing';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { axiosInstance } from '@/utils/axios';
 import { Section } from './molecules/Section';
@@ -32,6 +32,7 @@ const buildQueryString = (options: {
 
 export function Rooms({ hotelSlug }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const { confirmedValue: dates } = useDatePickerContext();
 
   const [queryOptions, setQueryOptions] = useState({
@@ -71,12 +72,14 @@ export function Rooms({ hotelSlug }: Props) {
       passengers: '0',
     });
 
-    // در URL هم دیگر &passengers=1,0 اضافه نمی‌شود
-    router.replace(
-      `/hotel/${hotelSlug}?start-date=${startDate}&end-date=${endDate}`,
-      { scroll: false },
-    );
-  }, [dates, router, hotelSlug]);
+    // مسیر فعلی (شامل شهر و اسلاگ هتل) حفظ می‌شود و فقط تاریخ در URL آپدیت می‌شود
+    if (pathname) {
+      router.replace(
+        `${pathname}?start-date=${startDate}&end-date=${endDate}`,
+        { scroll: false },
+      );
+    }
+  }, [dates, router, pathname]);
 
   return (
     <Section sectionID="rooms">

@@ -54,9 +54,15 @@ export default function SearchAndFilter() {
     const commonParams = `start-date=${startDate}&end-date=${endDate}`;
 
     if (cityOrHotel.hotel) {
-      router.push(`/hotel/${cityOrHotel.hotelSlug}?${commonParams}`, {
-        scroll: true,
-      });
+      const citySlug =
+        (cityOrHotel as any).citySlug ||
+        (cityOrHotel as any).city_slug ||
+        'iran';
+
+      router.push(
+        `/hotel/${encodeURIComponent(citySlug)}/${cityOrHotel.hotelSlug}?${commonParams}`,
+        { scroll: true },
+      );
     }
     // ===
     else {

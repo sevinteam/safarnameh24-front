@@ -44,6 +44,7 @@ export function CityOrHotelList(props: Props) {
                   type="city"
                   info={{
                     city: city.name,
+                    citySlug: (city as { slug?: string } | undefined)?.slug || '',
                     province: city.province.name,
                     residence: city.hotels_number,
                   }}
@@ -69,6 +70,10 @@ export function CityOrHotelList(props: Props) {
                     hotel: hotel.name,
                     star: hotel.stars,
                     city: hotel.city.name,
+                    citySlug:
+                      (hotel.city as { slug?: string } | undefined)?.slug ||
+                      (hotel as any)?.city_slug ||
+                      '',
                   }}
                   handleClose={handleClose}
                 />

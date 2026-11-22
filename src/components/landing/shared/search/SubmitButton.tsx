@@ -35,18 +35,12 @@ export default function SubmitButton(props: Props) {
   const { confirmedValue: cityOrHotel } = useHotelOrCityContext();
   const { confirmedPassengers: passengers } = usePassengersContext();
 
-  // console.log('dates', dates)
-  // console.log('cityOrHotel', cityOrHotel);
-  // console.log('passengers', passengers);
-
   function handleSubmit() {
     if (!isHotelDetail) {
       const stopCondition =
         !dates?.[0] ||
-        !dates?.[1] 
-        !cityOrHotel.city 
-        // !passengers.rooms ||
-        // !passengers.passengers;
+        !dates?.[1] ||
+        !cityOrHotel.city;
 
       if (stopCondition) {
         setError(true);
@@ -70,29 +64,23 @@ export default function SubmitButton(props: Props) {
           .format('YYYY-MM-DD'),
       );
 
-      // params.set('passengers', passengers.passengers.toString());
-      // params.set('rooms', passengers.rooms.toString());
-
       if (cityOrHotel.hotel) {
+        const citySlug =
+          (cityOrHotel as any).citySlug ||
+          (cityOrHotel as any).city_slug ||
+          'iran';
+
         router.replace(
-          `/hotel/${cityOrHotel.hotelSlug}/?${params.toString()}`,
+          `/hotel/${encodeURIComponent(citySlug)}/${cityOrHotel.hotelSlug}?${params.toString()}`,
           { scroll: true },
         );
-      }
-      // ---
-      else {
+      } else {
         params.set('city', cityOrHotel.city);
         params.set('province', cityOrHotel.province);
         router.replace(`/hotel/?${params.toString()}`, { scroll: true });
       }
-    }
-    // 
-     else {
-            const stopCondition =
-        !dates?.[0] ||
-        !dates?.[1] 
-        // !passengers.rooms ||
-        // !passengers.passengers;
+    } else {
+      const stopCondition = !dates?.[0] || !dates?.[1];
 
       if (stopCondition) {
         setError(true);
@@ -115,22 +103,6 @@ export default function SubmitButton(props: Props) {
           ?.convert(dateInfo.calendar, dateInfo.locale)
           .format('YYYY-MM-DD'),
       );
-
-      // params.set('passengers', passengers.passengers.toString());
-      // params.set('rooms', passengers.rooms.toString());
-
-      // if (cityOrHotel.hotel) {
-      //   router.replace(
-      //     `/hotel/${cityOrHotel.hotelSlug}/?${params.toString()}`,
-      //     { scroll: true },
-      //   );
-      // }
-      // // ---
-      // else {
-      //   params.set('city', cityOrHotel.city);
-      //   params.set('province', cityOrHotel.province);
-      //   router.replace(`/hotel/?${params.toString()}`, { scroll: true });
-      // }
     }
 
     handleClose();

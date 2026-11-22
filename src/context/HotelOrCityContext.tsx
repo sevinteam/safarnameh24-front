@@ -10,6 +10,7 @@ import {
 type THotelOrCity = {
   city: string;
   hotel: string;
+  citySlug: string;
   province: string;
   hotelSlug: string;
 };
@@ -26,6 +27,7 @@ type HotelOrCityAction =
       payload: {
         city: string;
         province: string;
+        citySlug?: string;
       };
     }
   | {
@@ -34,6 +36,7 @@ type HotelOrCityAction =
         city: string;
         hotel: string;
         hotelSlug: string;
+        citySlug?: string;
       };
     }
   | { type: 'input-value'; payload: string }
@@ -44,6 +47,7 @@ type HotelOrCityAction =
       payload: {
         city: string;
         province: string;
+        citySlug?: string;
       };
     }
   | {
@@ -51,7 +55,7 @@ type HotelOrCityAction =
       payload: undefined;
     };
 
-const hotelOrCityState = {
+const hotelOrCityState: THotelOrCity = {
   city: '',
   hotel: '',
   citySlug: '',
@@ -81,6 +85,7 @@ const HotelOrCityReducer = (
           hotel: '',
           hotelSlug: '',
           city: payload.city,
+          citySlug: payload.citySlug || '',
           province: payload.province,
         },
       };
@@ -93,6 +98,7 @@ const HotelOrCityReducer = (
           city: payload.city,
           hotel: payload.hotel,
           hotelSlug: payload.hotelSlug,
+          citySlug: payload.citySlug || '',
         },
       };
 
@@ -112,12 +118,14 @@ const HotelOrCityReducer = (
           hotel: '',
           hotelSlug: '',
           city: payload.city,
+          citySlug: payload.citySlug || '',
           province: payload.province,
         },
         confirmedValue: {
           hotel: '',
           hotelSlug: '',
           city: payload.city,
+          citySlug: payload.citySlug || '',
           province: payload.province,
         },
       };
