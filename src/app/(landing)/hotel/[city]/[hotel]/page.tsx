@@ -5,10 +5,10 @@ import { apiBaseUrl } from '@/constants';
 import { hotel } from '@/constants/landing';
 
 // ایمپورت‌های کامپوننت‌ها
-import { 
-  Tags, Rooms, Pictures, Facilities, Description, SectionLinks, 
-  EssentialTips, ImportantPlaces, CustomerReviews, SuggestedHotels, 
-  AdditionalDetails, InitialInformation, RulesAndRegulations, FrequentlyQuestions 
+import {
+  Tags, Rooms, Pictures, Facilities, Description, SectionLinks,
+  EssentialTips, ImportantPlaces, CustomerReviews, SuggestedHotels,
+  AdditionalDetails, InitialInformation, RulesAndRegulations, FrequentlyQuestions
 } from '@/components/landing/modules/hotel';
 import HotelWrapper from '@/components/landing/modules/hotel/molecules/HotelWrapper';
 import StickyArea from '@/components/landing/shared/StickyArea';
@@ -20,7 +20,23 @@ import { FavoriteButton } from '@/components/landing/modules/hotel/molecules/fav
 import MImageGallery from '@/components/landing/modules/hotel/molecules/pictures-gallery/MImageGallery';
 import DImageGallery from '@/components/landing/modules/hotel/molecules/pictures-gallery/LSPicturesGallery';
 
-type Props = { params: Promise<{ hotel: string }> };
+type Props = {
+  params: Promise<{
+    city: string;
+    hotel: string;
+  }>;
+};
+
+const SITE_URL = 'https://zarvantrip.com';
+const SITE_NAME = 'زروان تریپ';
+
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
 
 // ۱. فچ کش‌شده سئو (جلوگیری از ریکوئست‌های تکراری)
 const getHotelSeo = cache(async (hotelSlug: string) => {
@@ -31,7 +47,7 @@ const getHotelSeo = cache(async (hotelSlug: string) => {
     if (!res.ok) return null;
     return await res.json();
   } catch (error) {
-    console.error("Error fetching SEO:", error);
+    console.error('Error fetching SEO:', error);
     return null;
   }
 });
@@ -46,41 +62,42 @@ const getHotelIntroduction = cache(async (hotelSlug: string) => {
     if (!res.ok) return null;
     return await res.json();
   } catch (error) {
-    console.error("Error fetching hotel introduction:", error);
+    console.error('Error fetching hotel introduction:', error);
     return null;
   }
 });
 
 // ۳. تولید متادیتای کاملاً پویا و ایمن صفحه
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { hotel: hotelSlug } = await params;
-  
-  // ابتدا تلاش برای دریافت دیتای سئو و اطلاعات هتل به صورت همزمان
+  const { city, hotel: hotelSlug } = await params;
+
   const [seo, hotelData] = await Promise.all([
     getHotelSeo(hotelSlug),
-    getHotelIntroduction(hotelSlug)
+    getHotelIntroduction(hotelSlug),
   ]);
 
-  // رمزگشایی اسلاگ برای استفاده در تایتل (در صورتی که فارسی باشد)
-  const decodedSlug = decodeURIComponent(hotelSlug).replace(/-/g, ' ');
+  const decodedSlug = safeDecode(hotelSlug).replace(/-/g, ' ');
+  const citySlug = hotelData?.city_slug || city;
+  const canonicalUrl = `${SITE_URL}/hotel/${citySlug}/${hotelSlug}`;
 
   // اگر دیتای سئو وجود داشت، از آن استفاده کن
   if (seo && seo.title_tag) {
     return {
       title: seo.title_tag,
-      description: seo.description || `رزرو هتل در زروان تریپ`,
+      description: seo.description || `رزرو هتل در ${SITE_NAME}`,
       keywords: Array.isArray(seo.keywords) ? seo.keywords : [],
       robots: {
         index: !seo.no_index,
         follow: !seo.no_index,
       },
       alternates: {
-        canonical: seo.canonical_url || `https://zarvantrip.com/hotel/${hotelSlug}`,
+        canonical: seo.canonical_url || canonicalUrl,
       },
       openGraph: {
         title: seo.og_title || seo.title_tag,
         description: seo.og_description || seo.description,
         images: seo.og_image ? [{ url: seo.og_image }] : [],
+        url: canonicalUrl,
         type: 'website',
         locale: 'fa_IR',
       },
@@ -90,26 +107,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // اگر دیتای سئو نبود، اما اطلاعات پایه هتل لود شد (تایتل پویا بر اساس نام هتل)
   if (hotelData && hotelData.name) {
     return {
-      title: `رزرو هتل ${hotelData.name} با بهترین قیمت | زروان تریپ`,
-      description: `رزرو آنلاین و اطلاعات کامل هتل ${hotelData.name} ${hotelData.city_name ? `در ${hotelData.city_name}` : ''} با تخفیف ویژه در زروان تریپ.`,
+      title: `رزرو هتل ${hotelData.name} با بهترین قیمت | ${SITE_NAME}`,
+      description: `رزرو آنلاین و اطلاعات کامل هتل ${hotelData.name} ${hotelData.city_name ? `در ${hotelData.city_name}` : ''} با تخفیف ویژه در ${SITE_NAME}.`,
       alternates: {
-        canonical: `https://zarvantrip.com/hotel/${hotelSlug}`,
-      }
+        canonical: canonicalUrl,
+      },
+      openGraph: {
+        title: `رزرو هتل ${hotelData.name} | ${SITE_NAME}`,
+        description: `رزرو آنلاین هتل ${hotelData.name} با بهترین قیمت در ${SITE_NAME}.`,
+        url: canonicalUrl,
+        type: 'website',
+        locale: 'fa_IR',
+      },
     };
   }
 
-  // حالت سقوط نهایی (Fallback) به جای نمایش تایتل صفحه اصلی، از نام اسلاگ استفاده می‌کند
+  // حالت سقوط نهایی (Fallback)
   return {
-    title: `رزرو هتل ${decodedSlug} | زروان تریپ`,
-    description: `رزرو آنلاین هتل ${decodedSlug} با بهترین قیمت و پشتیبانی ۲۴ ساعته در زروان تریپ.`,
+    title: `رزرو هتل ${decodedSlug} | ${SITE_NAME}`,
+    description: `رزرو آنلاین هتل ${decodedSlug} با بهترین قیمت و پشتیبانی ۲۴ ساعته در ${SITE_NAME}.`,
     alternates: {
-      canonical: `https://zarvantrip.com/hotel/${hotelSlug}`,
-    }
+      canonical: canonicalUrl,
+    },
   };
 }
 
 export default async function Hotel({ params }: Props) {
-  const { hotel: hotelSlug } = await params;
+  const { city, hotel: hotelSlug } = await params;
   const sectionLinks = hotel?.sectionLinks || [];
 
   // دریافت اطلاعات پایه هتل
@@ -118,12 +142,23 @@ export default async function Hotel({ params }: Props) {
     notFound();
   }
 
+  // اعتبارسنجی شهر در URL (اگر city_slug از بک‌اند بیاید و با شهر لینک یکی نباشد 404 می‌دهد)
+  if (
+    hotelData.city_slug &&
+    safeDecode(city).trim().toLowerCase() !== String(hotelData.city_slug).trim().toLowerCase()
+  ) {
+    notFound();
+  }
+
+  const pageUrl = `${SITE_URL}/hotel/${hotelData.city_slug || city}/${hotelSlug}`;
+
   // تعریف اسکیما غنی‌شده برای گوگل
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Hotel',
     name: hotelData.name,
-    description: hotelData.description || `رزرو هتل ${hotelData.name} در زروان تریپ`,
+    url: pageUrl,
+    description: hotelData.description || `رزرو هتل ${hotelData.name} در ${SITE_NAME}`,
     starRating: {
       '@type': 'Rating',
       ratingValue: hotelData.stars || 3,
