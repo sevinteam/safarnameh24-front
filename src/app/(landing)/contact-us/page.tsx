@@ -6,16 +6,16 @@ import {
 } from '@/components/landing/modules/contact-us';
 
 export const metadata: Metadata = {
-  title: 'تماس با زروان تریپ | پشتیبانی و ارتباط با ما',
+  title: 'تماس با سفرنامه ۲۴| پشتیبانی و ارتباط با ما',
   description: 'برای ارتباط با تیم پشتیبانی زروان تریپ، پیگیری رزرو هتل و ارسال تیکت با ما در تماس باشید. ما آماده پاسخگویی به سوالات شما هستیم.',
   keywords: ['تماس با زروان تریپ', 'پشتیبانی زروان تریپ', 'شماره تماس زروان تریپ', 'ارسال تیکت به زروان تریپ', 'خدمات مشتریان زروان تریپ'],
   alternates: {
-    canonical: 'https://zarvantrip.com/contact-us',
+    canonical: 'https://safarnameh24.com/contact-us',
   },
   openGraph: {
-    title: 'تماس با ما | زروان تریپ - همراه شما در سفر',
+    title: 'تماس با ما | سفرنامه ۲۴- همراه شما در سفر',
     description: 'راهنمای ارتباط با زروان تریپ؛ پشتیبانی آنلاین و شماره تماس برای رزرو هتل.',
-    url: 'https://zarvantrip.com/contact-us',
+    url: 'https://safarnameh24.com/contact-us',
     type: 'website',
   },
 };

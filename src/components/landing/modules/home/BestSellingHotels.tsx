@@ -94,7 +94,7 @@ export function BestSellingHotels() {
         arraylength={hotels.length}
         prevClickFunc={() => swiperRef.current?.slidePrev()}
         nextClickFunc={() => swiperRef.current?.slideNext()}
-        subtitle="هتل های پرفروش و جذاب زروان تریپ رو از دست نده !"
+        subtitle="هتل های پرفروش و جذاب سفرنامه ۲۴رو از دست نده !"
       />
 
       <div className="grid-cols-[30%_67%] justify-between xl:grid">

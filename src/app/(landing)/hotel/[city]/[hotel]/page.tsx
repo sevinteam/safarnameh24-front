@@ -27,7 +27,7 @@ type Props = {
   }>;
 };
 
-const SITE_URL = 'https://zarvantrip.com';
+const SITE_URL = 'https://safarnameh24.com';
 const SITE_NAME = 'زروان تریپ';
 
 function safeDecode(value: string) {

@@ -6,9 +6,9 @@ import { Metadata } from 'next';
 
 // متا دیتای عمومی برای صفحات لندینگ
 export const metadata: Metadata = {
-  metadataBase: new URL('https://zarvantrip.com'),
+  metadataBase: new URL('https://safarnameh24.com'),
   title: {
-    default: 'زروان تریپ | مرجع رزرو آنلاین هتل‌های داخلی و خارجی',
+    default: 'سفرنامه ۲۴| مرجع رزرو آنلاین هتل‌های داخلی و خارجی',
     template: '%s', // حذف پسوند تکراری زروان تریپ
   },
   description:
@@ -16,18 +16,18 @@ export const metadata: Metadata = {
   keywords: [
     'رزرو هتل',
     'زروان تریپ',
-    'ZarvanTrip',
+    'safarnameh24',
     'بهترین هتل ها',
     'رزرو آنلاین هتل',
   ],
-  authors: [{ name: 'ZarvanTrip Team' }],
+  authors: [{ name: 'safarnameh24 Team' }],
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
     type: 'website',
-    siteName: 'ZarvanTrip',
+    siteName: 'safarnameh24',
     locale: 'fa_IR',
   },
 };

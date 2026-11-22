@@ -11,10 +11,10 @@ export const dynamic = 'force-dynamic';
 
 // متادیتا برای سئو
 export const metadata: Metadata = {
-  title: 'قوانین و مقررات زروان تریپ | شرایط رزرو هتل',
+  title: 'قوانین و مقررات سفرنامه ۲۴| شرایط رزرو هتل',
   description:
-    'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
-  alternates: { canonical: 'https://zarvantrip.com/rules' },
+    'پیش از رزرو هتل، قوانین و مقررات سفرنامه ۲۴شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
+  alternates: { canonical: 'https://safarnameh24.com/rules' },
 };
 
 // تابع دریافت داده در سمت سرور با مدیریت امن آدرس و خطاها
@@ -25,7 +25,7 @@ async function getRules() {
 
   const rawBaseUrl =
     !envUrl || (process.env.NODE_ENV === 'production' && isLocalUrl)
-      ? 'https://cps.zarvantrip.com/api/v1'
+      ? 'https://cps.safarnameh24.com/api/v1'
       : envUrl;
 
   const baseUrl = rawBaseUrl.replace(/\/+$/, '');
@@ -36,7 +36,7 @@ async function getRules() {
       cache: 'no-store',
       headers: {
         Accept: 'application/json',
-        'User-Agent': 'Mozilla/5.0 (compatible; ZarvanTripFrontend/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; safarnameh24Frontend/1.0)',
       },
     });
 

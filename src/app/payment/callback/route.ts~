@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_CALLBACK_URL = 'https://cps.zarvantrip.com/api/v1/payment/callback/';
+const BACKEND_CALLBACK_URL = 'https://cps.safarnameh24.com/api/v1/payment/callback/';
 
 async function forwardToBackend(req: NextRequest, method: 'GET' | 'POST') {
   try {
@@ -26,14 +26,14 @@ async function forwardToBackend(req: NextRequest, method: 'GET' | 'POST') {
       return NextResponse.redirect(location, { status: 303 });
     }
 
-    const fallbackUrl = new URL('/payment/watcher-info', 'https://zarvantrip.com');
+    const fallbackUrl = new URL('/payment/watcher-info', 'https://safarnameh24.com');
     req.nextUrl.searchParams.forEach((v, k) => {
       fallbackUrl.searchParams.set(k, v);
     });
     return NextResponse.redirect(fallbackUrl, { status: 303 });
   } catch (err) {
     return NextResponse.redirect(
-      'https://zarvantrip.com/payment/watcher-info?Status=NOK',
+      'https://safarnameh24.com/payment/watcher-info?Status=NOK',
       { status: 303 },
     );
   }

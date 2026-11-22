@@ -13,15 +13,15 @@ import StickyArea from '@/components/landing/shared/StickyArea';
 // تنظیم متادیتای صفحه لیست هتل‌ها
 export const metadata: Metadata = {
   title: 'لیست هتل‌ها | رزرو بهترین هتل‌های ایران و جهان با زروان تریپ',
-  description: 'مجموعه‌ای از بهترین هتل‌های داخلی و خارجی را در زروان تریپ ببینید. مقایسه امکانات، قیمت و رزرو آنلاین هتل‌های خیلی خوب با تخفیف ویژه و واچر آنی.',
-  keywords: ['رزرو هتل', 'لیست هتل ها', 'بهترین هتل ها', 'هتل خیلی خوب', 'رزرو آنلاین هتل', 'هتل های ارزان', 'ZarvanTrip'],
+  description: 'مجموعه‌ای از بهترین هتل‌های داخلی و خارجی را در سفرنامه ۲۴ببینید. مقایسه امکانات، قیمت و رزرو آنلاین هتل‌های خیلی خوب با تخفیف ویژه و واچر آنی.',
+  keywords: ['رزرو هتل', 'لیست هتل ها', 'بهترین هتل ها', 'هتل خیلی خوب', 'رزرو آنلاین هتل', 'هتل های ارزان', 'safarnameh24'],
   alternates: {
-    canonical: 'https://zarvantrip.com/hotel',
+    canonical: 'https://safarnameh24.com/hotel',
   },
   openGraph: {
     title: 'جستجو و رزرو بهترین هتل‌ها | زروان تریپ',
     description: 'انتخاب از میان هزاران هتل برتر. همین حالا هتل مورد نظر خود را با بهترین قیمت رزرو کنید.',
-    url: 'https://zarvantrip.com/hotel',
+    url: 'https://safarnameh24.com/hotel',
     type: 'website',
   },
 };

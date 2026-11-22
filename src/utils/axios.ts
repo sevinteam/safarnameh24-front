@@ -15,7 +15,7 @@ const getBaseUrl = () => {
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     (process.env.NODE_ENV === 'development'
       ? 'http://127.0.0.1:8000/api/v1'
-      : 'https://cps.zarvantrip.com/api/v1')
+      : 'https://cps.safarnameh24.com/api/v1')
   );
 };
 

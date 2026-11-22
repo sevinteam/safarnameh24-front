@@ -50,7 +50,7 @@ export function SuggestedHotels() {
       <TopBarConfig
         arraylength={data?.data?.length}
         viewAllHref="/hotel?suggested-hotels=show"
-        subtitle="هتل های پیشنهادی زروان تریپ رو از دست نده !"
+        subtitle="هتل های پیشنهادی سفرنامه ۲۴رو از دست نده !"
         title={{ type: 'single', text: 'هتل های پیشنهادی' }}
         prevClickFunc={() => swiperRef.current?.slidePrev()}
         nextClickFunc={() => swiperRef.current?.slideNext()}
