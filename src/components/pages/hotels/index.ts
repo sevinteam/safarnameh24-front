@@ -1,2 +1,2 @@
-export * from './view/organisms/filters';
-export * from './view/organisms/hotel-list';
+export * from './filters/view/organisms/filters-sticky';
+export * from './hotel-list';

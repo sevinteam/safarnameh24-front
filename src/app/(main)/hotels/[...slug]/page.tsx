@@ -1,10 +1,9 @@
-import { Filters, HotelList } from '@/components/pages/hotels';
+import { FiltersSticky, HotelList } from '@/components/pages/hotels';
 import Banners from '@/components/pages/hotels/banners';
 import { ViewSwitcher } from '@/components/pages/hotels/view-mode/view-switcher';
 import { Sort } from '@/components/pages/hotels/sorting/sort';
-import BreadCrumb from '@/components/pages/hotels/view/organisms/breadcrumb';
+import BreadCrumb from '@/components/pages/hotels/breadcrumb';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import StickySearchBar from '@/components/pages/hotels/sticky-search-bar/sticky-search-bar';
 import { Container } from '@/components/layout/container';
 
@@ -18,8 +17,8 @@ export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
     <>
       <StickySearchBar />
 
-      <Container className="grid items-end gap-8 lg:mt-8 lg:grid-cols-[18rem_1fr]">
-        <Filters />
+      <Container className="mb-24 grid items-end gap-8 lg:mt-8 lg:grid-cols-[18rem_1fr]">
+        <FiltersSticky />
 
         <div className="space-y-8">
           <div className="space-y-6">

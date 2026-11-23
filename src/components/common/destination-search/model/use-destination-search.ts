@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { Destination } from './types';
 import { MOCK_GLOBAL_DESTINATIONS } from './constants';
-import { useDebounce } from '@/hooks/use-debounce';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
 
 interface UseDestinationSearchCoreProps {
   onSelect: (item: Destination) => void;
@@ -13,7 +13,7 @@ export const useDestinationSearch = ({
   const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedSearch = useDebounce(searchTerm, 500);
+  const debouncedSearch = useDebouncedValue(searchTerm, 500);
   const isSearching = searchTerm.trim().length > 0;
 
   // Filter list across domestic and international cities and hotels

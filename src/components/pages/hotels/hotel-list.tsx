@@ -4,7 +4,7 @@ import { MOCK_HOTELS } from '@/config/data/general';
 import { HotelCard as HotelCardB } from '@/components/common/hotel-card/organisms/hotel-card.b';
 import { HotelCard as HotelCardA } from '@/components/common/hotel-card/organisms/hotel-card.main';
 import { HotelCard as HotelCardC } from '@/components/common/hotel-card/organisms/hotel-card.secondary';
-import { useViewModeQuery } from '../../view-mode/use-view-mode-query';
+import { useViewModeQuery } from './view-mode/use-view-mode-query';
 import { cn } from 'cn';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
@@ -28,7 +28,7 @@ export function HotelList() {
   const shouldRenderListCard = isDesktop && !isGrid;
 
   return (
-    <div
+    <section
       className={cn(
         'grid grid-cols-1 gap-6 sm:grid-cols-2',
         // Pure CSS handles column counts cleanly across all breakpoints
@@ -42,6 +42,6 @@ export function HotelList() {
           <HotelCardA key={`${item.id}-${i}`} {...item} />
         ),
       )}
-    </div>
+    </section>
   );
 }

@@ -16,6 +16,7 @@ import SortWrapper from '@/components/pages/hotels/sorting/sort-wrapper';
 import { Button } from '@/components/ui/button';
 import { Map, SlidersHorizontal } from 'lucide-react';
 import { Container } from '@/components/layout/container';
+import { FiltersSheet } from '../filters/view/organisms/filters-sheet';
 
 // ------------------------------
 
@@ -48,11 +49,7 @@ export default function StickySearchBar() {
           <SheetWrapper open={isOpen} onOpenChange={setOpen} />
 
           <div className="flex-between border-t border-dashed px-4 py-2 lg:hidden">
-            <Button variant="link" className={'lg:hidden'}>
-              <SlidersHorizontal />
-              <span>فیلترها</span>
-            </Button>
-
+            <FiltersSheet />
             <SortWrapper />
 
             <Button variant="link" className={'lg:hidden'}>
