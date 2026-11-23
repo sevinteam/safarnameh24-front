@@ -15,7 +15,7 @@ type Props = HotelCardProps & {
 
 // ------------------------------
 
-export default function HotelCard(props: Props) {
+export function HotelCard(props: Props) {
   const {
     address,
     city,
@@ -54,7 +54,7 @@ export default function HotelCard(props: Props) {
         className,
       )}
     >
-      <div className="relative h-48 overflow-hidden rounded-xl lg:h-auto lg:min-h-52 lg:w-64">
+      <div className="relative h-48 overflow-hidden rounded-xl lg:h-auto lg:min-h-52 lg:w-68">
         {/* Placeholders */}
         <div className="absolute inset-3 z-20">
           {formattedInfo.discountExists && (

@@ -18,7 +18,7 @@ export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
     <>
       <StickySearchBar />
 
-      <Container className="grid items-end gap-8 lg:mt-8 lg:grid-cols-[20rem_1fr]">
+      <Container className="grid items-end gap-8 lg:mt-8 lg:grid-cols-[18rem_1fr]">
         <Filters />
 
         <div className="space-y-8">
@@ -26,7 +26,7 @@ export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
             <div className="flex-between items-center">
               <BreadCrumb />
 
-              <div className="hidden items-center gap-2 lg:flex">
+              <div className="hidden items-center gap-2 sm:flex">
                 <span className="text-sm font-medium">نتایج :</span>
                 <Badge
                   variant={'secondary'}
@@ -38,7 +38,7 @@ export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
             </div>
             <Banners />
 
-            <div className="hidden items-center justify-between gap-4 lg:flex">
+            <div className="hidden items-center justify-between gap-4 xl:flex">
               <Sort />
               <ViewSwitcher />
             </div>

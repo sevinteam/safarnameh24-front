@@ -10,8 +10,8 @@ import { cn } from '@/utils';
 import { ViewMode } from './types';
 import { VIEW_OPTIONS } from './constants';
 
+import { useId } from 'react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useId, useState } from 'react';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useViewModeQuery } from './use-view-mode-query';
 
@@ -28,18 +28,8 @@ export const ViewSwitcher = ({
   showLabel = true,
   className,
 }: Props) => {
-  const { viewMode, setViewMode } = useViewModeQuery({ onViewChange });
-
   const layoutGroupId = useId();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="bg-sidebar h-10 w-30 animate-pulse rounded-full" />;
-  }
+  const { viewMode, setViewMode } = useViewModeQuery({ onViewChange });
 
   return (
     <div className={cn('hidden items-center gap-3 md:flex', className)}>
@@ -76,7 +66,7 @@ export const ViewSwitcher = ({
 
                       {isActive && (
                         <motion.div
-                          layoutId="active-theme-pill"
+                          layoutId="active-view-pill"
                           className="bg-primary absolute inset-0 -z-10 rounded-md"
                         />
                       )}
