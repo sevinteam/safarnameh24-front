@@ -9,7 +9,7 @@ import '@/styles/dashboard.css';
 import Page from '@/components/dashboard/page';
 
 export const metadata: Metadata = {
-  title: 'پنل کاربری | زروان تریپ',
+  title: 'پنل کاربری | سفرنامه ۲۴',
   robots: {
     index: false,
     follow: false,

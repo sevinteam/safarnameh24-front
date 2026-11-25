@@ -9,7 +9,7 @@ import { Suspense } from 'react';
 import { ContextWrapper } from '@/components/landing/modules/payment/ContextWrapper';
 
 export const metadata: Metadata = {
-  title: 'تکمیل اطلاعات و پرداخت رزرو | زروان تریپ',
+  title: 'تکمیل اطلاعات و پرداخت رزرو | سفرنامه ۲۴',
   robots: {
     index: false,
     follow: false,

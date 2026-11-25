@@ -1,7 +1,7 @@
 import { cache } from 'react';
 
-export const SITE_URL = 'https://zarvantrip.com';
-export const SITE_NAME = 'زروان تریپ';
+export const SITE_URL = 'https://safarnameh24.com';
+export const SITE_NAME = 'سفرنامه ۲۴';
 export const SITE_NAME_EN = 'ZarvanTrip';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/image/logo/red.png`;
 
@@ -24,7 +24,7 @@ export function getBackendApiBaseUrl(): string {
     envUrl.includes('127.0.0.1') ||
     envUrl.includes('localhost')
   ) {
-    return 'https://cps.zarvantrip.com/api/v1';
+    return 'https://cps.safarnameh24.com/api/v1';
   }
 
   const withProtocol = /^https?:\/\//i.test(envUrl)

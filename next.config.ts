@@ -19,14 +19,14 @@ const nextConfig: NextConfig = {
   async rewrites() {
     if (process.env.NODE_ENV === 'development') {
       const rawBackendUrl = (
-        process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL || 'https://cps.zarvantrip.com'
+        process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL || 'https://cps.safarnameh24.com'
       )
         .trim()
         .replace(/\/+$/, '');
 
       const backendUrl = /^https?:\/\//i.test(rawBackendUrl)
         ? rawBackendUrl
-        : 'https://cps.zarvantrip.com';
+        : 'https://cps.safarnameh24.com';
 
       return [
         {
@@ -42,23 +42,23 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cps.zarvantrip.com',
+        hostname: 'cps.safarnameh24.com',
       },
       {
         protocol: 'https',
-        hostname: 'www.cps.zarvantrip.com',
+        hostname: 'www.cps.safarnameh24.com',
       },
       {
         protocol: 'https',
-        hostname: 'zarvantrip.com',
+        hostname: 'safarnameh24.com',
       },
       {
         protocol: 'https',
-        hostname: 'www.zarvantrip.com',
+        hostname: 'www.safarnameh24.com',
       },
       {
         protocol: 'http',
-        hostname: 'cps.zarvantrip.com',
+        hostname: 'cps.safarnameh24.com',
       },
       // پشتیبانی از لود تصاویر در محیط لوکال
       {
