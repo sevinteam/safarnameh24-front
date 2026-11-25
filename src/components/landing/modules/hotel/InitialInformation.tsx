@@ -27,7 +27,7 @@ type ApiResponse = { data: HotelInitialInfo };
 
 export function InitialInformation(props: Props) {
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-information'],
+    queryKey: ['hotel-information', props.hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${props.hotelSlug}/introduction`),
   });
@@ -47,7 +47,11 @@ export function InitialInformation(props: Props) {
                 <Image
                   width={100}
                   height={100}
-                  alt="hotel-logo"
+                  alt={
+                    data?.data.name
+                      ? `لوگوی هتل ${data.data.name} ${data.data.city_name || ''}`.trim()
+                      : 'لوگوی هتل'
+                  }
                   src={data?.data.logo_preview}
                   className="full-size object-cover"
                 />
@@ -63,10 +67,12 @@ export function InitialInformation(props: Props) {
                 <span>{data?.data.city_name}</span>
               </div>
 
-              <div className="text-cs08 font-bold flex items-center gap-1">
-                <span>{data?.data.stars}</span>
-                <span>ستاره</span>
-              </div>
+              {Number(data?.data?.stars) > 0 && (
+                <div className="text-cs08 font-bold flex items-center gap-1">
+                  <span>{data?.data.stars}</span>
+                  <span>ستاره</span>
+                </div>
+              )}
             </div>
           </div>
 

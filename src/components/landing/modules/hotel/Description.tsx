@@ -27,7 +27,7 @@ const buttonStyle =
 
 export function Description(props: Props) {
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-description'],
+    queryKey: ['hotel-description', props.hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${props.hotelSlug}/description`),
   });

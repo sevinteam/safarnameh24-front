@@ -46,10 +46,10 @@ export default function DHeaderStatics() {
         </div>
       ) : (
         <div className="max-w-48 space-y-0.5 text-cs08 text-zinc-800">
-          <h1 className="truncate font-extrabold">{title}</h1>
-          <h2 className="truncate font-inter font-semibold capitalize">
+          <span className="block truncate font-extrabold">{title}</span>
+          <span className="block truncate font-inter font-semibold capitalize">
             {subtitle}
-          </h2>
+          </span>
         </div>
       )}
     </Link>

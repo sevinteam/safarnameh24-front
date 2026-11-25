@@ -5,23 +5,30 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   output: 'standalone',
   skipTrailingSlashRedirect: true,
+  allowedDevOrigins: [
+    '**.run.app',
+    '*.run.app',
+    '**.google.com',
+    '**.googleusercontent.com',
+    '**.corp.google.com',
+    '127.0.0.1',
+    'localhost',
+  ],
 
   // هدایت خودکار درخواست‌های /api/v1 و /media در محیط لوکال به بک‌اند روی سرور
   async rewrites() {
     if (process.env.NODE_ENV === 'development') {
-      const backendUrl = (
+      const rawBackendUrl = (
         process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL || 'https://cps.zarvantrip.com'
-      ).replace(/\/+$/, '');
+      )
+        .trim()
+        .replace(/\/+$/, '');
+
+      const backendUrl = /^https?:\/\//i.test(rawBackendUrl)
+        ? rawBackendUrl
+        : 'https://cps.zarvantrip.com';
 
       return [
-        {
-          source: '/api/v1/:path*/',
-          destination: `${backendUrl}/api/v1/:path*/`,
-        },
-        {
-          source: '/api/v1/:path*',
-          destination: `${backendUrl}/api/v1/:path*`,
-        },
         {
           source: '/media/:path*',
           destination: `${backendUrl}/media/:path*`,

@@ -14,7 +14,7 @@ export default function ReviewsAverage(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-comments-average'],
+    queryKey: ['hotel-comments-average', hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${hotelSlug}/comments/points-summary`),
   });

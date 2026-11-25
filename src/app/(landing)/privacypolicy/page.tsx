@@ -1,15 +1,52 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'حریم خصوصی کاربران | زروان تریپ',
-  description: 'سیاست‌ها و قوانین حفظ حریم خصوصی و امنیت اطلاعات کاربران در سامانه رزرواسیون زروان تریپ.',
-  alternates: { canonical: 'https://zarvantrip.com/privacypolicy' },
+  title: `حریم خصوصی کاربران و امنیت اطلاعات | ${SITE_NAME}`,
+  description:
+    'سیاست‌ها و قوانین حفظ حریم خصوصی، رمزنگاری و امنیت اطلاعات شخصی کاربران و مسافران در سامانه رزرواسیون آنلاین زروان تریپ.',
+  alternates: { canonical: `${SITE_URL}/privacypolicy` },
+  openGraph: {
+    title: `حریم خصوصی کاربران | ${SITE_NAME}`,
+    description:
+      'سیاست‌های حفظ حریم خصوصی و امنیت داده‌های کاربران در زروان تریپ.',
+    url: `${SITE_URL}/privacypolicy`,
+    siteName: SITE_NAME,
+    locale: 'fa_IR',
+    type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, alt: `حریم خصوصی ${SITE_NAME}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `حریم خصوصی کاربران | ${SITE_NAME}`,
+    description:
+      'سیاست‌های حفظ حریم خصوصی و امنیت اطلاعات در زروان تریپ.',
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function PrivacyPolicy() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'خانه', item: SITE_URL },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'حریم خصوصی',
+        item: `${SITE_URL}/privacypolicy`,
+      },
+    ],
+  };
+
   return (
     <main className="container mx-auto px-4 py-10 lg:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-4xl rounded-2xl bg-white p-6 shadow-sm border border-zinc-100 lg:p-10">
         
         {/* هدر صفحه */}

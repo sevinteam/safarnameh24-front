@@ -96,9 +96,13 @@ export const DHotelCard = memo(function DHotelCard(props: Props) {
               </>
             )}
             <span>{city?.name}</span>
-            <span className="mx-0.5">|</span>
-            <span>{stars}</span>
-            <span>ستاره</span>
+            {Number(stars) > 0 && (
+              <>
+                <span className="mx-0.5">|</span>
+                <span>{stars}</span>
+                <span>ستاره</span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-1 text-cs08">

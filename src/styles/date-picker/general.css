@@ -1,41 +1,45 @@
-/* ========= Wrapper */
-/* ======================= */
-
+/* ========= Wrapper ========= */
 .general-calendar {
   width: 100% !important;
   border: none !important;
   box-shadow: none !important;
   border-radius: 0 !important;
-  min-height: 20rem !important;
+  min-height: 18rem !important;
   user-select: none !important;
   position: relative !important;
+  background: transparent !important;
 }
 
-/* ========= Header */
-/* ======================= */
-
+/* ========= Header Buttons ========= */
 .general-calendar .rmdp-header div button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
   outline: none !important;
-  height: 1.5rem !important;
-  border-radius: 0.3rem !important;
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 0.5rem !important;
+  background-color: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.general-calendar .rmdp-header div button:hover {
+  background-color: #e4e4e7 !important;
 }
 
 .general-calendar .rmdp-header div .rmdp-header-values {
-  gap: 0.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 0.25rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: fit-content !important;
   flex-direction: row-reverse !important;
 }
 
 .general-calendar .rmdp-arrow-container .rmdp-arrow {
-  border-color: black !important;
+  border-color: #27272a !important;
   margin-top: 0 !important;
 }
 
@@ -43,106 +47,68 @@
   box-shadow: none !important;
 }
 
-/* ========= Day-Picker */
-/* ======================= */
-
-.general-calendar .rmdp-day-picker .rmdp-week-day {
-  width: 2rem !important;
-  height: 2rem !important;
-  color: black !important;
-  font-weight: 600 !important;
-  border-radius: 0.4rem !important;
-  font-size: clamp(0.75rem, 3vw, 0.8rem) !important;
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
+/* ========= Range and Day States ========= */
 .general-calendar .rmdp-day-picker .rmdp-day.rmdp-range,
 .general-calendar .rmdp-day-picker .rmdp-day.rmdp-range-hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+  border-radius: 0 !important;
 }
 
 .general-calendar .rmdp-day-picker .rmdp-day span {
   border: none !important;
-  color: unset !important;
+  color: inherit !important;
   outline: none !important;
   box-shadow: none !important;
-  border-radius: none !important;
   background-color: transparent !important;
 }
 
+/* Start & End of Selection */
 .general-calendar .rmdp-day-picker .rmdp-day.start,
 .general-calendar .rmdp-day-picker .rmdp-day.end {
-  color: white !important;
-  background-color: rgb(37, 37, 37) !important;
+  color: #ffffff !important;
+  background-color: #18181b !important;
+  font-weight: 800 !important;
 }
 
 .general-calendar .rmdp-day-picker .rmdp-day.start {
   border-radius: 0 !important;
-  border-end-start-radius: 0.5rem !important;
-  border-start-start-radius: 0.5rem !important;
+  border-start-start-radius: 0.6rem !important;
+  border-end-start-radius: 0.6rem !important;
 }
 
 .general-calendar .rmdp-day-picker .rmdp-day.end {
   border-radius: 0 !important;
-  border-start-end-radius: 0.5rem !important;
-  border-end-end-radius: 0.5rem !important;
+  border-start-end-radius: 0.6rem !important;
+  border-end-end-radius: 0.6rem !important;
 }
-
-.general-calendar
-  .rmdp-day-picker
-  .rmdp-week:not(first-child)
-  .rmdp-day.rmdp-range:first-child {
-  border-radius: 0 0.5rem 0.5rem 0 !important;
-}
-
-.general-calendar
-  .rmdp-day-picker
-  .rmdp-week:not(first-child)
-  .rmdp-day.rmdp-range:last-child {
-  border-radius: 0.5rem 0 0 0.5rem !important;
-}
-
-.general-calendar
-  .rmdp-day-picker
-  .rmdp-week:not(first-child)
-  .rmdp-day.rmdp-range-hover:first-child {
-  border-radius: 0 0.5rem 0.5rem 0 !important;
-}
-
-.general-calendar
-  .rmdp-day-picker
-  .rmdp-week:not(first-child)
-  .rmdp-day.rmdp-range-hover:last-child {
-  border-radius: 0.5rem 0 0 0.5rem !important;
-}
-
-/* ========= Exceptions */
-/* ======================= */
 
 .general-calendar .rmdp-day-picker .rmdp-day.start.end {
-  border-radius: 0.5rem !important;
+  border-radius: 0.6rem !important;
 }
 
+/* Exceptions: Today */
+.general-calendar
+  .rmdp-day-picker
+  .rmdp-day.rmdp-today:not(.start):not(.end):not(.rmdp-range) {
+  color: #e11d48 !important;
+  background-color: #fff1f2 !important;
+  border: 1.5px solid #fecdd3 !important;
+  border-radius: 0.5rem !important;
+  font-weight: 800 !important;
+}
+
+/* Disabled */
 .general-calendar .rmdp-day-picker .rmdp-day.rmdp-disabled {
-  opacity: 25% !important;
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
+/* Friday / Weekend highlight */
 .general-calendar
   .rmdp-day-picker
-  .rmdp-day.rmdp-today:not(.rmdp-day.rmdp-range) {
-  color: white !important;
-  border-radius: 0.5rem !important;
-  background-color: #f30f26 !important;
-}
-
-.general-calendar
-  .rmdp-day-picker
-  .rmdp-day:not(
-    .rmdp-day.end,
-    .rmdp-day.start,
-    .rmdp-day.rmdp-today,
-    .rmdp-day.rmdp-disabled
-  )
+  .rmdp-day:not(.end):not(.start):not(.rmdp-disabled)
   span.highlight.highlight-red {
-  color: #f30f26 !important;
+  color: #e11d48 !important;
 }

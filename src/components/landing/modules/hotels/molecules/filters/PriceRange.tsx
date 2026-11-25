@@ -202,9 +202,9 @@ export function PriceRange() {
 
   const arrowAlignClass =
     ratio > 0.72
-      ? 'left-1.5'
+      ? 'left-3.5'
       : ratio < 0.28
-        ? 'right-1.5'
+        ? 'right-3.5'
         : 'left-1/2 -translate-x-1/2';
 
   const maxLabel = useMemo(() => formatMaxMillionLabel(apiMax), [apiMax]);
@@ -215,7 +215,7 @@ export function PriceRange() {
         رنج قیمتی هتل
       </AccordionTrigger>
 
-      <AccordionContent className="pt-12 pb-5">
+      <AccordionContent className="pt-10 pb-5">
         {data?.data ? (
           <>
             <div className="px-2.5">
@@ -262,7 +262,7 @@ export function PriceRange() {
                   className="absolute top-1/2 z-20 flex h-5 w-5 translate-x-1/2 -translate-y-1/2 cursor-grab touch-none items-center justify-center outline-none active:cursor-grabbing"
                 >
                   <div
-                    className={`pointer-events-none absolute -top-11 whitespace-nowrap rounded-lg bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 ${tooltipAlignClass}`}
+                    className={`pointer-events-none absolute bottom-full mb-1 flex items-center justify-center whitespace-nowrap rounded-xl bg-red-50 px-3 py-1 text-[11px] font-bold text-red-600 shadow-sm ${tooltipAlignClass}`}
                   >
                     {localRange[1] ? numberSeparation(localRange[1]) : '۰'}{' '}
                     تومان
@@ -295,19 +295,20 @@ export function PriceRange() {
               </div>
             )}
 
-            <div className="mt-4 grid grid-cols-2 gap-2.5">
-              <div className="flex h-11 items-center justify-center gap-1 rounded-xl bg-zinc-100 px-2 text-[11px] font-semibold whitespace-nowrap text-zinc-800">
-                <span>حداقل :</span>
-                <span>
-                  {localRange[0] ? numberSeparation(localRange[0]) : '۰'} تومان
+            <div className="mt-4 grid grid-cols-2 gap-1.5">
+              <div className="flex h-11 items-center justify-center gap-1 rounded-xl bg-zinc-100 px-1 text-[9.5px] font-bold text-zinc-800 overflow-hidden">
+                <span className="flex-shrink-0">حداقل:</span>
+                <span className="truncate">
+                  {localRange[0] ? numberSeparation(localRange[0]) : '۰'}
                 </span>
+                <span className="flex-shrink-0">تومان</span>
               </div>
-
-              <div className="flex h-11 items-center justify-center gap-1 rounded-xl bg-zinc-100 px-2 text-[11px] font-semibold whitespace-nowrap text-zinc-800">
-                <span>حداکثر :</span>
-                <span>
-                  {localRange[1] ? numberSeparation(localRange[1]) : '۰'} تومان
+              <div className="flex h-11 items-center justify-center gap-1 rounded-xl bg-zinc-100 px-1 text-[9.5px] font-bold text-zinc-800 overflow-hidden">
+                <span className="flex-shrink-0">حداکثر:</span>
+                <span className="truncate">
+                  {localRange[1] ? numberSeparation(localRange[1]) : '۰'}
                 </span>
+                <span className="flex-shrink-0">تومان</span>
               </div>
             </div>
           </>

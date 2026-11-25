@@ -25,7 +25,7 @@ export function Facilities(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-services'],
+    queryKey: ['hotel-services', hotelSlug],
     queryFn: () => generalInstance(`/hotel/hotels/${hotelSlug}/all-facilities`),
   });
 

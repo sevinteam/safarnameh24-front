@@ -5,30 +5,44 @@ import {
 } from '@/components/landing/modules/rules';
 import StickyArea from '@/components/landing/shared/StickyArea';
 import { Metadata } from 'next';
+import {
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  SITE_URL,
+  getBackendApiBaseUrl,
+} from '@/lib/seo';
 
 // جلوگیری از ارور بیلد و اجبار به رندر داینامیک
 export const dynamic = 'force-dynamic';
 
 // متادیتا برای سئو
 export const metadata: Metadata = {
-  title: 'قوانین و مقررات زروان تریپ | شرایط رزرو هتل',
+  title: `قوانین و مقررات رزرو هتل در ${SITE_NAME} | شرایط کنسلی و استرداد`,
   description:
-    'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، استرداد وجه و حریم خصوصی کاربران را مطالعه کنید.',
-  alternates: { canonical: 'https://zarvantrip.com/rules' },
+    'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، جرائم، استرداد وجه و قوانین پذیرش مسافر در هتل‌ها را مطالعه کنید.',
+  alternates: { canonical: `${SITE_URL}/rules` },
+  openGraph: {
+    title: `قوانین و مقررات | ${SITE_NAME}`,
+    description:
+      'قوانین رزرو هتل، شرایط کنسلی و استرداد وجه در سامانه رزرواسیون زروان تریپ.',
+    url: `${SITE_URL}/rules`,
+    siteName: SITE_NAME,
+    locale: 'fa_IR',
+    type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, alt: `قوانین و مقررات ${SITE_NAME}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `قوانین و مقررات | ${SITE_NAME}`,
+    description:
+      'مطالعه شرایط کنسلی، استرداد وجه و مقررات رزرو آنلاین هتل در زروان تریپ.',
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 // تابع دریافت داده در سمت سرور با مدیریت امن آدرس و خطاها
 async function getRules() {
-  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-  const isLocalUrl =
-    envUrl.includes('127.0.0.1') || envUrl.includes('localhost');
-
-  const rawBaseUrl =
-    !envUrl || (process.env.NODE_ENV === 'production' && isLocalUrl)
-      ? 'https://cps.zarvantrip.com/api/v1'
-      : envUrl;
-
-  const baseUrl = rawBaseUrl.replace(/\/+$/, '');
+  const baseUrl = getBackendApiBaseUrl();
   const url = `${baseUrl}/config/rules/`;
 
   try {
@@ -76,8 +90,26 @@ export default async function Rules() {
     'use server';
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'خانه', item: SITE_URL },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'قوانین و مقررات',
+        item: `${SITE_URL}/rules`,
+      },
+    ],
+  };
+
   return (
     <main className="container mx-auto">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="sr-only">قوانین و مقررات رزرو هتل زروان تریپ</h1>
 
       <div className="mt-2">

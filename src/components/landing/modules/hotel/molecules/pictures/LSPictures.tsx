@@ -4,6 +4,7 @@ import DImageGallery from '../pictures-gallery/LSPicturesGallery';
 
 type Props = {
   hotelSlug: string;
+  hotelName?: string;
   isLoading: boolean;
   pictures: string[];
 };
@@ -11,7 +12,7 @@ type Props = {
 // --------------------------------
 
 export default function LSPictures(props: Props) {
-  const { pictures, isLoading, hotelSlug } = props;
+  const { pictures, isLoading, hotelSlug, hotelName } = props;
 
   return (
     <div className="h-96 hidden grid-cols-2 gap-6 xl:grid">
@@ -40,7 +41,11 @@ export default function LSPictures(props: Props) {
                   <Image
                     fill
                     src={picture}
-                    alt="hotel-picture"
+                    alt={
+                      hotelName
+                        ? `تصویر ${index + 2} ${hotelName}`
+                        : `تصویر ${index + 2} هتل`
+                    }
                     className="object-cover"
                   />
                 )}
@@ -53,8 +58,9 @@ export default function LSPictures(props: Props) {
             {pictures[0] && (
               <Image
                 fill
+                priority
                 src={pictures[0]}
-                alt="hotel-picture"
+                alt={hotelName ? `تصویر اصلی ${hotelName}` : 'تصویر اصلی هتل'}
                 className="object-cover"
               />
             )}

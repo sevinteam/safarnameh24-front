@@ -32,6 +32,7 @@ export function OurStory() {
   return (
     <div>
       <TopBarConfig
+        headingLevel="h1"
         title={{ type: 'single', text: 'درباره ما' }}
         subtitle="داستان مجموعه زروان تریپ از کجا شروع شد ؟"
       />

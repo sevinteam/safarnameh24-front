@@ -25,12 +25,12 @@ export function EssentialTips(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-rules'],
+    queryKey: ['hotel-rules', hotelSlug],
     queryFn: () => generalInstance(`/hotel/hotels/${hotelSlug}/rules`),
   });
 
-  const notes = data?.data.important_notes;
-  if (status !== 'pending' && (!data || !data?.data)) return null;
+  const notes = data?.data?.important_notes;
+  if (status !== 'pending' && (!data || !data?.data || !notes?.trim())) return null;
 
   return (
     <>

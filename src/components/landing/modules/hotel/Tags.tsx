@@ -27,7 +27,7 @@ export function Tags(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-tags'],
+    queryKey: ['hotel-tags', hotelSlug],
     queryFn: () => generalInstance(`/hotel/hotels/${hotelSlug}/tags`),
   });
 
@@ -68,9 +68,9 @@ export function Tags(props: Props) {
               key={index}
               className="max-w-fit select-none xl:max-w-full"
             >
-              <h3 className="h-10 px-6 bg-zinc-200/50 text-zinc-800 text-cs08 font-semibold flex-center rounded-lg transition-colors duration-200 ease-in-out hover:text-zinc-100 hover:bg-[#252525]">
+              <span className="h-10 px-6 bg-zinc-200/50 text-zinc-800 text-cs08 font-semibold flex-center rounded-lg transition-colors duration-200 ease-in-out hover:text-zinc-100 hover:bg-[#252525]">
                 {tag.title}
-              </h3>
+              </span>
             </SwiperSlide>
           ))}
         </Swiper>

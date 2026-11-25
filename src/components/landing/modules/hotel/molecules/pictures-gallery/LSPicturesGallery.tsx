@@ -38,7 +38,7 @@ export default function DImageGallery(props: Props) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const { data: gallery } = useQuery<TGalleryResponse>({
-    queryKey: ['hotel-gallery'],
+    queryKey: ['hotel-gallery', hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${hotelSlug}/gallery`).then(
         (data) => data.data,
@@ -46,7 +46,7 @@ export default function DImageGallery(props: Props) {
   });
 
   const { data: pictures } = useQuery<TPicturesResponse>({
-    queryKey: ['hotel-pictures'],
+    queryKey: ['hotel-pictures', hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${hotelSlug}/images`).then(
         (data) => data.data,
