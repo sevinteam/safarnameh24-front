@@ -22,18 +22,6 @@ type ApiResponse = {
   };
 };
 
-type Options = {
-  endDate?: string;
-  startDate?: string;
-  passengers: string;
-};
-
-const initialOptions: Options = {
-  endDate: '',
-  startDate: '',
-  passengers: '',
-};
-
 const PRICE_STEP = 100_000;
 
 function formatMaxMillionLabel(price: number) {
@@ -54,18 +42,35 @@ function formatMaxMillionLabel(price: number) {
 // -------------------------------------
 
 export function PriceRange() {
-  const [queryOptions, setQueryOptions] = useState(initialOptions);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
   const { confirmedValue: dates } = useDatePickerContext();
   const { rooms, confirmedPassengers: passengers } = usePassengersContext();
 
+  const { startDate = '', endDate = '' } = getDates(dates) || {};
+
+  const queryPassengers = useMemo(() => {
+    if (!passengers?.rooms || !rooms?.length) return '0';
+    return rooms.map((item) => item.adults + item.children).toString();
+  }, [passengers?.rooms, rooms]);
+
+  // ساخت امن کوئری‌استرینگ (جلوگیری از ارسال start-date=undefined و خطای 400)
+  const priceRangeQueryString = useMemo(() => {
+    const params = new URLSearchParams();
+    if (startDate && startDate !== 'undefined') {
+      params.set('start-date', startDate);
+    }
+    if (endDate && endDate !== 'undefined') {
+      params.set('end-date', endDate);
+    }
+    params.set('passengers', queryPassengers || '0');
+    return params.toString();
+  }, [startDate, endDate, queryPassengers]);
+
   const { data } = useQuery<ApiResponse>({
-    queryKey: ['hotel-price-range', queryOptions],
+    queryKey: ['hotel-price-range', priceRangeQueryString],
     queryFn: () =>
-      axiosInstance(
-        `/hotel/hotels/price-range?start-date=${queryOptions.startDate}&end-date=${queryOptions.endDate}&passengers=${queryOptions.passengers}`,
-      ),
+      axiosInstance(`/hotel/hotels/price-range?${priceRangeQueryString}`),
   });
 
   const [minPrice, setMinPrice] = useQueryState(
@@ -99,24 +104,6 @@ export function PriceRange() {
     setLocalRange([nextMin, nextMax]);
   }, [data, apiMin, apiMax, minPrice, maxPrice]);
 
-  useEffect(() => {
-    const { startDate, endDate } = getDates(dates);
-    let queryPassengers = '0';
-
-    if (passengers.rooms && rooms?.length) {
-      queryPassengers = rooms
-        .map((item) => item.adults + item.children)
-        .toString();
-    }
-
-    setQueryOptions({
-      endDate,
-      startDate,
-      passengers: queryPassengers,
-    });
-  }, [dates, passengers, rooms]);
-
-  // محاسبه مقدار قیمت بر اساس موقعیت X موس/تاچ در حالت RTL
   const getValueFromClientX = useCallback(
     (clientX: number) => {
       const track = trackRef.current;
@@ -125,7 +112,6 @@ export function PriceRange() {
       const rect = track.getBoundingClientRect();
       if (rect.width <= 0) return apiMin;
 
-      // راست = 0% (حداقل)، چپ = 100% (حداکثر)
       const rawRatio = (rect.right - clientX) / rect.width;
       const clampedRatio = Math.min(1, Math.max(0, rawRatio));
 
@@ -196,7 +182,6 @@ export function PriceRange() {
     startDrag(activeThumb);
   };
 
-  // درصد موقعیت هر دو دستگیره (0 تا 100)
   const minPct =
     safeMax > apiMin
       ? Math.min(100, Math.max(0, ((localRange[0] - apiMin) / (safeMax - apiMin)) * 100))
@@ -234,13 +219,11 @@ export function PriceRange() {
         {data?.data ? (
           <>
             <div className="px-2.5">
-              {/* نوار پس‌زمینه اسلایدر */}
               <div
                 ref={trackRef}
                 onPointerDown={handleTrackPointerDown}
                 className="relative h-1.5 w-full cursor-pointer touch-none select-none rounded-full bg-zinc-200"
               >
-                {/* نوار قرمز بین حداقل و حداکثر */}
                 <div
                   className="pointer-events-none absolute inset-y-0 rounded-full bg-red-600"
                   style={{
@@ -249,7 +232,6 @@ export function PriceRange() {
                   }}
                 />
 
-                {/* دستگیره سمت راست (حداقل) - دایره قرمز با هاله صورتی */}
                 <div
                   role="slider"
                   aria-label="حداقل قیمت"
@@ -266,7 +248,6 @@ export function PriceRange() {
                   <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
                 </div>
 
-                {/* دستگیره سمت چپ (حداکثر) - مثلث قرمز + تولتیپ صورتی */}
                 <div
                   role="slider"
                   aria-label="حداکثر قیمت"
@@ -280,7 +261,6 @@ export function PriceRange() {
                   style={{ right: `${maxPct}%` }}
                   className="absolute top-1/2 z-20 flex h-5 w-5 translate-x-1/2 -translate-y-1/2 cursor-grab touch-none items-center justify-center outline-none active:cursor-grabbing"
                 >
-                  {/* تولتیپ صورتی بالای دستگیره */}
                   <div
                     className={`pointer-events-none absolute -top-11 whitespace-nowrap rounded-lg bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 ${tooltipAlignClass}`}
                   >
@@ -291,7 +271,6 @@ export function PriceRange() {
                     />
                   </div>
 
-                  {/* مثلث قرمز گوشه‌نرم زیر نوار */}
                   <svg
                     viewBox="0 0 16 14"
                     className="mt-7 h-3 w-3.5 text-red-600"
@@ -303,7 +282,6 @@ export function PriceRange() {
               </div>
             </div>
 
-            {/* برچسب سقف قیمت (+ میلیون تومان) در سمت راست زیر اسلایدر */}
             {maxLabel && (
               <div className="mt-3 flex justify-start text-right">
                 <div className="flex flex-col text-[11px] leading-4">
@@ -317,7 +295,6 @@ export function PriceRange() {
               </div>
             )}
 
-            {/* دو باکس حداقل و حداکثر در پایین */}
             <div className="mt-4 grid grid-cols-2 gap-2.5">
               <div className="flex h-11 items-center justify-center gap-1 rounded-xl bg-zinc-100 px-2 text-[11px] font-semibold whitespace-nowrap text-zinc-800">
                 <span>حداقل :</span>

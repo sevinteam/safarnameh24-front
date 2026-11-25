@@ -27,6 +27,7 @@ export function HotelList() {
   const [star] = useQueryState('star', parseAsArrayOf(parseAsInteger));
   const [amazingHotels] = useQueryState('amazing-hotels', parseAsShowToggle);
   const [suggestedHotels] = useQueryState('suggested-hotels', parseAsShowToggle);
+  const [lastMinute] = useQueryState('last-minute', parseAsShowToggle);
   const [minPrice] = useQueryState('min-price', parseAsInteger.withDefault(0));
   const [maxPrice] = useQueryState('max-price', parseAsInteger.withDefault(0));
   const [residenceType] = useQueryState('residence-type', parseAsArrayOf(parseAsInteger));
@@ -56,8 +57,8 @@ export function HotelList() {
   const queryStringWithoutPage = useMemo(() => {
     const params = new URLSearchParams();
 
-    if (startDate) params.set('start-date', startDate);
-    if (endDate) params.set('end-date', endDate);
+    if (startDate && startDate !== 'undefined') params.set('start-date', startDate);
+    if (endDate && endDate !== 'undefined') params.set('end-date', endDate);
     if (city) params.set('city', city);
     if (province) params.set('province', province);
     if (queryPassengers) params.set('passengers', queryPassengers);
@@ -69,6 +70,7 @@ export function HotelList() {
     if (roomFacilitiesString) params.set('room-facilities', roomFacilitiesString);
     if (amazingHotels === 'show') params.set('amazing-hotels', 'show');
     if (suggestedHotels === 'show') params.set('suggested-hotels', 'show');
+    if (lastMinute === 'show') params.set('last-minute', 'show');
 
     return params.toString();
   }, [
@@ -85,6 +87,7 @@ export function HotelList() {
     roomFacilitiesString,
     amazingHotels,
     suggestedHotels,
+    lastMinute,
   ]);
 
   // ۲. فراخوانی API به صورت صفحه‌بندی پشت‌صحنه (Infinite Scroll)
@@ -102,7 +105,7 @@ export function HotelList() {
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams(queryStringWithoutPage);
       params.set('page', String(pageParam));
-      return axiosInstance(`/hotel/hotels/best-filter?${params.toString()}`);
+      return axiosInstance(`/hotel/hotels/best-filter/?${params.toString()}`);
     },
     getNextPageParam: (lastPage, allPages) => {
       const totalPages = lastPage?.data?.total_pages ?? 0;
@@ -119,13 +122,16 @@ export function HotelList() {
   }, [data?.pages]);
 
   const isPending = status === 'pending';
-  const resultsCount = hotels?.length ?? null;
+  const totalCount =
+    (data?.pages?.[0]?.data as { count?: number } | undefined)?.count ??
+    hotels?.length ??
+    null;
 
   // ۳. آپدیت کانتکست
   useEffect(() => {
-    handleSetQueryState(isPending, resultsCount);
+    handleSetQueryState(isPending, totalCount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPending, resultsCount]);
+  }, [isPending, totalCount]);
 
   // ۴. تشخیص رسیدن کاربر به پایین لیست و لود خودکار صفحه بعد
   useEffect(() => {
