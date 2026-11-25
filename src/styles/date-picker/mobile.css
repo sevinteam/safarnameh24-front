@@ -64,5 +64,6 @@
   color: black !important;
   font-weight: 700 !important;
   box-shadow: none !important;
+  border-radius: 0.5rem !important;
   font-size: clamp(0.9rem, 3vw, 0.95rem) !important;
 }

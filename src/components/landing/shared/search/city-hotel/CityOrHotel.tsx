@@ -83,7 +83,7 @@ export default function CityOrHotel(props: Props) {
             ) : (
               <div className="flex items-center gap-1.5">
                 {isBestHotel ? <span>شهر مقصد</span> : <span>شهر یا هتل</span>}
-                <span>(داخلی , خارجی)</span>
+                <span>(داخلی)</span>
               </div>
             )}
           </SheetTrigger>

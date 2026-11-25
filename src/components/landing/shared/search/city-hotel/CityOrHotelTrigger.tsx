@@ -88,7 +88,7 @@ export default function CityOrHotelTrigger(props: Props) {
             ) : (
               <span className="flex items-center gap-1.5 text-cs08 font-semibold text-zinc-500">
                 <span>شهر یا هتل</span>
-                <span>(داخلی , خارجی)</span>
+                <span>(داخلی)</span>
               </span>
             )}
           </div>
@@ -126,7 +126,7 @@ export default function CityOrHotelTrigger(props: Props) {
                   ) : (
                     <span>شهر یا هتل</span>
                   )}
-                  <span>(داخلی , خارجی)</span>
+                  <span>(داخلی)</span>
                 </span>
               )}
             </div>
