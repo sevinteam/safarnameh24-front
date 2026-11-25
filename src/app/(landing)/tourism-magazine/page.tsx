@@ -8,31 +8,31 @@ import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 export const metadata: Metadata = {
   title: `مجله گردشگری و راهنمای سفر | ${SITE_NAME}`,
   description:
-    'جدیدترین مقالات راهنمای سفر، معرفی هتل‌های لوکس، جاذبه‌های گردشگری شهرهای ایران و جهان و نکات کاربردی رزرو هتل در مجله گردشگری سفرنامه ۲۴.',
+    'جدیدترین مقالات راهنمای سفر، معرفی هتل‌های لوکس، جاذبه‌های گردشگری شهرهای ایران و جهان و نکات کاربردی رزرو هتل در مجله گردشگری زروان تریپ.',
   keywords: [
     'مجله گردشگری',
     'وبلاگ سفر',
     'راهنمای سفر',
     'جاذبه‌های گردشگری',
     'معرفی هتل',
-    'سفرنامه ۲۴',
+    'زروان تریپ',
   ],
   alternates: {
     canonical: `${SITE_URL}/tourism-magazine`,
   },
   openGraph: {
-    title: `مجله گردشگری سفرنامه ۲۴ | راهنمای جامع سفر و هتل`,
+    title: `مجله گردشگری زروان تریپ | راهنمای جامع سفر و هتل`,
     description:
       'خواندنی‌ترین مقالات گردشگری، راهنمای سفر به شهرهای مختلف و بررسی تخصصی هتل‌ها.',
     url: `${SITE_URL}/tourism-magazine`,
     siteName: SITE_NAME,
     locale: 'fa_IR',
     type: 'website',
-    images: [{ url: DEFAULT_OG_IMAGE, alt: 'مجله گردشگری سفرنامه ۲۴' }],
+    images: [{ url: DEFAULT_OG_IMAGE, alt: 'مجله گردشگری زروان تریپ' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `مجله گردشگری سفرنامه ۲۴`,
+    title: `مجله گردشگری زروان تریپ`,
     description: 'راهنمای سفر، جاذبه‌های گردشگری و معرفی بهترین هتل‌ها.',
     images: [DEFAULT_OG_IMAGE],
   },
@@ -65,7 +65,7 @@ export default function TourismMagazinePage() {
         url: `${SITE_URL}/tourism-magazine`,
         name: `مجله گردشگری ${SITE_NAME}`,
         description:
-          'مقالات راهنمای سفر و معرفی هتل‌های ایران و جهان در مجله سفرنامه ۲۴.',
+          'مقالات راهنمای سفر و معرفی هتل‌های ایران و جهان در مجله زروان تریپ.',
         publisher: {
           '@type': 'TravelAgency',
           name: SITE_NAME,
@@ -131,7 +131,7 @@ export default function TourismMagazinePage() {
             راهنمای سفر و خواندنی‌های هتل‌ها
           </h1>
           <p className="text-xs sm:text-sm font-semibold text-zinc-500 max-w-2xl">
-            با مقالات تخصصی سفرنامه ۲۴، جاذبه‌های گردشگری شهرهای ایران و جهان را بشناسید و بهترین انتخاب را برای اقامت و رزرو هتل داشته باشید.
+            با مقالات تخصصی زروان تریپ، جاذبه‌های گردشگری شهرهای ایران و جهان را بشناسید و بهترین انتخاب را برای اقامت و رزرو هتل داشته باشید.
           </p>
         </div>
 

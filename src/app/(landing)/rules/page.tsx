@@ -19,12 +19,12 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: `قوانین و مقررات رزرو هتل در ${SITE_NAME} | شرایط کنسلی و استرداد`,
   description:
-    'پیش از رزرو هتل، قوانین و مقررات سفرنامه ۲۴ شامل شرایط کنسلی، جرائم، استرداد وجه و قوانین پذیرش مسافر در هتل‌ها را مطالعه کنید.',
+    'پیش از رزرو هتل، قوانین و مقررات زروان تریپ شامل شرایط کنسلی، جرائم، استرداد وجه و قوانین پذیرش مسافر در هتل‌ها را مطالعه کنید.',
   alternates: { canonical: `${SITE_URL}/rules` },
   openGraph: {
     title: `قوانین و مقررات | ${SITE_NAME}`,
     description:
-      'قوانین رزرو هتل، شرایط کنسلی و استرداد وجه در سامانه رزرواسیون سفرنامه ۲۴.',
+      'قوانین رزرو هتل، شرایط کنسلی و استرداد وجه در سامانه رزرواسیون زروان تریپ.',
     url: `${SITE_URL}/rules`,
     siteName: SITE_NAME,
     locale: 'fa_IR',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `قوانین و مقررات | ${SITE_NAME}`,
     description:
-      'مطالعه شرایط کنسلی، استرداد وجه و مقررات رزرو آنلاین هتل در سفرنامه ۲۴.',
+      'مطالعه شرایط کنسلی، استرداد وجه و مقررات رزرو آنلاین هتل در زروان تریپ.',
     images: [DEFAULT_OG_IMAGE],
   },
 };
@@ -50,7 +50,7 @@ async function getRules() {
       cache: 'no-store',
       headers: {
         Accept: 'application/json',
-        'User-Agent': 'Mozilla/5.0 (compatible; safarnameh24Frontend/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; ZarvanTripFrontend/1.0)',
       },
     });
 
@@ -110,7 +110,7 @@ export default async function Rules() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <h1 className="sr-only">قوانین و مقررات رزرو هتل سفرنامه ۲۴</h1>
+      <h1 className="sr-only">قوانین و مقررات رزرو هتل زروان تریپ</h1>
 
       <div className="mt-2">
         <StickyArea

@@ -511,7 +511,7 @@ export default async function Hotel({ params }: Props) {
               '@type': 'Person',
               name:
                 `${c.first_name || ''} ${c.last_name || ''}`.trim() ||
-                'مسافر سفرنامه ۲۴',
+                'مسافر زروان تریپ',
             },
             reviewRating: {
               '@type': 'Rating',

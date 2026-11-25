@@ -140,12 +140,16 @@ export function SuggestedHotel(props: Props) {
             </div>
           </div>
 
-          <div className="h-3 w-[2px] rounded bg-zinc-500"></div>
+          {Number(stars) > 0 && (
+            <>
+              <div className="h-3 w-[2px] rounded bg-zinc-500"></div>
 
-          <div className="flex items-center gap-1">
-            <span>{stars}</span>
-            <span>ستاره</span>
-          </div>
+              <div className="flex items-center gap-1">
+                <span>{stars}</span>
+                <span>ستاره</span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Hotel-Rating */}
