@@ -27,17 +27,27 @@ import {
 
 import { Accordion } from '@/components/ui/accordion';
 
+// کلیدهای value مربوط به AccordionItem هر فیلتر (در پوشه molecules/filters)
+const ALL_FILTER_VALUES = [
+  'star',
+  'price-range',
+  'residence-type',
+  'other-filters',
+  'hotel-facilities',
+  'room-facilities',
+];
+
 // ------------------------------
 // ۱. مموایز کردن لیست فیلترها برای جلوگیری از رندرهای تکراری هنگام تغییر وضعیت سرچ
 const FilterItemsList = memo(function FilterItemsList({
-  isMultiple = false,
+  defaultOpenAll = false,
 }: {
-  isMultiple?: boolean;
+  defaultOpenAll?: boolean;
 }) {
   return (
     <Accordion
-      type={(isMultiple ? 'multiple' : 'single') as any}
-      collapsible
+      type="multiple"
+      defaultValue={defaultOpenAll ? ALL_FILTER_VALUES : undefined}
       className="divide-y"
     >
       <Star />
@@ -69,7 +79,7 @@ export function Filters() {
           </SheetTrigger>
 
           <SheetContent className="grid w-full grid-rows-[auto_1fr_auto] p-0">
-            <SheetHeader className="shadow-light flex-row items-center justify-between border-b px-6 h-16">
+            <SheetHeader className="shadow-light flex h-16 flex-row items-center justify-between border-b px-6">
               <SheetTitle className="hidden"></SheetTitle>
               <SheetDescription className="hidden"></SheetDescription>
 
@@ -80,9 +90,9 @@ export function Filters() {
               </SheetClose>
             </SheetHeader>
 
-            {/* لیست فیلترها بدون تگ‌های اضافی و سبک‌شده */}
-            <div className="custom-scrollbar overflow-auto divide-y pb-4">
-              <FilterItemsList isMultiple={true} />
+            {/* لیست فیلترها در موبایل */}
+            <div className="custom-scrollbar divide-y overflow-auto pb-4">
+              <FilterItemsList defaultOpenAll={false} />
             </div>
 
             <div className="shadow-light flex h-20 items-center justify-between border-t px-6">
@@ -108,7 +118,7 @@ export function Filters() {
         <div className="flex-center shadow-light gap-2 rounded-full border bg-white px-4">
           <Building size="18" color="#52525b" />
 
-          <div className="flex-center text-cs75 pt-0.5 font-bold text-zinc-600 gap-1">
+          <div className="flex-center text-cs75 gap-1 pt-0.5 font-bold text-zinc-600">
             <span>نتایج :</span>
             <span>{totalLength}</span>
             <span>هتل</span>
@@ -116,22 +126,25 @@ export function Filters() {
         </div>
       </div>
 
-      {/* === حالت دسکتاپ (Large-Screen) === */}
-      <div className="shadow-light sticky top-28 hidden rounded-2xl bg-white text-zinc-800 lg:block">
-        <div className="flex-between items-center border-b px-5 py-4">
+      {/* === حالت دسکتاپ (Large-Screen) - استیکی با حداکثر ارتفاع صفحه و اسکرول داخلی === */}
+      <div className="shadow-light sticky top-24 hidden max-h-[calc(100dvh-7rem)] flex-col rounded-2xl bg-white text-zinc-800 lg:flex">
+        <div className="flex-between shrink-0 items-center border-b px-5 py-4">
           <span className="text-cs85 font-bold">فیلتر های جستجو</span>
           <ClearFilters />
         </div>
 
-        {/* لیست اسکرول‌خور دسکتاپ */}
-        <div dir="ltr" className="custom-scrollbar max-h-[60dvh] overflow-auto">
+        {/* لیست اسکرول‌خور دسکتاپ - کل فضای عمودی صفحه را پر می‌کند */}
+        <div
+          dir="ltr"
+          className="custom-scrollbar min-h-0 flex-1 overflow-y-auto"
+        >
           <div dir="rtl">
-            <FilterItemsList isMultiple={false} />
+            <FilterItemsList defaultOpenAll={true} />
           </div>
         </div>
 
         {/* دکمه وضعیت نتایج در پایین فیلتر دسکتاپ */}
-        <div className="flex-between items-center border-t px-5 py-4">
+        <div className="flex-between shrink-0 items-center border-t px-5 py-4">
           <div className="flex-center bg-cs-dark-blue rounded-cs-10 text-cs08 h-11 w-full gap-1 font-semibold text-white">
             {isPending ? (
               <div className="loader-dots" />

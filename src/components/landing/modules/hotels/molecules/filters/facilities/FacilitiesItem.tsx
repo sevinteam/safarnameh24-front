@@ -1,14 +1,14 @@
+'use client';
+
 import Image from 'next/image';
 import { FaCheck } from 'react-icons/fa6';
-import { Label } from '@/components/ui/label';
-
 import { useQueryState, parseAsArrayOf, parseAsInteger } from 'nuqs';
 
 type Props = {
   id: number;
   title: string;
   type: 'hotel' | 'room';
-  icon?: { link: string };
+  icon?: { link?: string | null } | null;
 };
 
 // ----------------------------
@@ -25,43 +25,59 @@ export default function FacilitiesItem(props: Props) {
 
   const toggle = (value: boolean) => {
     if (value) {
+      if (checked) return;
       setFacilities([...(facilities ?? []), id]);
     } else {
-      setFacilities(facilities?.filter((item) => item !== id) ?? []);
+      const next = facilities?.filter((item) => item !== id) ?? [];
+      setFacilities(next.length > 0 ? next : null);
     }
   };
 
   return (
     <div
-      className="px-5 flex items-center gap-3 select-none cursor-pointer transition-colors hover:bg-cs-blue/5"
+      role="checkbox"
+      tabIndex={0}
+      aria-checked={checked}
       onClick={() => toggle(!checked)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle(!checked);
+        }
+      }}
+      className="hover:bg-cs-blue/5 flex min-h-11 cursor-pointer items-center gap-3 px-5 py-2 select-none transition-colors outline-none"
     >
-      <div className="relative bg-zinc-200/50 w-5 h-5 overflow-hidden rounded-[0.3rem]">
+      <div
+        className={`relative h-5 w-5 shrink-0 overflow-hidden rounded-[0.3rem] border transition-colors ${
+          checked
+            ? 'border-cs-blue bg-cs-blue'
+            : 'border-zinc-300/80 bg-zinc-100'
+        }`}
+      >
         <div
-          className={`absolute inset-0 bg-cs-blue flex-center transition-all duration-200 ease-in-out ${checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+          className={`flex-center bg-cs-blue absolute inset-0 transition-all duration-200 ease-in-out ${
+            checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+          }`}
         >
           <FaCheck color="#fff" size={12} />
         </div>
       </div>
 
-      <Label
-        htmlFor={id.toString()}
-        className="h-12 text-zinc-700 text-[0.8rem] font-bold flex-1 flex items-center cursor-pointer"
-      >
+      <span className="flex flex-1 items-center text-[0.8rem] leading-5 font-bold text-zinc-700">
         {title}
-      </Label>
+      </span>
 
-      <div className="w-5 h-5 flex-center">
-        {icon && (
+      {icon?.link && (
+        <div className="flex-center h-5 w-5 shrink-0">
           <Image
-            width={100}
-            height={100}
-            className=""
+            width={20}
+            height={20}
+            className="h-5 w-5 object-contain"
             src={icon.link}
-            alt="facilities-icon"
+            alt={title || 'facilities-icon'}
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
