@@ -17,7 +17,7 @@ export type HotelFiltersState = {
   maxPrice: number | null;
   stars: number[];
   rating: number | null;
-  amenities: string[];
+  amenities: number[];
   types: string[];
   page: number;
 };

@@ -39,7 +39,7 @@ export function HotelList() {
         shouldRenderListCard ? (
           <HotelCardC key={`${item.id}-${i}`} {...item} />
         ) : (
-          <HotelCardA key={`${item.id}-${i}`} {...item} />
+          <HotelCardB key={`${item.id}-${i}`} {...item} />
         ),
       )}
     </section>

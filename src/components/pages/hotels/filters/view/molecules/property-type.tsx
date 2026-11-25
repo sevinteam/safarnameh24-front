@@ -20,15 +20,16 @@ export function PropertyType({ selectedTypes, onChange }: Props) {
       onClear={() => onChange([])}
     >
       <div className="flex flex-col">
-        {PROPERTY_TYPE_OPTIONS.map(({ value, label, count }) => {
+        {PROPERTY_TYPE_OPTIONS.map(({ value, label, count, icon }) => {
           const isChecked = selectedTypes.includes(value);
           const id = `filter-type-${value}`;
+          const Icon = icon;
 
           return (
             <Label
               key={value}
               htmlFor={id}
-              className="text-foreground flex cursor-pointer items-center gap-3 py-2 text-sm"
+              className="text-foreground flex cursor-pointer items-center gap-3 py-2.5 text-sm"
             >
               <Checkbox
                 id={id}
@@ -44,6 +45,8 @@ export function PropertyType({ selectedTypes, onChange }: Props) {
                   ({count})
                 </span>
               )}
+
+              <Icon className="text-muted-foreground mr-auto size-4.5 shrink-0" />
             </Label>
           );
         })}

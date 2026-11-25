@@ -1,10 +1,10 @@
 import { useHotelFiltersQuery } from '../../use-hotel-filters-query';
 import { Amenities } from '../molecules/amenities';
-import { DiscountFilter } from '../molecules/discount-filter';
 import { GuestRating } from '../molecules/guest-rating';
 import { HotelSearch } from '../molecules/hotel-search';
 import { PriceRange } from '../molecules/price-range';
 import { PropertyType } from '../molecules/property-type';
+import { QuickToggle } from '../molecules/quick-toggle';
 import { StarRating } from '../molecules/star-rating';
 
 // ------------------------------
@@ -17,12 +17,14 @@ export function FiltersContent() {
     <>
       <HotelSearch value={filters.q} onChange={(q) => updateFilters({ q })} />
 
-      <div className="border-b p-5">
-        <DiscountFilter
-          checked={filters.discount}
-          onChange={(discount) => updateFilters({ discount })}
-        />
-      </div>
+      <QuickToggle
+        values={{
+          discount: filters.discount,
+          availableOnly: filters.availableOnly,
+          freeCancellation: filters.freeCancellation,
+        }}
+        onChange={(key, checked) => updateFilters({ [key]: checked })}
+      />
 
       <PriceRange
         minPrice={filters.minPrice}

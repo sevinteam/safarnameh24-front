@@ -1,8 +1,7 @@
-'use client';
-
 import { useMemo, useState } from 'react';
-import { ChevronDown, Search, X } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 
+import { ClearableInput } from '@/components/common/clearable-input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -10,43 +9,61 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toggleArrayItem } from '@/utils/array';
 import { cn } from '@/utils';
 
-import { AMENITY_OPTIONS } from '../../constants';
+import {
+  AMENITY_OPTIONS,
+  getAmenityIcon,
+  type AmenityApiItem,
+} from '../../constants';
+
 import { FilterSection } from './filter-section';
 
-type Props = {
-  selectedAmenities: string[];
-  onChange: (amenities: string[]) => void;
+type AmenitiesFilterProps = {
+  selectedAmenities: number[];
+  onChange: (amenities: number[]) => void;
+  amenities?: readonly AmenityApiItem[]; // Optional: pass API data when ready
 };
 
-const INITIAL_VISIBLE_COUNT = 5;
+const INITIAL_VISIBLE_COUNT = 6;
 
 // ------------------------------
 
-export function Amenities({ selectedAmenities, onChange }: Props) {
+export function Amenities({
+  selectedAmenities,
+  onChange,
+  amenities = AMENITY_OPTIONS,
+}: AmenitiesFilterProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Auto-expand on mount if any collapsed amenity is already active in URL
+  // Ensure amenities follow backend priority order
+  const sortedAmenities = useMemo(() => {
+    return [...amenities].sort(
+      (a, b) =>
+        (a.priority ?? Number.MAX_SAFE_INTEGER) -
+        (b.priority ?? Number.MAX_SAFE_INTEGER),
+    );
+  }, [amenities]);
+
+  // Auto-expand on mount if any collapsed amenity is already selected in URL
   const [isExpanded, setIsExpanded] = useState(() =>
-    AMENITY_OPTIONS.slice(INITIAL_VISIBLE_COUNT).some((item) =>
-      selectedAmenities.includes(item.value),
-    ),
+    sortedAmenities
+      .slice(INITIAL_VISIBLE_COUNT)
+      .some((item) => selectedAmenities.includes(item.id)),
   );
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const isSearching = normalizedSearch.length > 0;
 
   const filteredAmenities = useMemo(() => {
-    if (!isSearching) return AMENITY_OPTIONS;
+    if (!isSearching) return sortedAmenities;
 
-    return AMENITY_OPTIONS.filter((item) =>
+    return sortedAmenities.filter((item) =>
       item.label.toLowerCase().includes(normalizedSearch),
     );
-  }, [isSearching, normalizedSearch]);
+  }, [isSearching, normalizedSearch, sortedAmenities]);
 
   const primaryItems = isSearching
     ? filteredAmenities
@@ -56,98 +73,84 @@ export function Amenities({ selectedAmenities, onChange }: Props) {
     ? []
     : filteredAmenities.slice(INITIAL_VISIBLE_COUNT);
 
-  const renderAmenityItem = (value: string, label: string) => {
-    const id = `filter-amenity-${value}`;
-    const isChecked = selectedAmenities.includes(value);
+  const renderAmenityItem = (item: AmenityApiItem) => {
+    const id = `filter-amenity-${item.id}`;
+    const isChecked = selectedAmenities.includes(item.id);
+    const Icon = getAmenityIcon(item.slug);
 
     return (
       <Label
-        key={value}
+        key={item.id}
         htmlFor={id}
-        className="text-foreground flex cursor-pointer items-center gap-3 py-2 text-sm"
+        className="flex cursor-pointer items-center gap-3 py-2.5"
       >
         <Checkbox
           id={id}
           checked={isChecked}
           onCheckedChange={() =>
-            onChange(toggleArrayItem(selectedAmenities, value))
+            onChange(toggleArrayItem(selectedAmenities, item.id))
           }
         />
-        <span>{label}</span>
+
+        <span className="truncate">{item.label}</span>
+        <Icon className="text-muted-foreground mr-auto size-4.5 shrink-0" />
       </Label>
     );
   };
 
   return (
     <FilterSection
-      onClear={() => onChange([])}
+      title="امکانات هتل"
       hasSelection={selectedAmenities.length > 0}
-      title={`امکانات هتل (${AMENITY_OPTIONS.length})`}
+      onClear={() => onChange([])}
     >
-      {/* Quick local search inside amenities */}
-      <div className="relative">
-        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2" />
-
-        <Input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="جستجو در امکانات ..."
-          aria-label="جستجو در امکانات هتل"
-          className="h-10 px-10"
-        />
-
-        {isSearching && (
-          <Button
-            type="button"
-            size="icon-xs"
-            variant="ghost"
-            onClick={() => setSearchTerm('')}
-            aria-label="پاک کردن جستجوی امکانات"
-            className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-          >
-            <X className="size-4" />
-          </Button>
-        )}
-      </div>
+      <ClearableInput
+        value={searchTerm}
+        startIcon={<Search />}
+        onValueChange={setSearchTerm}
+        aria-label="جستجو در امکانات هتل"
+        placeholder="جستجو در امکانات ..."
+      />
 
       {filteredAmenities.length === 0 ? (
-        <p className="text-muted-foreground py-3 text-center text-sm font-medium">
-          امکاناتی با این عنوان یافت نشد .
+        <p className="text-muted-foreground py-3 text-center text-xs font-medium">
+          امکاناتی با این عنوان یافت نشد !
         </p>
       ) : (
-        <div className="flex flex-col">
-          {primaryItems.map((item) =>
-            renderAmenityItem(item.value, item.label),
-          )}
+        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+          <div className={cn('flex flex-col')}>
+            {primaryItems.map(renderAmenityItem)}
+
+            {collapsibleItems.length > 0 && (
+              <CollapsibleContent className="flex flex-col">
+                {collapsibleItems.map(renderAmenityItem)}
+              </CollapsibleContent>
+            )}
+          </div>
 
           {collapsibleItems.length > 0 && (
-            <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-              <CollapsibleContent className="flex flex-col gap-1.5 pt-1.5">
-                {collapsibleItems.map((item) =>
-                  renderAmenityItem(item.value, item.label),
-                )}
-              </CollapsibleContent>
-
-              <CollapsibleTrigger
-                render={
-                  <Button
-                    size="sm"
-                    type="button"
-                    variant="ghost"
-                    className="text-muted-foreground mt-2 w-full justify-between text-xs"
-                  />
-                }
-              >
-                <span>{isExpanded ? 'مشاهده کمتر' : 'مشاهده بیشتر'}</span>
-
-                <ChevronDown
-                  className={cn('size-4', isExpanded && 'rotate-180')}
+            <CollapsibleTrigger
+              render={
+                <Button
+                  size="xs"
+                  type="button"
+                  variant="ghost"
+                  className="mt-3 h-8 w-full justify-between rounded-lg px-2.5"
                 />
-              </CollapsibleTrigger>
-            </Collapsible>
+              }
+            >
+              <span>
+                {isExpanded
+                  ? 'نمایش کمتر'
+                  : `مشاهده همه (${sortedAmenities.length})`}
+              </span>
+
+              <ChevronDown
+                className={cn('size-4', isExpanded && 'rotate-180')}
+              />
+            </CollapsibleTrigger>
           )}
-        </div>
+        </Collapsible>
       )}
     </FilterSection>
   );

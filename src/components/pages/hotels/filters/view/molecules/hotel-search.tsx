@@ -1,9 +1,7 @@
-import { Search, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { FilterSection } from './filter-section';
 import { useEffect, useRef, useState } from 'react';
 
+import { ClearableInput } from '@/components/common/clearable-input';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 
 type HotelSearchFilterProps = {
@@ -49,31 +47,14 @@ export function HotelSearch({ value, onChange }: HotelSearchFilterProps) {
 
   return (
     <FilterSection title="جستجوی نام هتل">
-      <div className="relative">
-        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2" />
-
-        <Input
-          type="text"
-          className="h-10 px-10"
-          value={localValue}
-          onChange={(e) => handleInputChange(e.target.value)}
-          placeholder="برای مثال : اسپیناس پالاس"
-          aria-label="جستجو بر اساس نام هتل"
-        />
-
-        {localValue.length > 0 && (
-          <Button
-            type="button"
-            size="icon-xs"
-            variant="ghost"
-            onClick={handleClear}
-            aria-label="پاک کردن جستجو"
-            className="text-muted-foreground hover:text-foreground absolute top-1/2 left-3 -translate-y-1/2"
-          >
-            <X className="size-4" />
-          </Button>
-        )}
-      </div>
+      <ClearableInput
+        value={localValue}
+        onClear={handleClear}
+        clearLabel="پاک کردن جستجو"
+        onValueChange={handleInputChange}
+        aria-label="جستجو بر اساس نام هتل"
+        placeholder="برای مثال : اسپیناس پالاس"
+      />
     </FilterSection>
   );
 }

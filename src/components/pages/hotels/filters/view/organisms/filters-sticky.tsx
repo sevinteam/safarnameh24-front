@@ -30,10 +30,10 @@ export function FiltersSticky({ className }: Props) {
 
         <div className="bg-card rounded-2xl border">
           {/* Header + Clear All */}
-          <div className="flex items-center justify-between gap-2 border-b p-5">
+          <div className="flex h-16 items-center justify-between gap-2 border-b px-5">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="text-muted-foreground size-4.5" />
-              <span className="font-semibold">فیلترها</span>
+              <span className="text-sm font-semibold">فیلترها</span>
             </div>
 
             {hasActiveFilters && (

@@ -34,13 +34,15 @@ export function useHotelFiltersQuery() {
   const resetAllFilters = useCallback(() => {
     void setFilters({
       q: '',
-      discount: false,
       minPrice: null,
       maxPrice: null,
       stars: [],
       rating: null,
       amenities: [],
       types: [],
+      discount: false,
+      availableOnly: false,
+      freeCancellation: false,
       page: 1,
     });
   }, [setFilters]);
@@ -50,6 +52,8 @@ export function useHotelFiltersQuery() {
 
     if (filters.q.trim()) count += 1;
     if (filters.discount) count += 1;
+    if (filters.availableOnly) count += 1;
+    if (filters.freeCancellation) count += 1;
     if (filters.minPrice !== null || filters.maxPrice !== null) count += 1;
     if (filters.stars.length > 0) count += filters.stars.length;
     if (filters.rating !== null) count += 1;

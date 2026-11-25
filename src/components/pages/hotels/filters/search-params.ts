@@ -9,13 +9,15 @@ import {
 
 export const hotelFiltersSearchParams = {
   q: parseAsString.withDefault(''),
-  discount: parseAsBoolean.withDefault(false),
   minPrice: parseAsInteger,
   maxPrice: parseAsInteger,
   stars: parseAsArrayOf(parseAsInteger).withDefault([]),
   rating: parseAsInteger,
-  amenities: parseAsArrayOf(parseAsString).withDefault([]),
+  amenities: parseAsArrayOf(parseAsInteger).withDefault([]),
   types: parseAsArrayOf(parseAsString).withDefault([]),
+  discount: parseAsBoolean.withDefault(false),
+  availableOnly: parseAsBoolean.withDefault(false),
+  freeCancellation: parseAsBoolean.withDefault(false),
   page: parseAsInteger.withDefault(1),
 };
 
@@ -24,6 +26,9 @@ export const hotelFiltersUrlKeys: UrlKeys<typeof hotelFiltersSearchParams> = {
   q: 'hotel-name', // URL: ?hotel-name=...  | Code: filters.q
   minPrice: 'min-price',
   maxPrice: 'max-price',
+  discount: 'discounted',
+  availableOnly: 'available-only',
+  freeCancellation: 'free-cancellation',
 };
 
 export const loadHotelFiltersParams = createLoader(hotelFiltersSearchParams, {

@@ -84,9 +84,10 @@ export default function SortWrapper(props: Props) {
                 return (
                   <DrawerClose
                     key={option.value}
-                    className="flex h-10 items-center gap-2.5"
+                    className="flex items-center gap-3 py-2"
                   >
-                    {Icon && <Icon className="size-5 shrink-0" />}
+                    <RadioGroupItem value={option.value} id={option.value} />
+
                     <Label
                       htmlFor={option.value}
                       className="flex-1 font-semibold"
@@ -94,7 +95,7 @@ export default function SortWrapper(props: Props) {
                       {option.label}
                     </Label>
 
-                    <RadioGroupItem value={option.value} id={option.value} />
+                    {Icon && <Icon className="size-5 shrink-0" />}
                   </DrawerClose>
                 );
               })}

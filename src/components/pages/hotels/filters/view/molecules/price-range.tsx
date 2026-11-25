@@ -1,6 +1,5 @@
-'use client';
-
 import { formatNumber } from '@/utils';
+import { Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 
@@ -58,21 +57,7 @@ export function PriceRange({
       hasSelection={hasSelection}
       onClear={() => onCommit(null, null)}
     >
-      <div className="mt-2 flex flex-col gap-4">
-        <Slider
-          step={step}
-          min={minBound}
-          max={maxBound}
-          value={localRange}
-          onValueChange={handleSliderChange}
-          onValueCommitted={handleSliderCommit}
-        />
-
-        <div className="text-muted-foreground flex items-center justify-between text-xs font-semibold">
-          <span>حداقل</span>
-          <span>حداکثر</span>
-        </div>
-
+      <div className="mt-2 flex flex-col">
         <div className="text-foreground flex h-10 justify-between gap-3 text-sm font-semibold">
           <span className="bg-secondary flex-center flex-1 rounded-lg">
             {formatNumber(localRange[0])}
@@ -85,6 +70,28 @@ export function PriceRange({
           <span className="bg-secondary flex-center flex-1 rounded-lg">
             {formatNumber(localRange[1])}
           </span>
+        </div>
+
+        <Slider
+          step={step}
+          min={minBound}
+          max={maxBound}
+          value={localRange}
+          className={'mt-6 mb-5'}
+          onValueChange={handleSliderChange}
+          onValueCommitted={handleSliderCommit}
+        />
+
+        <div className="text-muted-foreground flex items-center justify-between text-xs font-semibold">
+          <div className="flex items-center gap-1">
+            <Minus className="size-3" />
+            <span>حداقل</span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <span>حداکثر</span>
+            <Plus className="size-3" />
+          </div>
         </div>
       </div>
     </FilterSection>
