@@ -55,9 +55,9 @@ export default function UserAccount() {
               />
             </div>
 
-            <h1 className="font-inter font-bold capitalize md:hidden">
-              safarnameh24
-            </h1>
+            <span className="font-inter font-bold capitalize md:hidden">
+              zarvantrip
+            </span>
           </div>
 
           {/* Dialog-Content */}

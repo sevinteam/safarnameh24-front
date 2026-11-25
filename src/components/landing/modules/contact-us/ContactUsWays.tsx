@@ -33,6 +33,7 @@ export function ContactUsWays() {
   return (
     <div>
       <TopBarConfig
+        headingLevel="h1"
         title={{ type: 'single', text: 'تماس با ما' }}
         subtitle="راه های ارتباطی با آژانس زروان تریپ"
       />

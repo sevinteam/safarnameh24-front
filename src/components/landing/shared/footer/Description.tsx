@@ -27,9 +27,9 @@ export default function Description() {
       {status === 'pending' ? (
         <Skeleton className="w-1/2 h-5" />
       ) : (
-        <h1 className="text-zinc-700 text-cs09 font-inter font-bold capitalize">
+        <span className="text-zinc-700 text-cs09 font-inter font-bold capitalize">
           {title}
-        </h1>
+        </span>
       )}
 
       <div className="bg-cs-red w-5/6 h-[2px] mt-3 mb-1 rounded-full lg:bg-zinc-300"></div>

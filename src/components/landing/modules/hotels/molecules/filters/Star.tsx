@@ -28,7 +28,7 @@ export function Star() {
       </AccordionTrigger>
 
       <AccordionContent className="space-y-4">
-        {[1, 2, 3, 4, 5].map((number) => (
+        {[5, 4, 3, 2, 1].map((number) => (
           <div
             key={number}
             onClick={() => {

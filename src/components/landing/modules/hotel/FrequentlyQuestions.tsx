@@ -31,7 +31,7 @@ type Props = {
 
 export function FrequentlyQuestions(props: Props) {
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-faqs'],
+    queryKey: ['hotel-faqs', props.hotelSlug],
     queryFn: () => generalInstance(`/hotel/hotels/${props.hotelSlug}/faq`),
   });
 

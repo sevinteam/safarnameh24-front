@@ -5,10 +5,19 @@ import Script from 'next/script';
 
 import MainWrapper from '@/components/landing/shared/MainWrapper';
 import { cn } from '@/utils/utils';
+import {
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  SITE_NAME_EN,
+  SITE_URL,
+  fetchSiteGlobalSeoData,
+  getMetadataBaseUrl,
+  toHttpsUrl,
+} from '@/lib/seo';
 
 // ---------------------------------------------------
 
-// const GTM_ID = 'GTM-PFSBR64';
+const GTM_ID = 'GTM-PFSBR64';
 
 // Local font
 const interFont = localFont({
@@ -132,34 +141,127 @@ const iranSansFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'زروان تریپ',
-  description: 'رزرواسیون آنلاین هتل به صورت ۲۴ ساعته',
+  metadataBase: getMetadataBaseUrl(),
+  title: {
+    default: `${SITE_NAME} | رزرو آنلاین هتل‌های داخلی و خارجی با بهترین قیمت`,
+    template: '%s',
+  },
+  description:
+    'رزرو آنلاین هتل‌های داخلی و خارجی در زروان تریپ با تضمین بهترین قیمت، تخفیف‌های ویژه، بررسی امکانات و نظرات مسافران و صدور آنی واچر با پشتیبانی ۲۴ ساعته.',
+  applicationName: SITE_NAME,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
-    title: 'زروان تریپ',
-    description: 'رزرواسیون آنلاین هتل به صورت ۲۴ ساعته ',
+    title: `${SITE_NAME} | رزرو آنلاین هتل با بهترین قیمت`,
+    description:
+      'انتخاب و رزرو آنلاین بهترین هتل‌های ایران و جهان با تخفیف ویژه و پشتیبانی ۲۴ ساعته در زروان تریپ.',
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: 'fa_IR',
+    type: 'website',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        alt: `${SITE_NAME} - ${SITE_NAME_EN}`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE_NAME} | رزرو آنلاین هتل با بهترین قیمت`,
+    description:
+      'رزرو آنلاین بهترین هتل‌های ایران و جهان با تضمین قیمت و صدور آنی واچر در زروان تریپ.',
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { mainConfig, phone, email, address, sameAs } =
+    await fetchSiteGlobalSeoData();
+
+  const logoUrl = toHttpsUrl(mainConfig?.header_logo) || DEFAULT_OG_IMAGE;
+
+  const siteJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'TravelAgency',
+        '@id': `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        alternateName: SITE_NAME_EN,
+        url: SITE_URL,
+        logo: {
+          '@type': 'ImageObject',
+          url: logoUrl,
+        },
+        description:
+          mainConfig?.footer_description?.replace(/\s+/g, ' ').trim() ||
+          'زروان‌تریپ، سامانه رزرو آنلاین هتل در ایران با پشتیبانی ۲۴ ساعته.',
+        email,
+        telephone: phone,
+        address: {
+          '@type': 'PostalAddress',
+          addressCountry: 'IR',
+          addressLocality: 'تهران',
+          streetAddress: address,
+        },
+        ...(sameAs.length > 0 ? { sameAs } : {}),
+        contactPoint: {
+          '@type': 'ContactPoint',
+          telephone: phone,
+          contactType: 'customer service',
+          areaServed: 'IR',
+          availableLanguage: ['Persian', 'English'],
+        },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: SITE_NAME,
+        alternateName: SITE_NAME_EN,
+        inLanguage: 'fa-IR',
+        publisher: {
+          '@id': `${SITE_URL}/#organization`,
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${SITE_URL}/hotel?city={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
+  };
+
   return (
     <html lang="fa" dir="rtl">
       <head>
-        {/* Google Tag Manager - Commented Out */}
-        {/* 
+        {/* Google Tag Manager */}
         <Script id="google-tag-manager" strategy="afterInteractive">
-          {\`
+          {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','\${GTM_ID}');
-          \`}
+            })(window,document,'script','dataLayer','${GTM_ID}');
+          `}
         </Script>
-        */}
       </head>
       <body
         className={cn(
@@ -169,17 +271,20 @@ export default function RootLayout({
         )}
         suppressHydrationWarning
       >
-        {/* Google Tag Manager (noscript) - Commented Out */}
-        {/* 
+        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
-            src={\`https://www.googletagmanager.com/ns.html?id=\${GTM_ID}\`}
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
-        */}
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
 
         <MainWrapper>{children}</MainWrapper>
       </body>

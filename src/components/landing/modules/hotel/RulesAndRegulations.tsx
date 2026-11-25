@@ -25,12 +25,12 @@ export function RulesAndRegulations(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-rules'],
+    queryKey: ['hotel-rules', hotelSlug],
     queryFn: () => generalInstance(`/hotel/hotels/${hotelSlug}/rules`),
   });
 
-  const rules = data?.data.rules;
-  if (status !== 'pending' && (!data || !data?.data)) return null;
+  const rules = data?.data?.rules;
+  if (status !== 'pending' && (!data || !data?.data || !rules?.trim())) return null;
 
   return (
     <>

@@ -123,9 +123,9 @@ export default function ReserveButton(props: Props) {
     <button
       onClick={handleClick}
       disabled={isDisabled}
-      className={`col-span-2 flex-center h-11 w-full rounded-cs-10 font-bold ${
+      className={`col-span-2 flex-center h-11 w-full rounded-cs-10 font-bold transition-colors ${
         canBook
-          ? 'bg-cs-dark-blue text-zinc-100'
+          ? 'bg-cs-red text-white hover:bg-cs-red/90'
           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
       }`}
     >

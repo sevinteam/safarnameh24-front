@@ -35,7 +35,7 @@ export function ImportantPlaces(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-nearby-places'],
+    queryKey: ['hotel-nearby-places', hotelSlug],
     queryFn: () => generalInstance(`/hotel/hotels/${hotelSlug}/nearby-places`),
   });
 

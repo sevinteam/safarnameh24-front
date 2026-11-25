@@ -10,12 +10,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 type Props = {
   isLoading: boolean;
   pictures: string[];
+  hotelName?: string;
 };
 
 // --------------------------------
 
 export default function SSPictures(props: Props) {
-  const { pictures, isLoading } = props;
+  const { pictures, isLoading, hotelName } = props;
 
   return (
     <div className="h-52 xl:hidden">
@@ -51,8 +52,13 @@ export default function SSPictures(props: Props) {
                 >
                   <Image
                     fill
+                    priority={index === 0}
                     src={picture}
-                    alt="hotel-picture"
+                    alt={
+                      hotelName
+                        ? `تصویر ${index + 1} ${hotelName}`
+                        : `تصویر ${index + 1} هتل`
+                    }
                     className="object-cover"
                   />
                 </SwiperSlide>

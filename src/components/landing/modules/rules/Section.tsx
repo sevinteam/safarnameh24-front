@@ -77,11 +77,17 @@ export function Section(props: Props) {
       {/* متن کامل را sanitize و نمایش بده */}
       <div
         className="text-zinc-600 text-cs85/6 text-justify font-normal lg:text-cs09/7 rules-content"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(text, {
-            ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'mark', 'span', 'div', 'a', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'tfoot'],
-            ALLOWED_ATTR: ['style', 'class', 'dir', 'href', 'colspan', 'rowspan']
-          })
+          __html:
+            typeof window !== 'undefined' && typeof DOMPurify?.sanitize === 'function'
+              ? DOMPurify.sanitize(text, {
+                  ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'mark', 'span', 'div', 'a', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'tfoot'],
+                  ALLOWED_ATTR: ['style', 'class', 'dir', 'href', 'colspan', 'rowspan']
+                })
+              : text
+                  .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+                  .replace(/\son\w+\s*=\s*(['"]).*?\1/gi, ''),
         }}
       />
     </div>

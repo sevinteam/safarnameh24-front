@@ -45,7 +45,7 @@ export function FavoriteButton(props: Props) {
 
   // === Get Hotel-Id
   const { data } = useQuery<HotelInformation>({
-    queryKey: ['hotel-information'],
+    queryKey: ['hotel-information', props.hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${props.hotelSlug}/introduction`),
   });

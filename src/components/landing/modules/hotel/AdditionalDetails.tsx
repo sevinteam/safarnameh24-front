@@ -24,7 +24,7 @@ export function AdditionalDetails(props: Props) {
   const { hotelSlug } = props;
 
   const { data, status } = useQuery<ApiResponse>({
-    queryKey: ['hotel-further-description'],
+    queryKey: ['hotel-further-description', hotelSlug],
     queryFn: () =>
       generalInstance(`/hotel/hotels/${hotelSlug}/further-description`),
   });

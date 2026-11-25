@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import {
   Services,
   BestHotels,
@@ -5,39 +6,63 @@ import {
   AmazingHotels,
   SuggestedHotels,
   CustomerReviews,
-  InterestingBlogs,
   BestSellingHotels,
   MostVisitedCities,
   AdvertisingBanners,
 } from '@/components/landing/modules/home';
 
 import StickyArea from '@/components/landing/shared/StickyArea';
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 
-// تنظیمات متادیتای صفحه اصلی (SEO)
-export const metadata = {
-  title: 'سفرنامه ۲۴| رزرو آنلاین هتل | بهترین هتل‌های ایران و جهان',
-  description: 'در سفرنامه ۲۴به راحتی هتل‌های خیلی خوب را جستجو و رزرو کنید. ارائه بهترین قیمت هتل‌ها، تخفیف‌های ویژه و پشتیبانی ۲۴ ساعته. سفر خود را با سفرنامه ۲۴شروع کنید.',
-  keywords: 'زروان تریپ, safarnameh24, رزرو هتل, رزرو آنلاین هتل, هتل خیلی خوب, بهترین هتل ها, سایت رزرو هتل, اقامتگاه ارزان, رزرو هتل خارجی, هتل‌های داخلی',
+export const metadata: Metadata = {
+  title: `${SITE_NAME} | رزرو آنلاین هتل با بهترین قیمت و تخفیف ویژه`,
+  description:
+    'در زروان تریپ بهترین هتل‌های ایران و جهان را با تضمین ارزان‌ترین قیمت، تخفیف‌های شگفت‌انگیز، مشاهده عکس و نظرات مسافران و پشتیبانی ۲۴ ساعته رزرو کنید.',
+  keywords: [
+    'زروان تریپ',
+    'ZarvanTrip',
+    'رزرو هتل',
+    'رزرو آنلاین هتل',
+    'رزرو هتل تهران',
+    'رزرو هتل مشهد',
+    'هتل تخفیف دار',
+    'بهترین هتل ها',
+    'رزرو هتل ارزان',
+  ],
   alternates: {
-    canonical: 'https://safarnameh24.com', // آدرس اصلی سایت
+    canonical: SITE_URL,
   },
   openGraph: {
-    title: 'سفرنامه ۲۴| مرجع تخصصی رزرو آنلاین هتل',
-    description: 'تجربه رزرو سریع و ارزان هتل در زروان تریپ. با ما هتل‌های خیلی خوب را با بهترین قیمت رزرو کنید.',
-    url: 'https://safarnameh24.com',
-    siteName: 'safarnameh24',
+    title: `${SITE_NAME} | مرجع تخصصی رزرو آنلاین هتل‌های ایران و جهان`,
+    description:
+      'مقایسه قیمت، امکانات و نظرات هتل‌ها و رزرو آنلاین با واچر آنی و پشتیبانی ۲۴ ساعته در زروان تریپ.',
+    url: SITE_URL,
+    siteName: SITE_NAME,
     locale: 'fa_IR',
     type: 'website',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        alt: 'زروان تریپ | رزرو آنلاین هتل',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE_NAME} | رزرو آنلاین هتل با بهترین قیمت`,
+    description:
+      'رزرو سریع و مطمئن هتل‌های داخلی و خارجی با تخفیف ویژه و صدور آنی واچر در زروان تریپ.',
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
 export default function Home() {
   return (
     <>
-      {/* 
-        نکته سئو: تگ H1 باید فقط یک بار در صفحه باشد. 
-        اگر در HeroSection تگ H1 ندارید، حتما در آنجا اضافه کنید.
-      */}
+      <h1 className="sr-only">
+        رزرو آنلاین هتل‌های داخلی و خارجی با بهترین قیمت در زروان تریپ
+      </h1>
+
       <StickyArea
         staticClassName="mt-2"
         childrenStatus={{ static: true, fixed: true }}

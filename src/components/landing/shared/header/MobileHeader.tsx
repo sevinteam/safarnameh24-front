@@ -70,8 +70,10 @@ export default function MobileHeader() {
           </div>
         ) : (
           <div className="space-y-0.5 text-cs85 text-zinc-800">
-            <h1 className="font-extrabold">{title}</h1>
-            <h2 className="font-inter font-bold capitalize">{subtitle}</h2>
+            <span className="block font-extrabold">{title}</span>
+            <span className="block font-inter font-bold capitalize">
+              {subtitle}
+            </span>
           </div>
         )}
       </div>

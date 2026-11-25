@@ -1,15 +1,52 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'حریم خصوصی کاربران | زروان تریپ',
-  description: 'سیاست‌ها و قوانین حفظ حریم خصوصی و امنیت اطلاعات کاربران در سامانه رزرواسیون زروان تریپ.',
-  alternates: { canonical: 'https://safarnameh24.com/privacypolicy' },
+  title: `حریم خصوصی کاربران و امنیت اطلاعات | ${SITE_NAME}`,
+  description:
+    'سیاست‌ها و قوانین حفظ حریم خصوصی، رمزنگاری و امنیت اطلاعات شخصی کاربران و مسافران در سامانه رزرواسیون آنلاین زروان تریپ.',
+  alternates: { canonical: `${SITE_URL}/privacypolicy` },
+  openGraph: {
+    title: `حریم خصوصی کاربران | ${SITE_NAME}`,
+    description:
+      'سیاست‌های حفظ حریم خصوصی و امنیت داده‌های کاربران در زروان تریپ.',
+    url: `${SITE_URL}/privacypolicy`,
+    siteName: SITE_NAME,
+    locale: 'fa_IR',
+    type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, alt: `حریم خصوصی ${SITE_NAME}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `حریم خصوصی کاربران | ${SITE_NAME}`,
+    description:
+      'سیاست‌های حفظ حریم خصوصی و امنیت اطلاعات در زروان تریپ.',
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function PrivacyPolicy() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'خانه', item: SITE_URL },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'حریم خصوصی',
+        item: `${SITE_URL}/privacypolicy`,
+      },
+    ],
+  };
+
   return (
     <main className="container mx-auto px-4 py-10 lg:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-4xl rounded-2xl bg-white p-6 shadow-sm border border-zinc-100 lg:p-10">
         
         {/* هدر صفحه */}
@@ -62,7 +99,7 @@ export default function PrivacyPolicy() {
               حفاظت و امنیت داده‌ها
             </h2>
             <p>
-              سفرنامه ۲۴از پروتکل‌های امنیتی استاندارد (مانند SSL) برای رمزنگاری اطلاعات شما در بستر اینترنت استفاده می‌کند. دسترسی به پایگاه داده کاربران به شدت محدود بوده و اطلاعات شخصی شما به هیچ وجه به اشخاص ثالث (جز هتل محل اقامت جهت پذیرش) فروخته یا اجاره داده نخواهد شد. در صورت درخواست مراجع قضایی ذی‌صلاح، اطلاعات طبق قانون ارائه می‌گردد.
+              زروان تریپ از پروتکل‌های امنیتی استاندارد (مانند SSL) برای رمزنگاری اطلاعات شما در بستر اینترنت استفاده می‌کند. دسترسی به پایگاه داده کاربران به شدت محدود بوده و اطلاعات شخصی شما به هیچ وجه به اشخاص ثالث (جز هتل محل اقامت جهت پذیرش) فروخته یا اجاره داده نخواهد شد. در صورت درخواست مراجع قضایی ذی‌صلاح، اطلاعات طبق قانون ارائه می‌گردد.
             </p>
           </section>
 
@@ -72,7 +109,7 @@ export default function PrivacyPolicy() {
               تغییرات در حریم خصوصی
             </h2>
             <p>
-              سفرنامه ۲۴حق تغییر و بروزرسانی این قوانین را در هر زمان برای خود محفوظ می‌دارد. هرگونه تغییر در همین صفحه اطلاع‌رسانی خواهد شد و ادامه استفاده شما از سایت به معنای پذیرش تغییرات جدید است.
+              زروان تریپ حق تغییر و بروزرسانی این قوانین را در هر زمان برای خود محفوظ می‌دارد. هرگونه تغییر در همین صفحه اطلاع‌رسانی خواهد شد و ادامه استفاده شما از سایت به معنای پذیرش تغییرات جدید است.
             </p>
           </section>
 
