@@ -212,7 +212,7 @@ export default function AdminHotelReviewPage() {
       }
       const payload = {
         hotel_id: selectedHotel.id,
-        guest_name: guestName.trim() || 'مسافر زروان تریپ',
+        guest_name: guestName.trim() || 'مسافر سفرنامه ۲۴',
         stars,
         avatar_style: avatarStyle,
         text: text.trim(),

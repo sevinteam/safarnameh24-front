@@ -56,7 +56,7 @@ export default function UserAccount() {
             </div>
 
             <span className="font-inter font-bold capitalize md:hidden">
-              zarvantrip
+              safarnameh24
             </span>
           </div>
 

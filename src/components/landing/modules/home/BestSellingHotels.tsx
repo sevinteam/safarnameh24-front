@@ -89,7 +89,7 @@ export function BestSellingHotels() {
       <TopBarConfig
         title={{
           type: 'single',
-          text: 'هتل های پرفروش و جذاب زروان تریپ',
+          text: 'هتل های پرفروش و جذاب سفرنامه ۲۴',
         }}
         arraylength={hotels.length}
         prevClickFunc={() => swiperRef.current?.slidePrev()}

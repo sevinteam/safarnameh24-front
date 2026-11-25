@@ -95,7 +95,7 @@ export default function Reviews({ reviews }: Props) {
       {reviews.map((item: any) => {
         const fullName =
           `${item?.first_name || ''} ${item?.last_name || ''}`.trim() ||
-          'مسافر زروان تریپ';
+          'مسافر سفرنامه ۲۴';
         const strengths = Array.isArray(item?.strengths) ? item.strengths : [];
         const weaknesses = Array.isArray(item?.weaknesses)
           ? item.weaknesses

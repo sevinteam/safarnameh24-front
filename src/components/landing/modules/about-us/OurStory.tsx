@@ -34,7 +34,7 @@ export function OurStory() {
       <TopBarConfig
         headingLevel="h1"
         title={{ type: 'single', text: 'درباره ما' }}
-        subtitle="داستان مجموعه زروان تریپ از کجا شروع شد ؟"
+        subtitle="داستان مجموعه سفرنامه ۲۴ از کجا شروع شد ؟"
       />
 
       <div className="grid gap-8 lg:grid-flow-col-dense lg:grid-cols-[1fr_1.2fr]">
