@@ -17,12 +17,13 @@ export default function MobileNotification({
   // Defining states of component
   const [notificationOpened, setNotificationOpened] = useState<boolean>(false);
   const { data } = useNotification();
+  const notifications = Array.isArray(data) ? data : [];
 
   // Defining variables
-  const unseenCount: number = data.filter((item) => !item.is_read).length;
+  const unseenCount: number = notifications.filter((item) => !item.is_read).length;
 
   // Using useEffect to close the sheet whenever new notification arrives
-  useEffect(() => setNotificationOpened(false), [data.length]);
+  useEffect(() => setNotificationOpened(false), [notifications.length]);
 
   // Returning JSX
   return (
@@ -44,7 +45,7 @@ export default function MobileNotification({
             )}
           </div>
           <div className="flex flex-col lg:gap-3 gap-[15px] border-t-2 border-dashed border-gray-200 lg:pt-3 pt-[15px] pb-20">
-            {data.length === 0 ? (
+            {notifications.length === 0 ? (
               <div className="flex items-center justify-center h-[55dvh]">
                 <div className="text-cs-red ">
                   <IconsaxIcons
@@ -61,12 +62,12 @@ export default function MobileNotification({
                 </div>
               </div>
             ) : (
-              data.map((item, index) => (
+              notifications.map((item, index) => (
                 <NotificationComponent.default
                   key={index}
                   data={item}
                   className={
-                    index + 1 !== data.length
+                    index + 1 !== notifications.length
                       ? 'border-b border-b-black/20 pb-4'
                       : ''
                   }

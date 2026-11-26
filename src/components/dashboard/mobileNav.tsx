@@ -56,10 +56,15 @@ export default function MobileNav(): ReactNode {
   const showNavInUrls = ['/dashboard'];
 
   // Defining states of component
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [profileOpened, setProfileOpened] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const [scrollDirection, setScrollDirection] = useState('');
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Check Scroll-Direction
   useEffect(() => {
@@ -110,13 +115,14 @@ export default function MobileNav(): ReactNode {
           </Link>
         ) : (
           <div key={index}>
-            {createPortal(
-              <MobileProfile
-                isOpened={profileOpened}
-                closeFn={() => setProfileOpened(false)}
-              />,
-              document.body,
-            )}
+            {isMounted &&
+              createPortal(
+                <MobileProfile
+                  isOpened={profileOpened}
+                  closeFn={() => setProfileOpened(false)}
+                />,
+                document.body,
+              )}
             <button
               data-active={profileOpened}
               className="flex flex-col items-center justify-center gap-1.5 transition-all duration-500 data-[active='false']:text-gray-400 data-[active='true']:text-black shrink"

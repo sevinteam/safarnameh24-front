@@ -198,7 +198,7 @@ export default function ProfilePage(): ReactNode {
 
   // Setting form values based on parsed userInfo in first fetch and passed with context
   useEffect(() => {
-    const firstCard = userInfo.card_numbers[0];
+    const firstCard = userInfo?.card_numbers?.[0];
 
     personalForm.setValue('address', userInfo.address);
     personalForm.setValue('name', userInfo.first_name);
@@ -218,8 +218,9 @@ export default function ProfilePage(): ReactNode {
 
   // Setting form values (legal profiles)
   useEffect(() => {
-    const legalInfo = userLegalInfo.data;
-    const firstCard = legalInfo.card_numbers[0];
+    const legalInfo = userLegalInfo?.data;
+    if (!legalInfo) return;
+    const firstCard = legalInfo.card_numbers?.[0];
 
     legalForm.setValue('name', legalInfo.organization_name);
     legalForm.setValue('id', legalInfo.national_id);
@@ -288,11 +289,11 @@ export default function ProfilePage(): ReactNode {
               loading={false}
               className="overflow-auto scrollbar-hide lg:col-span-2 lg:row-span-3 lg:col-start-3 lg:row-start-1"
               form={legalForm}
-              creditCards={userLegalInfo.data.card_numbers}
+              creditCards={userLegalInfo.data?.card_numbers || []}
               refetch={userLegalInfo.refetch}
               userStatus={{
-                rejectReason: userLegalInfo.data.reject_reason || '',
-                status: userLegalInfo.data.status,
+                rejectReason: userLegalInfo.data?.reject_reason || '',
+                status: userLegalInfo.data?.status || 'rejected',
               }}
             />
             <div className="lg:col-span-4 flex lg:flex-row flex-col lg:gap-5 gap-[20px]">

@@ -16,12 +16,13 @@ export default function Notification(): ReactNode {
   // Defining hooks
   const [sheetOpened, setSheetOpened] = useState<boolean>(false);
   const { data } = useNotification();
+  const notifications = Array.isArray(data) ? data : [];
 
   // Defining variables
-  const unseenCount: number = data.filter((item) => !item.is_read).length;
+  const unseenCount: number = notifications.filter((item) => !item.is_read).length;
 
   // Using useEffect to close the sheet whenever new notification arrives
-  useEffect(() => setSheetOpened(false), [data.length]);
+  useEffect(() => setSheetOpened(false), [notifications.length]);
 
   // Returning JSX
   return (
@@ -61,10 +62,11 @@ export default function Notification(): ReactNode {
           <div
             className={cn(
               'flex flex-col gap-3 py-4',
-              data.length === 0 && ' h-full  overflow-auto custom-scrollbar',
+              notifications.length === 0 &&
+                ' h-full  overflow-auto custom-scrollbar',
             )}
           >
-            {data.length === 0 ? (
+            {notifications.length === 0 ? (
               <div className="h-full flex items-center justify-center">
                 <div className="text-cs-red ">
                   <IconsaxIcons
@@ -81,12 +83,12 @@ export default function Notification(): ReactNode {
                 </div>
               </div>
             ) : (
-              data.map((item, index) => (
+              notifications.map((item, index) => (
                 <NotificationComponent.default
                   key={index}
                   data={item}
                   className={
-                    index + 1 !== data.length
+                    index + 1 !== notifications.length
                       ? 'border-b border-b-[##7e7e7e33] pb-4'
                       : ''
                   }

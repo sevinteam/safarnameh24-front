@@ -8,6 +8,18 @@ type Props = { hotel: Hotel & { reservation_count: number } };
 
 // -------------------------
 
+function hasLastMinuteDiscount(hotel: Hotel): boolean {
+  const h = hotel as any;
+  return Boolean(
+    h?.is_last_minute_active ||
+      h?.has_last_minute ||
+      h?.is_last_minute ||
+      h?.has_hotel_last_minute ||
+      Number(h?.last_minute_discount_percent ?? 0) > 0 ||
+      Number(h?.last_minute_discount ?? 0) > 0,
+  );
+}
+
 export default function BestSellingHotelA(props: Props) {
   const {
     hotel: {
@@ -27,6 +39,8 @@ export default function BestSellingHotelA(props: Props) {
     (city as { slug?: string } | undefined)?.slug ||
     (props.hotel as any)?.city_slug ||
     'iran';
+
+  const isLastMinute = hasLastMinuteDiscount(props.hotel);
 
   return (
     <Link
@@ -83,12 +97,24 @@ export default function BestSellingHotelA(props: Props) {
         </div>
 
         {/* Hotel-Price */}
-        <div className="relative flex-between items-center gap-2 mt-auto">
-          <div className="absolute -top-6 left-0 text-cs07 text-zinc-500 font-bold flex-center gap-1">
-            <span>بیش از</span>
-            <span>{reservation_count}</span>
-            <span>رزرو</span>
-          </div>
+        <div className="relative flex-between items-center gap-2 mt-auto pt-4">
+          {isLastMinute && (
+            <div className="absolute -top-4 right-0 z-10 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 px-2.5 py-0.5 text-[11px] font-black text-white shadow-md shadow-rose-600/35 backdrop-blur-md">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
+                <span className="relative inline-flex size-2 rounded-full bg-white" />
+              </span>
+              <span>لحظه آخری</span>
+            </div>
+          )}
+
+          {Number(reservation_count) > 0 && (
+            <div className="absolute -top-4 left-0 text-cs07 text-zinc-500 font-bold flex-center gap-1">
+              <span>بیش از</span>
+              <span>{reservation_count}</span>
+              <span>رزرو</span>
+            </div>
+          )}
 
           <span>شروع قیمت اتاق :</span>
 

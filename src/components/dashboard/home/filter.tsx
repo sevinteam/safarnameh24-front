@@ -4,7 +4,7 @@
 // Importing part
 import { ICChevronBottom } from '@/components/icons/ICChevronBottom';
 import { getTodayDate } from '@/utils/date';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import * as DropDown from '@/components/ui/dropdown-menu';
 import { FilterComponentPropsType } from '@/types/dashboard/component';
 import { cn } from '@/utils/utils';
@@ -14,8 +14,22 @@ import { DropdownMenuRadioItem } from '@radix-ui/react-dropdown-menu';
 export default function Filter({
   className,
 }: FilterComponentPropsType): ReactNode {
-  // Defining current date in tehran
-  const date = getTodayDate();
+  // Defining current date in tehran after mount to prevent hydration mismatch
+  const [date, setDate] = useState<{
+    date: string;
+    time: { hour: string; minute: string };
+  }>({
+    date: 'TEH -- - ----/--/--',
+    time: { hour: '--', minute: '--' },
+  });
+
+  useEffect(() => {
+    setDate(getTodayDate());
+    const interval = setInterval(() => {
+      setDate(getTodayDate());
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Defining states of component
   const [filter, setFilter] = useState<string>('7'); // values: 7, 2, 1

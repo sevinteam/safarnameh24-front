@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/utils/axios';
 import { useMutation } from '@tanstack/react-query';
+import { clearAuthCookies, clearAuthTokens } from '@/utils/authCookies';
 
 // --------------------------------------------
 
@@ -15,11 +16,9 @@ export default function LogoutButton() {
       console.error(error);
     },
     onSuccess: () => {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('token');
+      clearAuthTokens();
       sessionStorage.removeItem('upn');
-      document.cookie = 'auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      document.cookie = 'AUTH=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      clearAuthCookies();
       window.location.reload();
     },
   });

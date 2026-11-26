@@ -18,15 +18,29 @@ async function proxyHandler(
 
   const requestHeaders = new Headers();
   req.headers.forEach((value, key) => {
-    // Exclude host/connection headers
+    const lower = key.toLowerCase();
+    // Exclude host/connection/origin headers that belong to the proxy host
     if (
-      key.toLowerCase() !== 'host' &&
-      key.toLowerCase() !== 'connection' &&
-      key.toLowerCase() !== 'content-length'
+      lower !== 'host' &&
+      lower !== 'connection' &&
+      lower !== 'content-length' &&
+      lower !== 'origin' &&
+      lower !== 'referer'
     ) {
       requestHeaders.set(key, value);
     }
   });
+
+  const originHeader = req.headers.get('origin') || '';
+  const refererHeader = req.headers.get('referer') || '';
+  const hostHeader = req.headers.get('host') || '';
+  const isHttps =
+    req.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() === 'https' ||
+    req.nextUrl.protocol === 'https:' ||
+    originHeader.startsWith('https://') ||
+    refererHeader.startsWith('https://') ||
+    hostHeader.endsWith('.run.app') ||
+    hostHeader.endsWith('zarvantrip.com');
 
   let body: any = undefined;
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -60,16 +74,98 @@ async function proxyHandler(
       }
     });
 
+    const extractedTokens: { access?: string; refresh?: string } = {};
+
     if (typeof (res.headers as any).getSetCookie === 'function') {
-      const cookies = (res.headers as any).getSetCookie();
-      for (const cookie of cookies) {
-        responseHeaders.append('set-cookie', cookie);
+      const cookies = (res.headers as any).getSetCookie() as string[];
+      for (const rawCookie of cookies) {
+        // Extract cookie name/value for token endpoints so iframe environments
+        // where third-party cookies are blocked can still authenticate via Bearer
+        const firstPart = rawCookie.split(';')[0] || '';
+        const eqIdx = firstPart.indexOf('=');
+        if (eqIdx > 0) {
+          const cookieName = firstPart.slice(0, eqIdx).trim().toLowerCase();
+          const cookieVal = firstPart.slice(eqIdx + 1).trim();
+          if (
+            cookieVal &&
+            (cookieName === 'access_token' || cookieName === 'access')
+          ) {
+            extractedTokens.access = cookieVal;
+          } else if (
+            cookieVal &&
+            (cookieName === 'refresh_token' || cookieName === 'refresh')
+          ) {
+            extractedTokens.refresh = cookieVal;
+          }
+        }
+
+        let rewritten = rawCookie
+          .replace(/;\s*domain=[^;]*/gi, '')
+          .replace(/;\s*path=[^;]*/gi, '');
+        rewritten += '; Path=/';
+
+        if (isHttps) {
+          if (/;\s*samesite=/i.test(rewritten)) {
+            rewritten = rewritten.replace(
+              /;\s*samesite=(lax|strict|none)/gi,
+              '; SameSite=None',
+            );
+          } else {
+            rewritten += '; SameSite=None';
+          }
+          if (!/;\s*secure\b/i.test(rewritten)) {
+            rewritten += '; Secure';
+          }
+        } else {
+          rewritten = rewritten
+            .replace(/;\s*secure\b/gi, '')
+            .replace(/;\s*samesite=none/gi, '; SameSite=Lax');
+        }
+        responseHeaders.append('set-cookie', rewritten);
       }
     }
 
     const responseData = await res.arrayBuffer();
 
-    return new NextResponse(responseData, {
+    const isTokenEndpoint =
+      res.ok &&
+      (targetPath === 'token/' || targetPath === 'token/refresh/');
+
+    if (
+      isTokenEndpoint &&
+      (extractedTokens.access || extractedTokens.refresh)
+    ) {
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType || contentType.includes('application/json')) {
+        try {
+          const text = new TextDecoder().decode(responseData);
+          const parsed = text ? JSON.parse(text) : {};
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            if (extractedTokens.access && !parsed.access && !parsed.access_token) {
+              parsed.access = extractedTokens.access;
+            }
+            if (extractedTokens.refresh && !parsed.refresh && !parsed.refresh_token) {
+              parsed.refresh = extractedTokens.refresh;
+            }
+            if (!contentType) {
+              responseHeaders.set('content-type', 'application/json; charset=utf-8');
+            }
+            return new NextResponse(JSON.stringify(parsed), {
+              status: res.status,
+              statusText: res.statusText,
+              headers: responseHeaders,
+            });
+          }
+        } catch {
+          // Fall through and return raw responseData buffer
+        }
+      }
+    }
+
+    const bodyForResponse =
+      res.status === 204 || res.status === 304 ? null : responseData;
+
+    return new NextResponse(bodyForResponse, {
       status: res.status,
       statusText: res.statusText,
       headers: responseHeaders,

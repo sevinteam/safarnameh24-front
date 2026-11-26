@@ -118,6 +118,17 @@ export function SuggestedHotel(props: Props) {
         {showTimer && formattedDeadline && !isLastMinute && (
           <DynamicSuggestedHotelTimer timer={formattedDeadline} />
         )}
+
+        {/* نشان لحظه آخری مدرن و جذاب */}
+        {isLastMinute && (
+          <div className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 px-3 py-1 text-xs font-black text-white shadow-lg shadow-rose-600/35 backdrop-blur-md">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
+              <span className="relative inline-flex size-2 rounded-full bg-white" />
+            </span>
+            <span>لحظه آخری</span>
+          </div>
+        )}
       </div>
 
       {/* Hotel-Information */}

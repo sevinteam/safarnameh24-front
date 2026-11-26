@@ -19,7 +19,7 @@ export function InterestingBlogs() {
   return (
     <div className="-mb-4 -ml-5 lg:ml-0">
       <TopBarConfig
-        viewAllHref="/tourism-magazine"
+        viewAllHref="/blog"
         title={{ type: 'single', text: 'بلاگ های جذاب' }}
         prevClickFunc={() => swiperRef.current?.slidePrev()}
         nextClickFunc={() => swiperRef.current?.slideNext()}

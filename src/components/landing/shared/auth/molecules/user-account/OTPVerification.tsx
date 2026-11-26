@@ -16,7 +16,11 @@ import RulesAndRegulation from './RulesAndRegulation';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { axiosInstance } from '@/utils/axios';
 import { useMutation } from '@tanstack/react-query';
-import Cookies from 'js-cookie';
+import {
+  extractTokensFromResponse,
+  saveAuthTokens,
+  setAuthCookies,
+} from '@/utils/authCookies';
 
 const formSchema = z.object({
   otp: z.string().min(4),
@@ -50,16 +54,9 @@ export default function OTPVerification(props: Props) {
     },
     onSuccess: (response: any) => {
       const data = response?.data || response;
-      const accessToken = data?.access || data?.token || data?.data?.access;
-      if (accessToken) {
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('token', accessToken);
-        Cookies.set('auth', 'true', { expires: 30 });
-        Cookies.set('AUTH', 'true', { expires: 30 });
-      } else {
-        Cookies.set('auth', 'true', { expires: 30 });
-        Cookies.set('AUTH', 'true', { expires: 30 });
-      }
+      const { access, refresh } = extractTokensFromResponse(data);
+      saveAuthTokens({ access, refresh });
+      setAuthCookies();
       window.location.reload();
     },
   });

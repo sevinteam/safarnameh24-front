@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { useEffect } from 'react';
 import { AxiosError } from 'axios';
-import Cookies from 'js-cookie';
+import { setAuthCookies } from '@/utils/authCookies';
 import { useForm } from 'react-hook-form';
 
 import { useMutation } from '@tanstack/react-query';
@@ -64,8 +64,7 @@ export default function PhoneNumber(props: Props) {
         serverError &&
         (serverError.includes('قبلاً') || serverError.includes('وارد شده‌اید'))
       ) {
-        Cookies.set('auth', 'true', { expires: 30 });
-        Cookies.set('AUTH', 'true', { expires: 30 });
+        setAuthCookies();
         window.location.reload();
         return;
       }

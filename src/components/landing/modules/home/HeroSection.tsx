@@ -28,10 +28,16 @@ export function HeroSection() {
     allowSlideNext: true,
   });
 
-  const { data: heroSlides, status } = useQuery<ApiResponse>({
+  const { data: rawData, status } = useQuery<any>({
     queryKey: ['config-slides'],
-    queryFn: () => generalInstance('/config/slides/').then((res) => res.data),
+    queryFn: () => generalInstance('/config/slides/'),
   });
+
+  const heroSlides = Array.isArray(rawData?.data)
+    ? rawData.data
+    : Array.isArray(rawData)
+      ? rawData
+      : [];
 
   function handleSetControlSlides(slide: 'next' | 'prev', value: boolean) {
     setControlSlides((prevValue) => ({
@@ -73,7 +79,7 @@ export function HeroSection() {
           allowSlideNext={controlSlides.allowSlideNext}
           className="heroSection-swiper h-[36rem] rounded-2xl xl:h-[40rem]"
         >
-          {heroSlides?.map((slide, index) => (
+          {heroSlides.map((slide: HeroSlide, index: number) => (
             <SwiperSlide
               key={index}
               className="flex-center relative max-w-full select-none overflow-hidden rounded-2xl bg-zinc-200"

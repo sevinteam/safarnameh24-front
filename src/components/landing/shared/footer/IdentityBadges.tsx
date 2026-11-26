@@ -21,7 +21,7 @@ type ApiResponse = [{ data: License[] }, { data: Enamad }];
 // ----------------------------------------
 
 export default function IdentityBadges() {
-  const licesnsesQuery = useQuery<License[]>({
+  const licesnsesQuery = useQuery<any>({
     queryKey: ["licenses"],
     queryFn: async () => {
       const response = await generalInstance.get('/config/licenses/');
@@ -40,10 +40,15 @@ export default function IdentityBadges() {
     }
   });
 
+  const licenses = Array.isArray(licesnsesQuery.data?.data)
+    ? licesnsesQuery.data.data
+    : Array.isArray(licesnsesQuery.data)
+      ? licesnsesQuery.data
+      : [];
 
   const pending = licesnsesQuery.isPending || enamadQuery.isPending;
   const isError = licesnsesQuery.isError || enamadQuery.isError;
-  const success = !pending && !isError && licesnsesQuery.data && enamadQuery.data;
+  const success = !pending && !isError && licenses.length > 0 && enamadQuery.data;
 
   if (pending) {
     return (
@@ -59,14 +64,8 @@ export default function IdentityBadges() {
   } else if (success) {
     return (
       <div className="w-full mt-4 mb-2 grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-4 lg:grid-cols-3">
-        {licesnsesQuery.data.map(
-          (badge, index) => (
-            // badge.link && (
-            //   <Link
-            //     key={index}
-            //     href={badge.link}
-            //     className="bg-zinc-100 h-28 p-4 flex-center overflow-hidden rounded-cs-10"
-            //   >
+        {licenses.map(
+          (badge: License, index: number) => (
             <div
               key={index}
               className="bg-zinc-100 h-28 p-4 flex-center overflow-hidden rounded-cs-10"
@@ -80,8 +79,6 @@ export default function IdentityBadges() {
               />
             </div>
           ),
-          //   </Link>
-          // ),
         )}
         <div
           dangerouslySetInnerHTML={{ __html: enamadQuery.data.code }}

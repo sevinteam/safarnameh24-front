@@ -7,12 +7,15 @@ import { useContext } from 'react';
 // and is passed Via React context
 export default function useNotification(): NotificationsContext {
   const context = useContext(notificationContext);
-  const data: NotificationsContext = context
-    ? context
-    : {
-        data: [],
-        refetch: () => console.error('Notification error'),
-      };
+  if (!context) {
+    return {
+      data: [],
+      refetch: () => console.error('Notification error'),
+    };
+  }
 
-  return data;
+  return {
+    ...context,
+    data: Array.isArray(context.data) ? context.data : [],
+  };
 }

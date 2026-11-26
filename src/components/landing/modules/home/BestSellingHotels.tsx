@@ -41,46 +41,21 @@ function hasLastMinuteDiscount(hotel: Hotel): boolean {
   );
 }
 
-function LastMinuteBadge({
-  hotel,
-  compact = false,
-}: {
-  hotel: Hotel;
-  compact?: boolean;
-}) {
-  if (!hasLastMinuteDiscount(hotel)) return null;
-
-  return (
-    <span
-      className={`pointer-events-none absolute z-10 inline-flex animate-pulse items-center gap-1.5 rounded-lg bg-rose-600 font-extrabold text-white shadow-md shadow-rose-600/40 ${
-        compact
-          ? 'right-3 top-3 px-2 py-0.5 text-[11px]'
-          : 'right-5 top-5 px-2.5 py-1 text-xs'
-      }`}
-    >
-      <span className="relative flex size-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
-        <span className="relative inline-flex size-2 rounded-full bg-white" />
-      </span>
-      <span>لحظه آخری</span>
-    </span>
-  );
-}
-
 export function BestSellingHotels() {
   const swiperRef = useRef<SwiperType>(null);
   const { data, status } = useQuery<ApiResponse>({
+    staleTime: 1000 * 60 * 5,
     queryKey: ['best-selling-hotels'],
-    queryFn: async () => {
-      const response = await axiosInstance.get('/hotel/hotels/best-sellers/');
-      return response.data;
-    },
+    queryFn: () => axiosInstance('/hotel/hotels/best-sellers/'),
   });
 
-  const hotels = data?.data ?? [];
+  const hotels = Array.isArray(data?.data) ? data.data : [];
 
   const topHotels = hotels.slice(0, 4);
-  const groupedHotels = chunkArray(hotels.slice(4), 2);
+  const groupedHotels = chunkArray(
+    hotels.length > 4 ? hotels.slice(4) : hotels,
+    2,
+  );
 
   if (isEmptyOrInvalid({ data, status })) return null;
 
@@ -117,10 +92,7 @@ export function BestSellingHotels() {
             >
               {hotels.map((hotel, i) => (
                 <SwiperSlide key={i} className="max-w-[20rem] select-none">
-                  <div className="relative">
-                    <LastMinuteBadge hotel={hotel} compact />
-                    <BestSellingHotelA hotel={hotel} />
-                  </div>
+                  <BestSellingHotelA hotel={hotel} />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -142,10 +114,7 @@ export function BestSellingHotels() {
             >
               {topHotels.map((hotel, i) => (
                 <SwiperSlide key={i} className="max-w-full select-none">
-                  <div className="relative">
-                    <LastMinuteBadge hotel={hotel} />
-                    <BestSellingHotelB hotel={hotel} />
-                  </div>
+                  <BestSellingHotelB hotel={hotel} />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -173,10 +142,7 @@ export function BestSellingHotels() {
                 <SwiperSlide key={i} className="max-w-full select-none pb-4">
                   <div className="grid gap-4">
                     {group.map((hotel, j) => (
-                      <div key={j} className="relative">
-                        <LastMinuteBadge hotel={hotel} compact />
-                        <BestSellingHotelA hotel={hotel} />
-                      </div>
+                      <BestSellingHotelA key={j} hotel={hotel} />
                     ))}
                   </div>
                 </SwiperSlide>

@@ -95,19 +95,7 @@ export function SuggestedHotels() {
               key={index}
               className="max-w-72 select-none pb-4 xl:max-w-full"
             >
-              <div className="relative">
-                {hasLastMinuteDiscount(hotel) && (
-                  <span className="pointer-events-none absolute right-5 top-5 z-10 inline-flex animate-pulse items-center gap-1.5 rounded-lg bg-rose-600 px-2.5 py-1 text-xs font-extrabold text-white shadow-md shadow-rose-600/40">
-                    <span className="relative flex size-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-80" />
-                      <span className="relative inline-flex size-2 rounded-full bg-white" />
-                    </span>
-                    <span>لحظه آخری</span>
-                  </span>
-                )}
-
-                <SuggestedHotel hotel={hotel} />
-              </div>
+              <SuggestedHotel hotel={hotel} />
             </SwiperSlide>
           ))}
         </Swiper>

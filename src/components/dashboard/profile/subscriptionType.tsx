@@ -31,11 +31,11 @@ export default function SubscriptionType({
 
   // Using useEffect to set level of user
   useEffect(() => {
-    if (!isLoading && !isError && data) {
+    if (!isLoading && !isError && data?.data) {
       const levelObj = data.data.find((item) => item.title === level_name);
       setUserLevel(levelObj);
     }
-  }, [isLoading]);
+  }, [isLoading, isError, data, level_name]);
 
   // Conditional rendering
   if (isLoading) {
@@ -118,13 +118,21 @@ export default function SubscriptionType({
             className="absolute top-0 left-0 w-full object-cover scale-105 h-full pointer-events-none"
           />
           <div className="border-2 border-current lg:w-[50px] lg:h-[50px] w-[45px] h-[45px] aspect-square shrink-0 flex items-center justify-center lg:rounded-md rounded-[8px] relative overflow-hidden">
-            <Image
-              alt={userLevel?.icon.title || ''}
-              src={userLevel?.icon.url || ''}
-              width={30}
-              height={30}
-              className="size-[30px]"
-            />
+            {userLevel?.icon?.url ? (
+              <Image
+                alt={userLevel.icon.title || ''}
+                src={userLevel.icon.url}
+                width={30}
+                height={30}
+                className="size-[30px]"
+              />
+            ) : (
+              <IconsaxIcons
+                name="Crown1"
+                color="white"
+                className="size-[22px]"
+              />
+            )}
           </div>
           <div className="w-full overflow-hidden">
             <span className="font-semibold lg:text-cs08 text-[12px] text-current block text-right truncate lg:mb-2 mb-[4px]">

@@ -5,7 +5,8 @@
 import { PageComponentPropsType } from '@/types/dashboard/component';
 import { cn } from '@/utils/utils';
 import { usePathname } from 'next/navigation';
-import { createContext, ReactNode } from 'react';
+import { createContext, ReactNode, useEffect } from 'react';
+import { clearAuthCookies, clearAuthTokens } from '@/utils/authCookies';
 import Header from './header';
 import MobileNav from './mobileNav';
 import Loading from './ui/loading';
@@ -141,15 +142,36 @@ function InnerPage({
 
   const isTicketPage = pathname.includes('/dashboard/tickets');
   const irregularPages = isReservationSubPage || isTicketPage;
-  const fetchingArray = [
-    personalDataFetch,
-    walletBalanceFetch,
-    notificationsFetch,
-    customerClubPointsFetch,
-    legalUserInfoFetching,
-  ];
-  const loading = fetchingArray.some((item) => item.isLoading);
-  const error = fetchingArray.some((item) => item.isError);
+  const loading = personalDataFetch.isLoading;
+  const error = personalDataFetch.isError;
+  const errorStatus = (personalDataFetch.error as { response?: { status?: number } } | null)
+    ?.response?.status;
+  const isUnauthorized = errorStatus === 401;
+
+  useEffect(() => {
+    if (isUnauthorized) {
+      clearAuthTokens();
+      clearAuthCookies();
+    }
+  }, [isUnauthorized]);
+
+  const rawNotifications = notificationsFetch.data as unknown as
+    | GETNotifications
+    | { results?: GETNotifications; data?: GETNotifications }
+    | undefined;
+  const normalizedNotifications: GETNotifications = Array.isArray(rawNotifications)
+    ? rawNotifications
+    : rawNotifications &&
+        typeof rawNotifications === 'object' &&
+        'results' in rawNotifications &&
+        Array.isArray(rawNotifications.results)
+      ? rawNotifications.results
+      : rawNotifications &&
+          typeof rawNotifications === 'object' &&
+          'data' in rawNotifications &&
+          Array.isArray(rawNotifications.data)
+        ? rawNotifications.data
+        : [];
 
   // Condititional rendering
   if (loading) {
@@ -174,19 +196,39 @@ function InnerPage({
   } else if (error) {
     return (
       <div className="flex h-dvh w-dvw items-center justify-center p-5">
-        <div className="text-black">
-          <h1 className="mb-4 block truncate text-center text-4xl font-black text-current">
-            اوپس !
+        <div className="max-w-md text-black">
+          <h1 className="mb-4 block truncate text-center text-3xl font-black text-current">
+            {isUnauthorized ? 'نشست کاربری شما منقضی شده است' : 'اوپس !'}
           </h1>
-          <p className="text-current/70 mb-3 text-center text-lg font-medium">
-            مشکلی در دریافت اطلاعات شما پیش امد.
+          <p className="text-current/70 mb-5 text-center text-base font-medium">
+            {isUnauthorized
+              ? 'لطفاً مجدداً وارد حساب کاربری خود شوید تا به داشبورد دسترسی داشته باشید.'
+              : 'مشکلی در دریافت اطلاعات شما پیش آمد.'}
           </p>
-          <Link
-            href="/"
-            className="mx-auto flex h-10 w-fit items-center justify-center rounded-lg bg-cs-red px-4 text-cs75 font-semibold text-white"
-          >
-            بازگشت به خانه
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {isUnauthorized ? (
+              <Link
+                href="/?auth_open=true"
+                className="flex h-10 w-fit items-center justify-center rounded-lg bg-cs-red px-5 text-cs75 font-semibold text-white"
+              >
+                ورود به حساب کاربری
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => personalDataFetch.refetch()}
+                className="flex h-10 w-fit items-center justify-center rounded-lg bg-cs-red px-5 text-cs75 font-semibold text-white"
+              >
+                تلاش مجدد
+              </button>
+            )}
+            <Link
+              href="/"
+              className="flex h-10 w-fit items-center justify-center rounded-lg border border-zinc-300 px-5 text-cs75 font-semibold text-zinc-700"
+            >
+              بازگشت به خانه
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -200,18 +242,32 @@ function InnerPage({
       >
         <legalProfileInfoContext.Provider
           value={{
-            data: legalUserInfoFetching.data!,
+            data: legalUserInfoFetching.data ?? {
+              documents: null,
+              address: '',
+              card_numbers: [],
+              economical_code: '',
+              email: '',
+              image: '',
+              national_id: '',
+              organization_name: '',
+              phone_number: '',
+              postal_code: '',
+              registeration_number: '',
+              reject_reason: '',
+              status: 'rejected',
+            },
             refetch: legalUserInfoFetching.refetch,
           }}
         >
           <userWalletBalanceContext.Provider
             value={{
-              balance: walletBalanceFetch.data?.balance!,
+              balance: walletBalanceFetch.data?.balance ?? 0,
             }}
           >
             <notificationContext.Provider
               value={{
-                data: notificationsFetch.data ? notificationsFetch.data : [],
+                data: normalizedNotifications,
                 refetch: notificationsFetch.refetch,
               }}
             >

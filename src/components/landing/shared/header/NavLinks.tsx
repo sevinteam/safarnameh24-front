@@ -17,13 +17,19 @@ type Data = {
 // --------------------------------------
 
 export default function NavLinks() {
-  const { data, isPending, isError } = useQuery<Data[]>({
+  const { data: rawData, isPending, isError } = useQuery<any>({
     queryKey: ['header-menus'],
     queryFn: async () => {
       const response = await generalInstance.get('/config/header-menus/');
       return response.data;
     },
   });
+
+  const data = Array.isArray(rawData?.data)
+    ? rawData.data
+    : Array.isArray(rawData)
+      ? rawData
+      : [];
 
   return (
     <nav className="flex-center">
@@ -37,7 +43,7 @@ export default function NavLinks() {
                   <Skeleton key={index} className="w-20 h-6" />
                 ))}
             </div>
-          ) : isError ? false : !isPending && !isError && data ? data.map((item, index) => (
+          ) : isError ? false : !isPending && !isError && data.length > 0 ? data.map((item: Data, index: number) => (
             <NavLink key={index} href={item.page.path}>
               {item.title}
             </NavLink>

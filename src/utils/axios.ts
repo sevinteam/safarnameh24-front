@@ -2,6 +2,12 @@ import axios, {
   AxiosError,
   InternalAxiosRequestConfig,
 } from 'axios';
+import {
+  extractTokensFromResponse,
+  getStoredAccessToken,
+  getStoredRefreshToken,
+  saveAuthTokens,
+} from './authCookies';
 
 interface RetryableRequest extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -29,16 +35,20 @@ let refreshPromise: Promise<void> | null = null;
 
 const refreshAccessToken = (): Promise<void> => {
   if (!refreshPromise) {
+    const refreshToken = getStoredRefreshToken();
     refreshPromise = axios
       .post(
         `${getBaseUrl()}/token/refresh/`,
-        {},
+        refreshToken ? { refresh: refreshToken } : {},
         {
           withCredentials: true,
         },
       )
-      .then(() => {
-        // بک‌اند توکن جدید را با Set-Cookie تنظیم می‌کند.
+      .then((res) => {
+        const { access, refresh } = extractTokensFromResponse(res.data);
+        if (access || refresh) {
+          saveAuthTokens({ access, refresh });
+        }
       })
       .finally(() => {
         refreshPromise = null;
@@ -48,9 +58,13 @@ const refreshAccessToken = (): Promise<void> => {
   return refreshPromise;
 };
 
-// ارسال درخواست‌ها بدون خواندن یا ذخیره توکن در localStorage
+// ارسال درخواست‌ها همراه با توکن Bearer در صورت وجود و کوکی‌های HttpOnly
 axiosInstance.interceptors.request.use(
   (config) => {
+    const token = getStoredAccessToken();
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error),

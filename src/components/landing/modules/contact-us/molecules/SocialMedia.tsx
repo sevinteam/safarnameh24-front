@@ -14,19 +14,36 @@ export default function SocialMedia(props: Props) {
   const { link, type, type_fa, icon } = props;
 
   return (
-    <div className="relative bg-white p-6 flex flex-col gap-2 group rounded-xl shadow-[0_0.5rem_1rem_rgba(0,0,0,0.02)] transition-all duration-500 ease-in-out xl:bg-[#f8f8f8] xl:shadow-none xl:hover:shadow-[0_0_4rem_0_rgba(0,0,0,0.08)]">
-      <div className="bg-cs-red/10 w-12 h-12 p-2.5 flex-center rounded-lg">
+    <div className="group relative flex flex-col gap-2 rounded-xl bg-white p-6 shadow-[0_1rem_1rem_rgba(0,0,0,0.02)] transition-all duration-300 ease-in-out xl:bg-[#F8F8F8] xl:shadow-none xl:hover:bg-white xl:hover:shadow-[0_0.5rem_1.5rem_rgba(0,0,0,0.08)]">
+      {/* Animated Red Stroke Border on Hover */}
+      <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full overflow-visible rounded-xl">
+        <rect
+          x="1"
+          y="1"
+          width="calc(100% - 2px)"
+          height="calc(100% - 2px)"
+          rx="12"
+          fill="none"
+          stroke="#F30F26"
+          strokeWidth="1.5"
+          pathLength="100"
+          strokeDasharray="25 75"
+          className="animate-stroke-draw opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
+      </svg>
+
+      <div className="flex-center h-12 w-12 rounded-lg bg-cs-red/10 p-2.5">
         {icon.url && <Image alt="icon" width={25} height={25} src={icon.url} />}
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-zinc-800 text-cs85 font-extrabold capitalize mt-3">
+        <span className="mt-3 text-cs85 font-extrabold capitalize text-zinc-800">
           {type_fa}
         </span>
 
-        <div className="w-0.5 h-4 bg-zinc-400 rounded mt-2" />
+        <div className="mt-2 h-4 w-0.5 rounded bg-zinc-400" />
 
-        <span className="text-zinc-800 text-cs85 font-extrabold capitalize mt-3">
+        <span className="mt-3 text-cs85 font-extrabold capitalize text-zinc-800">
           {type}
         </span>
       </div>
@@ -35,13 +52,11 @@ export default function SocialMedia(props: Props) {
         <Link
           href={link}
           target="_blank"
-          className="text-zinc-500 text-cs75 font-inter font-semibold"
+          className="font-inter text-cs75 font-semibold text-zinc-500"
         >
           <span className="underline">{link}</span>
         </Link>
       )}
-
-      <div className="absolute inset-0 -z-10 bg-cs-red scale-50 rounded-xl transition-all duration-500 ease-in-out xl:group-hover:-bottom-8 xl:group-hover:scale-75"></div>
     </div>
   );
 }

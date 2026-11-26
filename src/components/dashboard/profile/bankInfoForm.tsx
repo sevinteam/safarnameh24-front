@@ -137,7 +137,7 @@ export default function BankInfoForm({
     setBankInfo(info);
 
     const foundedCardOwner =
-      userInfo.card_numbers.find((item) => item.card_number === creditCardVal)
+      userInfo.card_numbers?.find((item) => item.card_number === creditCardVal)
         ?.account_holder_name || undefined;
     setCurrentCardOwner(foundedCardOwner);
   }, [creditCardVal]);
@@ -179,7 +179,7 @@ export default function BankInfoForm({
           </div>
           <div className="overflow-hidden w-full">
             <span className="lg:text-cs75 text-[12px] font-semibold text-black truncate block text-right mb-1">
-              {userInfo.card_numbers.length === 0
+              {(userInfo.card_numbers?.length ?? 0) === 0
                 ? 'اطلاعات بانکی و پروفایل'
                 : `اطلاعات بانکی و پروفایل${currentCardOwner ? ` (${currentCardOwner})` : ''}`}
             </span>

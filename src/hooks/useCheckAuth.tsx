@@ -1,30 +1,36 @@
 import { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
 import { axiosInstance } from '@/utils/axios';
+import {
+  clearAuthCookies,
+  clearAuthTokens,
+  extractTokensFromResponse,
+  getStoredRefreshToken,
+  hasAuthHint,
+  saveAuthTokens,
+  setAuthCookies,
+} from '@/utils/authCookies';
 
 export function useCheckAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return Boolean(
-      localStorage.getItem('access_token') ||
-      localStorage.getItem('token') ||
-      Cookies.get('auth') === 'true' ||
-      Cookies.get('AUTH') === 'true',
-    );
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const hasToken = Boolean(
-      localStorage.getItem('access_token') ||
-      localStorage.getItem('token') ||
-      Cookies.get('auth') === 'true' ||
-      Cookies.get('AUTH') === 'true',
-    );
+    const hasHint = hasAuthHint();
 
-    if (!hasToken) {
-      setIsAuthenticated(false);
-      setLoading(false);
+    if (!hasHint) {
+      // Even without client cookie/localStorage (e.g., HttpOnly cookie only), verify session quietly
+      axiosInstance
+        .get('/natural-profiles/')
+        .then(() => {
+          setAuthCookies();
+          setIsAuthenticated(true);
+        })
+        .catch(() => {
+          setIsAuthenticated(false);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
       return;
     }
 
@@ -33,32 +39,34 @@ export function useCheckAuth() {
     axiosInstance
       .get('/natural-profiles/')
       .then(() => {
+        setAuthCookies();
         setIsAuthenticated(true);
       })
       .catch(async (err) => {
         if (err.response?.status === 401) {
           try {
+            const refreshToken = getStoredRefreshToken();
             const refreshResponse = await axiosInstance.post(
               '/token/refresh/',
-              {},
+              refreshToken ? { refresh: refreshToken } : {},
               { withCredentials: true },
             );
 
-            const newAccess = refreshResponse.data.access;
-            if (newAccess) {
-              localStorage.setItem('access_token', newAccess);
-              localStorage.setItem('token', newAccess);
-              Cookies.set('auth', 'true', { expires: 30 });
-              Cookies.set('AUTH', 'true', { expires: 30 });
-              setIsAuthenticated(true);
-            } else {
-              throw new Error('No access token in refresh response');
+            const { access, refresh } = extractTokensFromResponse(
+              refreshResponse.data,
+            );
+
+            if (access || refresh) {
+              saveAuthTokens({ access, refresh });
             }
+
+            // Verify profile is reachable after refresh (supports both cookie & Bearer auth)
+            await axiosInstance.get('/natural-profiles/');
+            setAuthCookies();
+            setIsAuthenticated(true);
           } catch {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('token');
-            Cookies.remove('auth');
-            Cookies.remove('AUTH');
+            clearAuthTokens();
+            clearAuthCookies();
             setIsAuthenticated(false);
           }
         }
@@ -70,3 +78,4 @@ export function useCheckAuth() {
 
   return { isAuthenticated, loading };
 }
+

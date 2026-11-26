@@ -2,6 +2,7 @@
 import useApiMutation from './useApiMutation';
 import toast from '@/components/dashboard/ui/customSonner/toast';
 import useLocalStorageState from 'use-local-storage-state';
+import { clearAuthCookies, clearAuthTokens } from '@/utils/authCookies';
 
 // Creating and exporting useLogout custom hooks
 export default function useLogout() {
@@ -38,10 +39,8 @@ export default function useLogout() {
         ticketWalpaper[2].removeItem();
         ticketTheme[2].removeItem();
         ticketNotifications[2].removeItem();
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('token');
-        document.cookie = 'auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        document.cookie = 'AUTH=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        clearAuthTokens();
+        clearAuthCookies();
         sessionStorage.removeItem("upn");
 
         window.location.pathname = '/';
