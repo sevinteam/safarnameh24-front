@@ -7,6 +7,7 @@ import { HotelCard as HotelCardC } from '@/components/common/hotel-card/organism
 import { useViewModeQuery } from './view-mode/use-view-mode-query';
 import { cn } from 'cn';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import HotelCardTypeA from '@/components/common/hotel-card/organisms/hotel-card.type-a';
 
 // ------------------------------
 
@@ -39,7 +40,7 @@ export function HotelList() {
         shouldRenderListCard ? (
           <HotelCardC key={`${item.id}-${i}`} {...item} />
         ) : (
-          <HotelCardB key={`${item.id}-${i}`} {...item} />
+          <HotelCardTypeA key={`${item.id}-${i}`} info={item} showTags />
         ),
       )}
     </section>

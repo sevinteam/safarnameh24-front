@@ -13,6 +13,7 @@ import { HotelCard } from '@/components/common/hotel-card/organisms/hotel-card.m
 
 import { SectionTitle } from '@/components/common/section-topbar/section-title';
 import { SectionNavigation } from '@/components/common/section-topbar/section-navigation';
+import HotelCardTypeA from '@/components/common/hotel-card/organisms/hotel-card.type-a';
 import { MOCK_HOTELS } from '@/config/data/general';
 
 // ------------------------------
@@ -58,7 +59,8 @@ export function DiscountedHotels() {
               key={String(item.id + i)}
               className="max-w-74 select-none xl:max-w-full"
             >
-              <HotelCard {...item} />
+              <HotelCardTypeA info={item} />
+              {/* <HotelCard {...item} /> */}
             </SwiperSlide>
           ))}
         </Swiper>
