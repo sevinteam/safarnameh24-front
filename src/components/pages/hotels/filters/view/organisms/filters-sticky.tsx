@@ -21,7 +21,7 @@ export function FiltersSticky({ className }: Props) {
     useHotelFiltersQuery();
 
   return (
-    <StickyBox offsetTop={20} offsetBottom={20} bottom>
+    <StickyBox offsetTop={130} offsetBottom={20}>
       <aside
         aria-label="فیلترهای جستجوی هتل"
         className={cn('hidden space-y-5 lg:block', className)}

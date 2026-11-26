@@ -17,7 +17,7 @@ export default async function Hotels(props: PageProps<'/hotels/[...slug]'>) {
     <>
       <StickySearchBar />
 
-      <Container className="mb-24 grid items-end gap-8 lg:mt-8 lg:grid-cols-[18rem_1fr]">
+      <Container className="mb-24 grid items-start gap-8 lg:mt-8 lg:grid-cols-[18rem_1fr]">
         <FiltersSticky />
 
         <div className="space-y-8">
