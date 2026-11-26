@@ -39,7 +39,7 @@ export default function LegalUserStatus({
           'rounded-lg bg-gradient-to-tr bg-[#282828] px-3 py-3 flex items-center gap-3 justify-between text-white overflow-hidden relative h-[50px]',
           status === 'rejected'
             ? 'to-cs-red/20 from-cs-red cursor-pointer'
-            : status === 'accpeted'
+            : status === 'accpeted' || status === 'accepted'
               ? 'to-green-500/20 from-green-500 cursor-auto'
               : 'to-gray-500/20 from-gray-500 cursor-auto',
           className,
@@ -57,7 +57,11 @@ export default function LegalUserStatus({
             <Loading className="size-1" />
           ) : (
             <IconsaxIcons
-              name={status === 'accpeted' ? 'TickSquare' : 'CloseSquare'}
+              name={
+                status === 'accpeted' || status === 'accepted'
+                  ? 'TickSquare'
+                  : 'CloseSquare'
+              }
               color="white"
               className="size-[25px]"
             />
@@ -69,7 +73,7 @@ export default function LegalUserStatus({
             <span className="font-medium text-cs06 text-current block text-right truncate">
               {status === 'checking'
                 ? 'در حال بررسی'
-                : status === 'accpeted'
+                : status === 'accpeted' || status === 'accepted'
                   ? 'تایید شده'
                   : 'رد شده'}
             </span>

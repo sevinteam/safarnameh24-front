@@ -1,8 +1,11 @@
-// Importing part
 import useApiMutation from './useApiMutation';
 import toast from '@/components/dashboard/ui/customSonner/toast';
 import useLocalStorageState from 'use-local-storage-state';
-import { clearAuthCookies, clearAuthTokens } from '@/utils/authCookies';
+import {
+  clearAuthCookies,
+  clearAuthTokens,
+  getStoredRefreshToken,
+} from '@/utils/authCookies';
 
 // Creating and exporting useLogout custom hooks
 export default function useLogout() {
@@ -49,7 +52,10 @@ export default function useLogout() {
   });
 
   return {
-    mutate: () => mutation.mutate({}),
+    mutate: () =>
+      mutation.mutate({
+        refresh_token: getStoredRefreshToken(),
+      }),
     loading: mutation.isPending,
   };
 }

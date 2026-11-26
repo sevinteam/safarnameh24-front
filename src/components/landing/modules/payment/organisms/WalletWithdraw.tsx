@@ -21,6 +21,7 @@ import { axiosInstance } from '@/utils/axios';
 import { payment } from '../helpers/constant';
 import { useSearchParams } from 'next/navigation';
 
+import { useCheckAuth } from '@/hooks';
 import { useApiQuery } from '@/hooks/dashboard/useApiQuery';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -36,6 +37,7 @@ export function WalletWithdraw() {
 
   const queryClient = useQueryClient();
   const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const { isAuthenticated, loading: authLoading } = useCheckAuth();
 
   function handleInputChange(e: TEvent) {
     const filteredInput = e.target.value.replace(/[^0-9]/g, '').slice(0, 12);
@@ -50,12 +52,16 @@ export function WalletWithdraw() {
   const { data: wallet } = useApiQuery<WalletApiResponse>({
     url: '/finance/wallet/',
     queryKey: ['wallet-balance'],
+    options: {
+      enabled: isAuthenticated && !authLoading,
+      retry: false,
+    },
   });
 
   // === GET Wallet-Withdraw
   const { data: invoice } = useQuery<InvoiceApiResponse>({
     queryKey: ['reservation-invoice'],
-    enabled: (wallet?.balance ?? 0) > 0,
+    enabled: Boolean(trackingCode) && (wallet?.balance ?? 0) > 0,
     queryFn: () => axiosInstance(`/hotel/reservation/invoice/${trackingCode}/`),
   });
 

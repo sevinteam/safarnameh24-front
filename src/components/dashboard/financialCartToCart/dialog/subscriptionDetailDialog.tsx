@@ -14,6 +14,7 @@ import {
 import { SubscriptionDetailsDialogPropsType } from '@/types/dashboard/component';
 import { getPercentage } from '@/utils/utils';
 import { addCommas } from '@persian-tools/persian-tools';
+import moment from 'jalali-moment';
 import { JSX } from 'react';
 
 // Creating and exporting SubscriptionDetailsDialog component as default
@@ -42,20 +43,37 @@ export default function SubscriptionDetailsDialog({
             <div>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex-1 overflow-hidden">
-                  <span className="mb-1 block truncate text-right text-[12px] font-bold text-black lg:text-[14px]">{`کارت اشتراک ${data.next_level}`}</span>
-                  <span className="block truncate text-right text-[12px] font-normal text-black/70 lg:text-[14px]">{`خرید بالای به مبلغ ${addCommas(data.target)} تومان`}</span>
+                  <span className="mb-1 block truncate text-right text-[12px] font-bold text-black lg:text-[14px]">
+                    {data?.next_level
+                      ? `کارت اشتراک سطح ${data.next_level}`
+                      : 'هدف خرید و ارتقای دوره'}
+                  </span>
+                  {data?.target ? (
+                    <span className="block truncate text-right text-[12px] font-normal text-black/70 lg:text-[14px]">
+                      {`خرید هدف به مبلغ ${addCommas(data.target)} تومان`}
+                    </span>
+                  ) : null}
+                  {data?.deadline ? (
+                    <span className="block truncate text-right text-[11px] font-normal text-black/50">
+                      {`مهلت تا تاریخ ${moment(data.deadline).format('jYYYY/jMM/jDD')}`}
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <div>
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="block truncate text-right text-[12px] font-normal text-black/70">{`روند خرید شما : ${addCommas(data.current)} تومان`}</span>
-                  <span className="block truncate text-left text-[12px] font-normal text-black/70">{`${getPercentage(data.target, data.current)}%`}</span>
+                  <span className="block truncate text-right text-[12px] font-normal text-black/70">{`روند خرید شما : ${addCommas(data?.current ?? 0)} تومان`}</span>
+                  <span className="block truncate text-left text-[12px] font-normal text-black/70">
+                    {data?.target ? `${getPercentage(data.target, data.current ?? 0)}%` : '۱۰۰%'}
+                  </span>
                 </div>
                 <div className="h-[5px] w-full overflow-hidden rounded-3xl bg-black/10">
                   <div
                     className="h-[5px] rounded-3xl bg-cs-red"
                     style={{
-                      width: `${getPercentage(data.target, data.current)}%`,
+                      width: data?.target
+                        ? `${getPercentage(data.target, data.current ?? 0)}%`
+                        : '100%',
                     }}
                   />
                 </div>

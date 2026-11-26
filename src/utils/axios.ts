@@ -3,9 +3,12 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 import {
+  clearAuthCookies,
+  clearAuthTokens,
   extractTokensFromResponse,
   getStoredAccessToken,
   getStoredRefreshToken,
+  hasAuthHint,
   saveAuthTokens,
 } from './authCookies';
 
@@ -31,9 +34,9 @@ export const axiosInstance = axios.create({
 });
 
 // یک Promise مشترک برای جلوگیری از Refresh هم‌زمان
-let refreshPromise: Promise<void> | null = null;
+let refreshPromise: Promise<string | undefined> | null = null;
 
-const refreshAccessToken = (): Promise<void> => {
+const refreshAccessToken = (): Promise<string | undefined> => {
   if (!refreshPromise) {
     const refreshToken = getStoredRefreshToken();
     refreshPromise = axios
@@ -49,6 +52,12 @@ const refreshAccessToken = (): Promise<void> => {
         if (access || refresh) {
           saveAuthTokens({ access, refresh });
         }
+        return access;
+      })
+      .catch((err) => {
+        clearAuthTokens();
+        clearAuthCookies();
+        throw err;
       })
       .finally(() => {
         refreshPromise = null;
@@ -94,10 +103,21 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // اگر هیچ نشانه‌ای از نشست یا توکن رفرش وجود ندارد، درخواست /token/refresh/ بی‌نتیجه نزنیم
+    if (!getStoredRefreshToken() && !hasAuthHint()) {
+      return Promise.reject(error);
+    }
+
     originalRequest._retry = true;
 
     try {
-      await refreshAccessToken();
+      const refreshedAccess = await refreshAccessToken();
+
+      if (refreshedAccess && originalRequest.headers) {
+        originalRequest.headers.Authorization = `Bearer ${refreshedAccess}`;
+      } else if (originalRequest.headers?.Authorization) {
+        delete originalRequest.headers.Authorization;
+      }
 
       // مرورگر کوکی جدید را ارسال می‌کند.
       return axiosInstance(originalRequest);

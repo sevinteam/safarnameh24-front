@@ -17,6 +17,7 @@ export const StepThree = memo(function StepThree(props: Props) {
 
   const { data } = useQuery<ApiResponse>({
     queryKey: ['payment-status'],
+    enabled: Boolean(trackingCode),
     queryFn: () =>
       axiosInstance(`/payment/payment-status/${trackingCode}/`).then(
         (data) => data.data,

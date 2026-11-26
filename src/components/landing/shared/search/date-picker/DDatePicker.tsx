@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { Calendar, DateObject } from 'react-multi-date-picker';
 import weekends from 'react-multi-date-picker/plugins/highlight_weekends';
 
-import { DDatePickerTrigger } from './molecules';
+import { DDatePickerTrigger, ClearDateRangeButton } from './molecules';
 import { getCalendarDetail } from '@/helpers/date-picker';
 import { useDatePickerContext, useDatePickerDispatch } from '@/context';
 
@@ -99,6 +99,10 @@ export function DDatePicker(props: Props) {
           plugins={[weekends(calendarDetail.weekendDays)]}
           className={`general-calendar desktop-calendar no-ss01 ${calendarType === 'persian' ? 'font-sans' : 'font-inter'}`}
         ></Calendar>
+
+        <div className="flex items-center justify-end pt-4 mt-2 border-t border-zinc-100">
+          <ClearDateRangeButton />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

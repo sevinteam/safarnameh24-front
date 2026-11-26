@@ -17,19 +17,45 @@ async function proxyHandler(
   const targetUrl = `${TARGET_BASE_URL}/${targetPath}${search}`;
 
   const requestHeaders = new Headers();
+  const isLoginEndpoint = targetPath === 'auth/' || targetPath === 'token/';
+  const excludedHeaders = new Set([
+    'host',
+    'connection',
+    'content-length',
+    'origin',
+    'referer',
+    'accept-encoding',
+    'x-forwarded-host',
+    'x-forwarded-proto',
+    'x-forwarded-port',
+    'forwarded',
+    'x-cloud-trace-context',
+    'traceparent',
+    'tracestate',
+    'baggage',
+    'priority',
+    'sec-fetch-site',
+    'sec-fetch-mode',
+    'sec-fetch-dest',
+    'sec-fetch-user',
+    'sec-ch-ua',
+    'sec-ch-ua-mobile',
+    'sec-ch-ua-platform',
+    'x-client-data',
+  ]);
+
   req.headers.forEach((value, key) => {
     const lower = key.toLowerCase();
-    // Exclude host/connection/origin headers that belong to the proxy host
-    if (
-      lower !== 'host' &&
-      lower !== 'connection' &&
-      lower !== 'content-length' &&
-      lower !== 'origin' &&
-      lower !== 'referer'
-    ) {
+    if (isLoginEndpoint && lower === 'cookie') {
+      return;
+    }
+    if (!excludedHeaders.has(lower)) {
       requestHeaders.set(key, value);
     }
   });
+
+  requestHeaders.set('origin', 'https://zarvantrip.com');
+  requestHeaders.set('referer', 'https://zarvantrip.com/');
 
   const originHeader = req.headers.get('origin') || '';
   const refererHeader = req.headers.get('referer') || '';

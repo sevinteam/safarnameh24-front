@@ -125,25 +125,19 @@ export default function LegalBankInfo({
 
     formData.append('organization_name', data.name);
     formData.append('national_id', data.id);
+    formData.append('registration_number', data.registrationId);
     formData.append('registeration_number', data.registrationId);
     formData.append('economical_code', data.economicCode);
     formData.append('phone_number', data.tell);
-    formData.append('status', userStatus?.status || '');
-    formData.append('reject_reason', userStatus?.rejectReason || '');
-    !useUserImage && formData.append('image', file || '');
+    userStatus?.status && formData.append('status', userStatus.status);
+    userStatus?.rejectReason &&
+      formData.append('reject_reason', userStatus.rejectReason);
+    if (!useUserImage && file) {
+      formData.append('image', file);
+    }
     data.postCode && formData.append('postal_code', data.postCode);
     data.address && formData.append('address', data.address);
     data.email && formData.append('email', data.email);
-
-    data.creditCard ||
-      (data.creditCard !== '' &&
-        formData.append(
-          'card_numbers',
-          JSON.stringify({
-            card_number: data.creditCard,
-            iban: data.shabaNumber,
-          }),
-        ));
 
     await setLegalInfoFetch.mutateAsync(formData);
   };

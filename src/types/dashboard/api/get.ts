@@ -29,6 +29,7 @@ export interface GETPersonalProfile {
   level: number | null;
   level_name: null | string;
   phone_number: string;
+  total_purchase_formatted?: string;
   card_numbers: {
     id: number;
     card_number: string;
@@ -38,18 +39,29 @@ export interface GETPersonalProfile {
 }
 
 export interface GETLegalProfile {
+  has_natural_profile?: boolean;
+  has_juridical_profile?: boolean;
   organization_name: string;
   national_id: string;
   registeration_number: string;
+  registration_number?: string;
   economical_code: string;
   phone_number: string;
   postal_code: string;
   address: string;
   email: string | null;
-  image: string;
-  status: 'checking' | 'accpeted' | 'rejected';
+  image: string | null;
+  status: 'checking' | 'accpeted' | 'accepted' | 'rejected';
   reject_reason: string | null;
-  documents: string | null;
+  documents:
+    | {
+        id: number;
+        file_url?: string;
+        file?: string;
+        profile?: number;
+      }[]
+    | null
+    | string;
   card_numbers: {
     id: number;
     card_number: string;
@@ -333,26 +345,27 @@ export interface GETSubscriptionPackages {
   id: number;
   name: string;
   short_description: string;
-  monthly_cost: number;
+  monthly_cost: number | string;
   color: string;
   options: {
     id: number;
     name: string;
   }[];
-  upgrade_to_level: string;
-  period_fk: string;
+  upgrade_to_level: string | null;
+  period_fk: string | null;
 }
 
 export interface GETCurrentSubscription {
   expiration_date: null | string;
-  subscription_type: string;
-  renewal_cost: number | null;
-  purchased_amount: number;
+  subscription_type: 'auto' | 'manual' | 'ارتقا' | string;
+  renewal_cost: number | string | null;
+  purchased_amount: number | null;
   progress: {
     current: number;
-    target: number;
-    next_level: string;
-  };
+    target: number | null;
+    next_level?: string;
+    deadline?: string | null;
+  } | null;
 }
 
 export type GETSubscriptionChart = {

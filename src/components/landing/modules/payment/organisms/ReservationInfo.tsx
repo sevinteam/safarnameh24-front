@@ -20,7 +20,8 @@ export function ReservationInfo() {
   const trackingCode = searchParams.get(payment.reservationId);
 
   const { data, status } = useQuery<FormSchema>({
-    queryKey: ['reservation-form'],
+    queryKey: ['reservation-form', trackingCode],
+    enabled: Boolean(trackingCode),
     queryFn: async () => {
       return axiosInstance(`/hotel/reservation/form/${trackingCode}/`).then(
         (data) => data.data,

@@ -4,6 +4,7 @@ import {
   Description,
   PaymentInvoice,
   ReservationForm,
+  CheckReservationInfo,
 } from '@/components/landing/modules/payment/organisms';
 
 import { useEffect } from 'react';
@@ -32,8 +33,9 @@ export function CompletePassengersInformationWrapper() {
     <>
       {/* === Small-Screen */}
       <div className="space-y-6 lg:hidden">
+        <CheckReservationInfo />
         {!isDesktop && <ReservationForm />}
-        <Description />
+        {!isDesktop && <Description />}
         <PaymentInvoice />
         <SubmitButton />
       </div>
@@ -42,13 +44,16 @@ export function CompletePassengersInformationWrapper() {
       <div className="hidden grid-cols-[1fr_2.8fr] items-start gap-x-6 lg:grid">
         {/* --- Right-Column */}
         <div className="sticky top-[6.4rem] space-y-6">
-          <Description />
+          <CheckReservationInfo />
           <PaymentInvoice />
           <SubmitButton />
         </div>
 
         {/* --- Left-Column */}
-        <div>{isDesktop && <ReservationForm />}</div>
+        <div className="space-y-6">
+          {isDesktop && <ReservationForm />}
+          {isDesktop && <Description />}
+        </div>
       </div>
     </>
   );

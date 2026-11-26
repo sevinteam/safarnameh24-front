@@ -41,6 +41,7 @@ export function ApplyDiscountCode() {
   // === GET Price-Number of Discount-Code
   const { data, status } = useQuery<ApiResponse>({
     queryKey: ['reservation-invoice'],
+    enabled: Boolean(trackingCode),
     queryFn: () =>
       axiosInstance(`/hotel/reservation/invoice/${trackingCode}/`),
   });

@@ -17,6 +17,7 @@ export const StepFour = memo(function StepFour(props: Props) {
 
   const { data } = useQuery<ApiResponse>({
     queryKey: ['payment-status'],
+    enabled: Boolean(trackingCode),
     queryFn: () =>
       axiosInstance(`/payment/payment-status/${trackingCode}/`).then(
         (data) => data.data,
@@ -28,7 +29,7 @@ export const StepFour = memo(function StepFour(props: Props) {
   return (
     <div className="flex w-full items-center gap-1.5 last:w-fit lg:max-w-max lg:gap-3 lg:last:w-full">
       <div
-        className={`flex-center aspect-square w-11 rounded-full border lg:rounded-cs-10 ${paymentStatus === 'paid' ? 'border-green-500 bg-green-500/5' : paymentStatus === 'unpaid' ? 'border-cs-red bg-cs-red/5' : activeStep === 3 ? 'border-zinc-300' : 'border-transparent bg-zinc-200/60 lg:bg-zinc-100'}`}
+        className={`flex-center aspect-square w-11 rounded-full border lg:rounded-cs-10 ${paymentStatus === 'paid' ? 'border-green-500 bg-green-500/5' : paymentStatus === 'unpaid' ? 'border-cs-red bg-cs-red/5' : activeStep === 4 ? 'border-zinc-300' : 'border-transparent bg-zinc-200/60 lg:bg-zinc-100'}`}
       >
         {paymentStatus === 'paid' ? (
           <IconsaxIcons size={24} name={'Verify'} color="#16a34a" />

@@ -10,4 +10,6 @@ export * from './ReservationForm';
 export * from './ApplyDiscountCode';
 export * from './ReservationDetails';
 export * from './CheckReservationInfo';
+export * from './CapacityStatusCard';
+export * from './ConfirmInformationWrapper';
 export * from './CompletePassengersInformationWrapper';

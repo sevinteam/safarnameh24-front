@@ -172,9 +172,9 @@ export default function ProfilePage(): ReactNode {
   const [userImage, setUserImage] = useState<string | undefined>();
   const [userStatus, setUserStatus] = useState<
     | {
-      status: 'checking' | 'accpeted' | 'rejected';
-      rejectReason: string | null;
-    }
+        status: 'checking' | 'accpeted' | 'accepted' | 'rejected';
+        rejectReason: string | null;
+      }
     | undefined
   >();
 
@@ -224,7 +224,10 @@ export default function ProfilePage(): ReactNode {
 
     legalForm.setValue('name', legalInfo.organization_name);
     legalForm.setValue('id', legalInfo.national_id);
-    legalForm.setValue('registrationId', legalInfo.registeration_number);
+    legalForm.setValue(
+      'registrationId',
+      legalInfo.registration_number || legalInfo.registeration_number || '',
+    );
     legalForm.setValue('economicCode', legalInfo.economical_code);
     legalForm.setValue('email', legalInfo.email || '');
     legalForm.setValue('address', legalInfo.address);
@@ -241,7 +244,7 @@ export default function ProfilePage(): ReactNode {
       rejectReason: legalInfo.reject_reason,
       status: legalInfo.status,
     });
-  }, []);
+  }, [userLegalInfo?.data, legalForm]);
 
   // Returning JSX
   return (

@@ -542,7 +542,7 @@ export interface SubscriptionTypeComponentPropsType {
 
 export interface LegalUserStatusPropsType {
   className?: string;
-  status?: 'checking' | 'accpeted' | 'rejected';
+  status?: 'checking' | 'accpeted' | 'accepted' | 'rejected';
   rejectReason?: string;
 }
 
@@ -578,7 +578,7 @@ export interface LegalBankInfoFormComponentPropsType {
   refetch?: () => void;
   creditCards?: GETLegalProfile['card_numbers'];
   userStatus?: {
-    status?: 'checking' | 'accpeted' | 'rejected';
+    status?: 'checking' | 'accpeted' | 'accepted' | 'rejected';
     rejectReason?: string;
   };
 }
@@ -996,7 +996,8 @@ export interface SubscriptionDetailsDialogPropsType {
   onOpenChange?: (open: boolean) => void;
   data: {
     current: number;
-    target: number;
-    next_level: string;
+    target: number | null;
+    next_level?: string;
+    deadline?: string | null;
   };
 }

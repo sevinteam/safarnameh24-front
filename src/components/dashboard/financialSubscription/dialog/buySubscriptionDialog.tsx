@@ -104,9 +104,13 @@ export default function BuySubscriptionDialog({
   // Using useEffect to reset values
   useEffect(() => {
     if (!open) {
-      form.reset();
+      form.reset({
+        name: `${userInfo.first_name || ''} ${userInfo.last_name || ''}`.trim(),
+        nationalCode: userInfo.national_code || '',
+        phoneNumber: userInfo.phone_number || '',
+      });
     }
-  }, [open])
+  }, [open, userInfo.first_name, userInfo.last_name, userInfo.national_code, userInfo.phone_number, form])
 
   // Returning JSX
   return (
@@ -174,7 +178,7 @@ export default function BuySubscriptionDialog({
                 error={form.formState.errors.file?.message}
                 onChange={(e) => {
                   const files = e.currentTarget.files;
-                  if (files) {
+                  if (files && files[0]) {
                     form.setValue("file", files[0]);
                   }
                 }}

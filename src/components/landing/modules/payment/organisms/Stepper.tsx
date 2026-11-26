@@ -30,6 +30,7 @@ export function Stepper() {
   // === Fetch Payment-Status
   const { data: paymentStatus, status } = useQuery<ApiResponse>({
     queryKey: ['payment-status'],
+    enabled: Boolean(trackingCode),
     queryFn: () => axiosInstance(`/payment/payment-status/${trackingCode}/`),
   });
 
@@ -50,13 +51,16 @@ export function Stepper() {
     const checkInclude = (value: string) => pathname.includes(value);
     let activeStep = 0;
 
-    if (checkInclude('complete-passengers-information')) activeStep = 1;
-    else if (checkInclude('check-reservation-information')) activeStep = 2;
+    if (checkInclude('check-reservation-information')) activeStep = 1;
+    else if (checkInclude('complete-passengers-information')) activeStep = 2;
+    else if (checkInclude('confirm-information')) activeStep = 3;
     else if (checkInclude('watcher-info')) activeStep = 4;
     else activeStep = 0;
 
     return activeStep;
   }, [pathname]);
+
+  const currentMobileStep = activeStep > 0 ? stepper[activeStep - 1] : null;
 
   return (
     <div className="lg:col-span-2">
@@ -76,10 +80,10 @@ export function Stepper() {
       <div className="flex-between mt-6 items-center rounded-xl border bg-white p-4 lg:hidden">
         <div className="grid gap-1.5 text-cs08/5 font-bold">
           <span className="text-zinc-500">
-            مرحله {stepper[activeStep - 1].step}
+            مرحله {currentMobileStep?.step}
           </span>
 
-          <span>{stepper[activeStep - 1].title}</span>
+          <span>{currentMobileStep?.title}</span>
         </div>
 
         <StepBackButton activeStep={activeStep} />

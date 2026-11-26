@@ -11,20 +11,22 @@ export function StepBackButton(props: Props) {
 
   const { reservationId } = payment;
   const searchParams = useSearchParams();
+  const trackingCode = searchParams.get(reservationId);
+
+  const href =
+    activeStep === 3
+      ? `/payment/complete-passengers-information?${reservationId}=${trackingCode}`
+      : '/';
 
   return (
     <Link
       scroll={false}
-      href={
-        activeStep === 1 || activeStep === 4
-          ? '/'
-          : `/payment/complete-passengers-information?${reservationId}=${searchParams.get(reservationId)}`
-      }
+      href={href}
       className="rounded-lg bg-zinc-100 px-4 py-3 text-cs08 font-semibold lg:px-5"
     >
-      {activeStep === 1 || activeStep === 4
-        ? 'بازگشت به صفحه اصلی'
-        : 'بازگشت به مرحله قبل'}
+      {activeStep === 3
+        ? 'ویرایش مشخصات مسافران'
+        : 'بازگشت به صفحه اصلی'}
     </Link>
   );
 }

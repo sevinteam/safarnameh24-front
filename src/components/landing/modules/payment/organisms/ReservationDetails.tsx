@@ -22,6 +22,7 @@ export function ReservationDetails() {
 
   const { data, status } = useQuery<Response>({
     queryKey: ['reservation-detail'],
+    enabled: Boolean(trackingCode),
     queryFn: () =>
       axiosInstance(`/hotel/reservation/reservation-detail/${trackingCode}/`),
   });

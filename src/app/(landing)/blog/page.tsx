@@ -74,7 +74,7 @@ export default function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="w-full py-4 sm:py-6">
         <Suspense
           fallback={
             <div className="h-28 w-full animate-pulse rounded-2xl bg-zinc-100" />
@@ -82,7 +82,7 @@ export default function BlogPage() {
         >
           <MagazineView />
         </Suspense>
-      </main>
+      </div>
     </>
   );
 }

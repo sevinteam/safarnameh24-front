@@ -1,6 +1,10 @@
 import { axiosInstance } from '@/utils/axios';
 import { useMutation } from '@tanstack/react-query';
-import { clearAuthCookies, clearAuthTokens } from '@/utils/authCookies';
+import {
+  clearAuthCookies,
+  clearAuthTokens,
+  getStoredRefreshToken,
+} from '@/utils/authCookies';
 
 // --------------------------------------------
 
@@ -10,6 +14,9 @@ export default function LogoutButton() {
       return axiosInstance({
         method: 'POST',
         url: '/auth/logout/',
+        data: {
+          refresh_token: getStoredRefreshToken(),
+        },
       });
     },
     onError: (error) => {

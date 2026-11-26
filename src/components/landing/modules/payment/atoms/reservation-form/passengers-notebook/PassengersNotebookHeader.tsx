@@ -6,33 +6,42 @@ import {
 } from '@/components/ui/sheet';
 
 import Image from 'next/image';
-import { IoClose } from 'react-icons/io5';
+import { X } from 'lucide-react';
+import logo from '@/assets';
 
 // ------------------------------
 
 export function PassengersNotebookHeader() {
   return (
-    <SheetHeader className="flex-row items-center gap-3 space-y-0">
-      <div className="w-16">
-        <Image
-          alt="logo"
-          width={60}
-          height={60}
-          className="full-size"
-          src={'/image/logo/red.png'}
-        />
+    <SheetHeader className="flex-row items-center justify-between gap-3 space-y-0">
+      <div className="flex items-center gap-3">
+        <div className="flex-center size-12 shrink-0 overflow-hidden rounded-xl">
+          <Image
+            src={logo}
+            alt="لوگو زروان تریپ"
+            width={96}
+            height={96}
+            className="aspect-auto w-full object-contain"
+          />
+        </div>
+
+        <div className="flex flex-col items-start text-right">
+          <SheetTitle className="text-sm font-extrabold text-zinc-900">
+            زروان تریپ
+          </SheetTitle>
+
+          <SheetDescription className="mt-0.5 font-inter text-xs font-bold text-zinc-800">
+            Agency Zarvantrip
+          </SheetDescription>
+        </div>
       </div>
 
-      <div className="flex flex-col items-start">
-        <SheetTitle className="text-[0.9rem]/5">زروان تریپ</SheetTitle>
-
-        <SheetDescription className="font-inter text-[0.8rem]/5 font-semibold capitalize text-zinc-800">
-          agency zarvantrip
-        </SheetDescription>
-      </div>
-
-      <SheetClose className="mr-auto rounded-md bg-zinc-100 p-1.5">
-        <IoClose color="#666" size={18} />
+      <SheetClose
+        type="button"
+        aria-label="بستن"
+        className="flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
+      >
+        <X className="size-5" />
       </SheetClose>
     </SheetHeader>
   );

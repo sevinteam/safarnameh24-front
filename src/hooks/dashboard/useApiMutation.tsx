@@ -17,13 +17,29 @@ export default function useApiMutation<
       const isFullUrl = /^https?:\/\//i.test(url);
       const client = isFullUrl ? axios : axiosInstance;
 
+      let payload: any = variables;
+      if (
+        isFormData &&
+        typeof window !== 'undefined' &&
+        !(variables instanceof FormData) &&
+        variables &&
+        typeof variables === 'object'
+      ) {
+        const formData = new FormData();
+        Object.entries(variables as Record<string, any>).forEach(
+          ([key, val]) => {
+            if (val !== undefined && val !== null) {
+              formData.append(key, val);
+            }
+          },
+        );
+        payload = formData;
+      }
+
       const { data } = await client.request<TData>({
         url,
         method: method.toUpperCase(),
-        data: variables,
-        headers: isFormData
-          ? { 'Content-Type': 'multipart/form-data' }
-          : undefined,
+        data: payload,
       });
 
       return data;

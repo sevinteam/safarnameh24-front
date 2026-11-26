@@ -3,18 +3,32 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 import logo from '@/assets';
 import { generalInstance } from '@/utils/services';
 import { useScrollPosition } from '@/hooks';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 type CategoryItem = {
   id: string | number;
   title: string;
   slug?: string;
 };
+
+type RecentSearchItem = {
+  id: number;
+  query: string;
+  category: string;
+};
+
+const RECENT_SEARCHES_STORAGE_KEY = 'zarvan_blog_recent_searches';
 
 const DEFAULT_CATEGORIES: CategoryItem[] = [
   { id: 'danestani', title: 'دانستنی سفر', slug: 'danestani' },
@@ -24,7 +38,6 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
 ];
 
 function TourismMagazineHeaderContent() {
-  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get('category');
@@ -32,11 +45,30 @@ function TourismMagazineHeaderContent() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [isMounted, setIsMounted] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<RecentSearchItem[]>([]);
 
   useEffect(() => {
-    setIsMounted(true);
+    try {
+      const saved = localStorage.getItem(RECENT_SEARCHES_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setRecentSearches(parsed);
+        }
+      }
+    } catch {
+      // Ignore storage read errors
+    }
   }, []);
+
+  const persistRecentSearches = (items: RecentSearchItem[]) => {
+    setRecentSearches(items);
+    try {
+      localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // Ignore storage write errors
+    }
+  };
 
   // Fetch dynamic categories from backend if available
   const { data: rawCategories } = useQuery<any>({
@@ -59,14 +91,36 @@ function TourismMagazineHeaderContent() {
         ? rawCategories
         : DEFAULT_CATEGORIES;
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/blog?q=${encodeURIComponent(searchQuery.trim())}`);
+  const executeSearch = (queryText: string) => {
+    const trimmed = queryText.trim();
+    if (trimmed) {
+      const activeCatTitle =
+        categories.find((c) => (c.slug || String(c.id)) === activeCategory)
+          ?.title || 'مجله گردشگری';
+      const updated = [
+        {
+          id: Date.now(),
+          query: trimmed,
+          category: `دسته ${activeCatTitle}`,
+        },
+        ...recentSearches.filter((item) => item.query !== trimmed),
+      ].slice(0, 8);
+      persistRecentSearches(updated);
+      router.push(`/blog?q=${encodeURIComponent(trimmed)}`);
     } else {
       router.push('/blog');
     }
     setIsSearchOpen(false);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeSearch(searchQuery);
+  };
+
+  const handleDeleteRecentSearch = (id: number) => {
+    const updated = recentSearches.filter((item) => item.id !== id);
+    persistRecentSearches(updated);
   };
 
   const isScrolled = scrollPosition > 10;
@@ -87,8 +141,8 @@ function TourismMagazineHeaderContent() {
         <div className="flex w-full items-center justify-between mx-5 font-bold">
           {/* Right: Red Logo + Magazine Brand Name */}
           <Link
-            href="/blog"
-            className="flex items-center gap-3.5 group cursor-pointer"
+            href="/"
+            className="flex items-center gap-3.5 cursor-pointer"
           >
             <div className="flex-center size-14 overflow-hidden rounded-xl">
               <Image
@@ -101,7 +155,7 @@ function TourismMagazineHeaderContent() {
             </div>
 
             <div className="flex flex-col">
-              <span className="text-cs085 font-bold text-zinc-800 group-hover:text-red-600 transition-colors">
+              <span className="text-cs085 font-bold text-zinc-800">
                 مجله گردشگری زروان تریپ
               </span>
             </div>
@@ -147,42 +201,17 @@ function TourismMagazineHeaderContent() {
             })}
           </nav>
 
-          {/* Left: Search Box & Hotel Reservation Button */}
+          {/* Left: Search Button & Hotel Reservation Button */}
           <div className="flex items-center gap-3">
             {/* Search Trigger */}
             <div className="relative">
-              {isSearchOpen ? (
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="flex items-center rounded-[9px] bg-zinc-100 px-3 py-1.5 border border-zinc-200 transition-all"
-                >
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="جستجو در مقالات..."
-                    autoFocus
-                    className="w-36 bg-transparent text-xs font-bold text-zinc-800 outline-none placeholder:text-zinc-400 xl:w-48"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSearchOpen(false);
-                      setSearchQuery('');
-                    }}
-                    className="p-1 text-zinc-400 hover:text-zinc-600"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </form>
-              ) : (
-                <button
-                  onClick={() => setIsSearchOpen(true)}
-                  className="flex items-center justify-center rounded-[9px] bg-zinc-100 px-5 py-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200/80 active:scale-95"
-                >
-                  <span>جستجو</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center justify-center rounded-[9px] bg-zinc-100 px-5 py-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200/80 active:scale-95"
+              >
+                <span>جستجو</span>
+              </button>
             </div>
 
             {/* Hotel Reservation Button */}
@@ -200,7 +229,7 @@ function TourismMagazineHeaderContent() {
       <header className="sticky top-0 z-30 mx-4 mt-2 flex flex-col gap-3 rounded-2xl bg-white p-3.5 shadow-sm border border-zinc-100 lg:hidden">
         <div className="flex items-center justify-between">
           {/* Logo & Magazine title */}
-          <Link href="/blog" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="flex-center size-11 overflow-hidden rounded-lg">
               <Image
                 src={logo}
@@ -220,7 +249,8 @@ function TourismMagazineHeaderContent() {
           {/* Action buttons */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              type="button"
+              onClick={() => setIsSearchOpen(true)}
               className="flex h-9 items-center justify-center rounded-[9px] bg-zinc-100 px-3 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200"
               aria-label="جستجو"
             >
@@ -234,29 +264,6 @@ function TourismMagazineHeaderContent() {
             </Link>
           </div>
         </div>
-
-        {/* Mobile Search input when toggled */}
-        {isSearchOpen && (
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex items-center rounded-[9px] bg-zinc-50 px-3 py-2 border border-zinc-200"
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="جستجو در مقالات مجله گردشگری..."
-              className="flex-1 bg-transparent text-xs font-bold text-zinc-800 outline-none placeholder:text-zinc-400"
-            />
-            <button
-              type="button"
-              onClick={() => setIsSearchOpen(false)}
-              className="p-1 text-zinc-400"
-            >
-              <X className="size-3.5" />
-            </button>
-          </form>
-        )}
 
         {/* Mobile Horizontal Category Bar */}
         <div className="flex items-center gap-4 overflow-x-auto pb-1 scrollbar-none border-t border-zinc-100 pt-2 text-xs font-bold">
@@ -290,6 +297,108 @@ function TourismMagazineHeaderContent() {
           })}
         </div>
       </header>
+
+      {/* Search Drawer (Sheet) */}
+      <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+        <SheetContent
+          side="right"
+          dir="rtl"
+          className="w-[88vw] sm:w-[400px] sm:max-w-[400px] border-l-0 bg-white p-6 shadow-2xl data-[state=closed]:duration-300 data-[state=open]:duration-300"
+        >
+          <SheetDescription className="sr-only">
+            جستجو در مقالات مجله گردشگری زروان تریپ
+          </SheetDescription>
+
+          {/* Drawer Header: Zarvan Logo + Title on Right, Close Icon on Left */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex-center size-12 shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src={logo}
+                  alt="لوگو زروان تریپ"
+                  width={96}
+                  height={96}
+                  className="aspect-auto w-full object-contain"
+                />
+              </div>
+              <SheetTitle className="text-sm font-extrabold text-zinc-900">
+                مجله گردشگری زروان تریپ
+              </SheetTitle>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen(false)}
+              aria-label="بستن"
+              className="flex size-8 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+
+          {/* Search Input */}
+          <form onSubmit={handleSearchSubmit} className="mt-7">
+            <div className="rounded-xl border border-zinc-200/80 bg-white px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.04)]">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="دنبال چه مقاله ای میگردی..."
+                autoFocus
+                className="w-full bg-transparent text-xs font-semibold text-zinc-800 outline-none placeholder:text-zinc-400"
+              />
+            </div>
+          </form>
+
+          {/* Recent Searches */}
+          <div className="mt-7">
+            <h3 className="text-xs font-extrabold text-zinc-900">
+              جستجو های اخیر
+            </h3>
+            <div className="my-3.5 border-t border-dashed border-zinc-200" />
+
+            {recentSearches.length === 0 ? (
+              <p className="py-6 text-center text-xs font-medium text-zinc-400">
+                جستجوی اخیری ثبت نشده است
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {recentSearches.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery(item.query);
+                        executeSearch(item.query);
+                      }}
+                      className="flex flex-1 flex-col items-start text-right group"
+                    >
+                      <span className="text-xs font-bold text-zinc-800 group-hover:text-zinc-950">
+                        {item.query}
+                      </span>
+                      <span className="mt-0.5 text-[11px] font-medium text-zinc-400">
+                        {item.category}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteRecentSearch(item.id)}
+                      aria-label="حذف جستجو"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-md bg-cs-red/10 text-[#f30f26] transition hover:bg-cs-red/20"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

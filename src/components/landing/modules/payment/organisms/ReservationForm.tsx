@@ -16,6 +16,7 @@ import { usePaymentLoading } from '@/context';
 import { useUserAccountContext } from '@/context/UserAccountContext';
 import { useCheckAuth } from '@/hooks';
 import { payment } from '../helpers/constant';
+import { useReservationStatus } from '../helpers/useReservationStatus';
 
 import { formSchema } from '../helpers/schema';
 import { getFormDefaultValues } from '../utils';
@@ -41,6 +42,8 @@ export function ReservationForm() {
   const { handleToggleLoading } = usePaymentLoading();
 
   const trackingCode = searchParams.get(payment.reservationId);
+  const { status: capacityStatus } = useReservationStatus(trackingCode);
+  const isCapacityConfirmed = capacityStatus === 'confirmed';
   const isSubmittingRef = useRef(false);
 
   const { data, status } = useQuery<FormSchema>({
@@ -95,50 +98,74 @@ export function ReservationForm() {
     methods.reset(data);
   }, [data, status, trackingCode, methods]);
 
-  function handleNavigation() {
-    router.push(
-      `/payment/check-reservation-information?${payment.reservationId}=${trackingCode}`,
-      { scroll: false },
-    );
-  }
+  const handleNavigateTo = useCallback(
+    (url: string) => {
+      router.push(url, { scroll: false });
+    },
+    [router],
+  );
 
   // مدیریت ثبت فرم و هدایت به لاگین
-  const handleFormSubmit = useCallback(async (formData: FormSchema) => {
-    // اگر کاربر لاگین نبود، فرم به همراه کد پیگیری ذخیره شده و پنجره لاگین باز می‌شود
-    if (!checkIsUserAuth()) {
+  const handleFormSubmit = useCallback(
+    async (formData: FormSchema) => {
+      if (!isCapacityConfirmed) return;
+
+      // اگر کاربر لاگین نبود، فرم به همراه کد پیگیری ذخیره شده و پنجره لاگین باز می‌شود
+      if (!checkIsUserAuth()) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(
+            'pending_passenger_form',
+            JSON.stringify({ trackingCode, formData }),
+          );
+        }
+        openLoginModal();
+        return;
+      }
+
+      // پیشگیری از خطای ۴۰۰ توضیحات در صورت خالی بودن
       if (typeof window !== 'undefined') {
-        sessionStorage.setItem(
-          'pending_passenger_form',
-          JSON.stringify({ trackingCode, formData }),
-        );
+        const desc = sessionStorage.getItem(payment.descriptionKey);
+        if (!desc) {
+          sessionStorage.setItem(payment.descriptionKey, '');
+        }
       }
-      openLoginModal();
-      return;
-    }
 
-    // پیشگیری از خطای ۴۰۰ توضیحات در صورت خالی بودن
-    if (typeof window !== 'undefined') {
-      const desc = sessionStorage.getItem(payment.descriptionKey);
-      if (!desc) {
-        sessionStorage.setItem(payment.descriptionKey, '');
-      }
-    }
-
-    await onSubmit(
-      formData,
+      await onSubmit(
+        formData,
+        trackingCode,
+        handleNavigateTo,
+        handleToggleLoading,
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['reservation-form'] });
+          queryClient.invalidateQueries({ queryKey: ['reservation-form/1'] });
+          queryClient.invalidateQueries({ queryKey: ['reservation-invoice'] });
+          queryClient.invalidateQueries({
+            queryKey: ['reservation-description'],
+          });
+        },
+      );
+    },
+    [
+      isCapacityConfirmed,
+      checkIsUserAuth,
+      openLoginModal,
       trackingCode,
-      handleNavigation,
+      handleNavigateTo,
       handleToggleLoading,
-      () =>
-        queryClient.invalidateQueries({
-          queryKey: ['reservation-form'],
-        }),
-    );
-  }, [checkIsUserAuth, openLoginModal, trackingCode, handleToggleLoading, queryClient]);
+      queryClient,
+    ],
+  );
 
   // ۲. ارسال خودکار فرم بلافاصله پس از لاگین موفق کاربر (بدون پاک شدن اطلاعات)
   useEffect(() => {
-    if (!trackingCode || !checkIsUserAuth() || status !== 'success') return;
+    if (
+      !trackingCode ||
+      !checkIsUserAuth() ||
+      status !== 'success' ||
+      !isCapacityConfirmed
+    ) {
+      return;
+    }
 
     const savedRaw = sessionStorage.getItem('pending_passenger_form');
     if (!savedRaw || isSubmittingRef.current) return;
@@ -157,7 +184,15 @@ export function ReservationForm() {
     } catch {
       sessionStorage.removeItem('pending_passenger_form');
     }
-  }, [isAuthenticated, checkIsUserAuth, trackingCode, status, handleFormSubmit, methods]);
+  }, [
+    isAuthenticated,
+    isCapacityConfirmed,
+    checkIsUserAuth,
+    trackingCode,
+    status,
+    handleFormSubmit,
+    methods,
+  ]);
 
   return (
     <FormProvider {...methods}>
@@ -174,42 +209,61 @@ export function ReservationForm() {
             if (e.key === 'Enter') e.preventDefault();
           }}
         >
-          <Reserver />
-          {roomFields.map((room, roomIndex) => {
-            return (
-              <fieldset
-                key={room.id}
-                className="mt-6 space-y-5 border-b pb-7 last:border-0 last:pb-0"
-              >
-                <RoomInfo
-                  name={room.name}
-                  index={roomIndex}
-                  capacity={room.capacity}
-                  extraCapacity={room.extra_capacity}
-                  discountOnPurchase={room.discount_on_purchase}
-                />
+          {!isCapacityConfirmed && (
+            <div
+              className={`mb-5 rounded-xl border px-4 py-3 text-xs font-bold ${
+                capacityStatus === 'rejected'
+                  ? 'border-cs-red/20 bg-cs-red/5 text-cs-red'
+                  : 'border-zinc-200 bg-zinc-50 text-zinc-700'
+              }`}
+            >
+              {capacityStatus === 'rejected'
+                ? 'ظرفیت اتاق تایید نشد و امکان تکمیل مشخصات مسافران وجود ندارد.'
+                : 'در انتظار تایید ظرفیت اتاق... بلافاصله پس از تایید ظرفیت، فیلدهای مشخصات مسافران فعال می‌شوند.'}
+            </div>
+          )}
 
-                <MainPassenger roomIndex={roomIndex} />
-                <OtherPassengers
-                  roomIndex={roomIndex}
-                  control={methods.control}
-                  length={room.capacity - 1}
-                />
+          <fieldset
+            disabled={!isCapacityConfirmed}
+            className={!isCapacityConfirmed ? 'opacity-60 pointer-events-none select-none' : ''}
+          >
+            <Reserver />
+            {roomFields.map((room, roomIndex) => {
+              return (
+                <fieldset
+                  key={room.id}
+                  className="mt-6 space-y-5 border-b pb-7 last:border-0 last:pb-0"
+                >
+                  <RoomInfo
+                    name={room.name}
+                    index={roomIndex}
+                    capacity={room.capacity}
+                    extraCapacity={room.extra_capacity}
+                    discountOnPurchase={room.discount_on_purchase}
+                  />
 
-                <ExtraCapacityPassengers
-                  roomIndex={roomIndex}
-                  control={methods.control}
-                  length={room.extra_capacity}
-                  passengerPrice={room.extra_capacity_price}
-                />
+                  <MainPassenger roomIndex={roomIndex} />
+                  <OtherPassengers
+                    roomIndex={roomIndex}
+                    control={methods.control}
+                    length={room.capacity - 1}
+                  />
 
-                <HalfCharges
-                  roomIndex={roomIndex}
-                  halfCharges={room.half_charges}
-                />
-              </fieldset>
-            );
-          })}
+                  <ExtraCapacityPassengers
+                    roomIndex={roomIndex}
+                    control={methods.control}
+                    length={room.extra_capacity}
+                    passengerPrice={room.extra_capacity_price}
+                  />
+
+                  <HalfCharges
+                    roomIndex={roomIndex}
+                    halfCharges={room.half_charges}
+                  />
+                </fieldset>
+              );
+            })}
+          </fieldset>
         </form>
       )}
     </FormProvider>

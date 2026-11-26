@@ -23,6 +23,7 @@ export function PaymentInvoice() {
 
   const { data, status } = useQuery<Response>({
     queryKey: ['reservation-invoice'],
+    enabled: Boolean(trackingCode),
     queryFn: () => axiosInstance(`/hotel/reservation/invoice/${trackingCode}/`),
   });
 

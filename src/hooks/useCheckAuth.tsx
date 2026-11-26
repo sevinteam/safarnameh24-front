@@ -1,81 +1,144 @@
 import { useEffect, useState } from 'react';
-import { axiosInstance } from '@/utils/axios';
 import {
   clearAuthCookies,
   clearAuthTokens,
   extractTokensFromResponse,
+  getStoredAccessToken,
   getStoredRefreshToken,
   hasAuthHint,
   saveAuthTokens,
   setAuthCookies,
 } from '@/utils/authCookies';
 
+let inFlightVerifyPromise: Promise<boolean> | null = null;
+let verifiedSessionResult: boolean | null = null;
+let verifiedFingerprint: string | null = null;
+
+function getAuthFingerprint(): string {
+  const access = getStoredAccessToken() || '';
+  const refresh = getStoredRefreshToken() || '';
+  const hint = hasAuthHint() ? '1' : '0';
+  return `${hint}|${access}|${refresh}`;
+}
+
+async function verifyProfileWithFetch(token?: string | null): Promise<Response> {
+  const headers: Record<string, string> = {};
+  const activeToken = token ?? getStoredAccessToken();
+  if (activeToken) {
+    headers.Authorization = `Bearer ${activeToken}`;
+  }
+
+  return fetch('/api/v1/natural-profiles/', {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+    headers,
+  });
+}
+
+async function runSessionVerification(): Promise<boolean> {
+  if (!hasAuthHint()) {
+    return false;
+  }
+
+  try {
+    const profileRes = await verifyProfileWithFetch();
+    if (profileRes.ok) {
+      setAuthCookies();
+      return true;
+    }
+
+    if (profileRes.status === 401) {
+      const refreshToken = getStoredRefreshToken();
+      const refreshRes = await fetch('/api/v1/token/refresh/', {
+        method: 'POST',
+        credentials: 'include',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(refreshToken ? { refresh: refreshToken } : {}),
+      });
+
+      if (refreshRes.ok) {
+        let refreshedAccess: string | undefined;
+        try {
+          const payload = await refreshRes.json();
+          const { access, refresh } = extractTokensFromResponse(payload);
+          refreshedAccess = access;
+          if (access || refresh) {
+            saveAuthTokens({ access, refresh });
+          }
+        } catch {
+          // Response may rely solely on HttpOnly cookies
+        }
+
+        const retryProfileRes = await verifyProfileWithFetch(refreshedAccess);
+        if (retryProfileRes.ok) {
+          setAuthCookies();
+          return true;
+        }
+      }
+    }
+  } catch {
+    // Network failure or aborted check: fail closed without throwing AxiosError
+  }
+
+  clearAuthTokens();
+  clearAuthCookies();
+  return false;
+}
+
+function checkSessionShared(): Promise<boolean> {
+  const currentFingerprint = getAuthFingerprint();
+
+  if (
+    verifiedSessionResult !== null &&
+    verifiedFingerprint === currentFingerprint
+  ) {
+    return Promise.resolve(verifiedSessionResult);
+  }
+
+  if (!inFlightVerifyPromise) {
+    inFlightVerifyPromise = runSessionVerification()
+      .then((result) => {
+        verifiedSessionResult = result;
+        verifiedFingerprint = getAuthFingerprint();
+        return result;
+      })
+      .finally(() => {
+        inFlightVerifyPromise = null;
+      });
+  }
+
+  return inFlightVerifyPromise;
+}
+
 export function useCheckAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const hasHint = hasAuthHint();
+    let active = true;
 
-    if (!hasHint) {
-      // Even without client cookie/localStorage (e.g., HttpOnly cookie only), verify session quietly
-      axiosInstance
-        .get('/natural-profiles/')
-        .then(() => {
-          setAuthCookies();
-          setIsAuthenticated(true);
-        })
-        .catch(() => {
-          setIsAuthenticated(false);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+    if (!hasAuthHint()) {
+      setIsAuthenticated(false);
+      setLoading(false);
       return;
     }
 
-    setIsAuthenticated(true);
-
-    axiosInstance
-      .get('/natural-profiles/')
-      .then(() => {
-        setAuthCookies();
-        setIsAuthenticated(true);
-      })
-      .catch(async (err) => {
-        if (err.response?.status === 401) {
-          try {
-            const refreshToken = getStoredRefreshToken();
-            const refreshResponse = await axiosInstance.post(
-              '/token/refresh/',
-              refreshToken ? { refresh: refreshToken } : {},
-              { withCredentials: true },
-            );
-
-            const { access, refresh } = extractTokensFromResponse(
-              refreshResponse.data,
-            );
-
-            if (access || refresh) {
-              saveAuthTokens({ access, refresh });
-            }
-
-            // Verify profile is reachable after refresh (supports both cookie & Bearer auth)
-            await axiosInstance.get('/natural-profiles/');
-            setAuthCookies();
-            setIsAuthenticated(true);
-          } catch {
-            clearAuthTokens();
-            clearAuthCookies();
-            setIsAuthenticated(false);
-          }
-        }
+    checkSessionShared()
+      .then((authenticated) => {
+        if (!active) return;
+        setIsAuthenticated(authenticated);
       })
       .finally(() => {
+        if (!active) return;
         setLoading(false);
       });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   return { isAuthenticated, loading };
 }
-

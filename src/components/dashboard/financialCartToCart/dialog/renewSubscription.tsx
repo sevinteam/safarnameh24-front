@@ -8,7 +8,7 @@ import useApiMutation from '@/hooks/dashboard/useApiMutation';
 import { RenewSubscriptionDialogProps } from '@/types/dashboard/component';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { phoneNumberValidator, verifyIranianNationalId } from '@persian-tools/persian-tools';
-import { JSX } from 'react';
+import { JSX, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import toast from '../../ui/customSonner/toast';
@@ -58,16 +58,29 @@ export default function RenewSubscriptionDialog({
 }: RenewSubscriptionDialogProps): JSX.Element {
   // Defining hooks
   const userInfo = useUserInfo();
+  const defaultName = `${userInfo.first_name || ''} ${userInfo.last_name || ''}`.trim();
+  const defaultPhone = userInfo.phone_number || '';
+  const defaultNationalCode = userInfo.national_code || '';
+
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
-     mode: "all",
-     values: {
-       name: `${userInfo.first_name} ${userInfo.last_name}`,
-       phoneNumber: userInfo.phone_number,
-       nationalCode: userInfo.national_code,
-       file: new File([], "")
-     },
-  })
+    mode: "all",
+    defaultValues: {
+      name: defaultName,
+      phoneNumber: defaultPhone,
+      nationalCode: defaultNationalCode,
+    },
+  });
+
+  useEffect(() => {
+    if (!open) {
+      form.reset({
+        name: defaultName,
+        phoneNumber: defaultPhone,
+        nationalCode: defaultNationalCode,
+      });
+    }
+  }, [open, defaultName, defaultPhone, defaultNationalCode, form]);
 
   const setData = useApiMutation({
     url: "/subscription/renewal-request/",
@@ -188,7 +201,7 @@ export default function RenewSubscriptionDialog({
               error={form.formState.errors.file?.message}
               onChange={(e) => {
                 const files = e.currentTarget.files;
-                if (files) {
+                if (files && files[0]) {
                    form.setValue("file", files[0], {
                      shouldValidate: true
                   });

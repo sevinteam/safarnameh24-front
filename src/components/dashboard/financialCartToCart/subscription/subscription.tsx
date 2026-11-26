@@ -46,6 +46,27 @@ export default function Subscription({
 
   // Defining varaiables
   const loading = [getData.isLoading, chartsData.isLoading].some(item => item === true);
+  const chartItems = Array.isArray(chartsData.data) ? chartsData.data : [];
+
+  const hasActiveSubscription = Boolean(getData.data?.expiration_date);
+  const formatSubscriptionType = (type?: string) => {
+    if (!type) return 'تعیین نشده';
+    if (type === 'auto') return 'تمدید خودکار';
+    if (type === 'manual') return 'دستی';
+    if (type === 'ارتقا') return 'ارتقا بر اساس خرید';
+    return type;
+  };
+  const isRenewalCostAvailable =
+    getData.data?.renewal_cost !== null &&
+    getData.data?.renewal_cost !== undefined;
+  const amountLabel = isRenewalCostAvailable ? 'هزینه تمدید :' : 'مجموع خرید :';
+  const amountValue = isRenewalCostAvailable
+    ? `${numberSeparation(Number(getData.data?.renewal_cost))} تومان`
+    : getData.data?.purchased_amount !== null &&
+        getData.data?.purchased_amount !== undefined
+      ? `${numberSeparation(Number(getData.data?.purchased_amount))} تومان`
+      : 'تعیین نشده';
+  const hasProgress = Boolean(getData.data?.progress);
 
   // Returning JSX
   return (
@@ -56,7 +77,7 @@ export default function Subscription({
       )}
     >
       {
-        !loading && !getData.isError && getData.data && (
+        !loading && !getData.isError && getData.data?.progress && (
           <SubscriptionDetailsDialog
             data={getData.data.progress}
             open={detailsDialogOpened}
@@ -98,18 +119,15 @@ export default function Subscription({
                 ? false
                 : !loading && !getData.isError && getData.data
                   ? getData.data.expiration_date && isNearISO(getData.data.expiration_date) && (
-                    <>
-                      <RenewSubscriptionDialog open={renewalDialogOpened} onOpenChange={setRenewalDialogOpened} />
-                      <Tooltip content='تمدید اشتراک'>
-                        <button onClick={() => setRenewalDialogOpened(true)} className="size-[45px] shrink-0 flex items-center justify-center rounded-md text-white  transition-all duration-500 bg-black">
-                          <IconsaxIcons
-                            name="Repeat"
-                            className="w-[20px] h-[20px]"
-                            color="currentColor"
-                          />
-                        </button>
-                      </Tooltip>
-                    </>
+                    <Tooltip content='تمدید اشتراک'>
+                      <button onClick={() => setRenewalDialogOpened(true)} className="size-[45px] shrink-0 flex items-center justify-center rounded-md text-white  transition-all duration-500 bg-black">
+                        <IconsaxIcons
+                          name="Repeat"
+                          className="w-[20px] h-[20px]"
+                          color="currentColor"
+                        />
+                      </button>
+                    </Tooltip>
                   )
                   : false
           }
@@ -119,7 +137,7 @@ export default function Subscription({
         {
           loading
             ? <Skeleton className='lg:w-[125px] w-full lg:h-full h-[145px] bg-gray-100 border-[1.5px] border-black/10 lg:rounded-lg rounded-[10px] shrink-0' />
-            : chartsData.isError || !chartsData.data || chartsData.data.length === 0
+            : chartsData.isError || chartItems.length === 0
               ? (
                 <div className="lg:w-[125px] w-full lg:h-full h-[145px] bg-gray-100 border-[1.5px] border-black/10 lg:rounded-lg rounded-[10px] shrink-0 overflow-auto scrollbar-hide flex items-center flex-col justify-center">
                   <ICChartDown
@@ -130,17 +148,15 @@ export default function Subscription({
                     مبلغ چارت نامعلوم
                   </span>
                 </div>
-              ) : !loading && !chartsData.isError && chartsData.data
-                ? (
-                  <div className="lg:w-[125px] w-full lg:h-full h-[145px] bg-gray-100 border-[1.5px] border-black/10 lg:rounded-lg rounded-[10px] shrink-0 overflow-auto scrollbar-hide flex items-end justify-start">
-                    <SubscriptionChart chart={chartsData.data} />
-                  </div>
-                )
-                : false
+              ) : (
+                <div className="lg:w-[125px] w-full lg:h-full h-[145px] bg-gray-100 border-[1.5px] border-black/10 lg:rounded-lg rounded-[10px] shrink-0 overflow-auto scrollbar-hide flex items-end justify-start">
+                  <SubscriptionChart chart={chartItems} />
+                </div>
+              )
         }
         <div className="w-full h-full flex flex-col justify-center lg:gap-5 gap-[10px] items-start">
           <span className="block text-right font-semibold text-black lg:text-cs75 text-[10px] truncate w-full">
-            کارت اشتراک ندارید!
+            {loading ? 'در حال بررسی...' : hasActiveSubscription ? 'کارت اشتراک فعال' : 'کارت اشتراک ندارید!'}
           </span>
           <div className="flex items-center justify-between gap-3 w-full">
             <span className="block text-right font-medium text-black lg:text-cs07 text-[10px] truncate">
@@ -175,14 +191,14 @@ export default function Subscription({
                     </span>
                   ) : !loading && !getData.isError && getData.data ? (
                     <span className="block text-left font-medium text-black lg:text-cs07 text-[10px] truncate">
-                      {getData.data.subscription_type}
+                      {formatSubscriptionType(getData.data.subscription_type)}
                     </span>
                   ) : false
             }
           </div>
           <div className="flex items-center justify-between gap-3 w-full">
             <span className="block text-right font-medium text-black lg:text-cs07 text-[10px] truncate">
-              مبلغ اشتراک :
+              {amountLabel}
             </span>
             <span className="block text-left font-medium text-black lg:text-cs07 text-[10px] truncate">
               {
@@ -195,7 +211,7 @@ export default function Subscription({
                       </span>
                     ) : !loading && !getData.isError && getData.data ? (
                       <span className="block text-left font-medium text-black lg:text-cs07 text-[10px] truncate">
-                        {getData.data.purchased_amount ? `${numberSeparation(getData.data.purchased_amount)} تومان` : "تعیین نشده"}
+                        {amountValue}
                       </span>
                     ) : false
               }
@@ -204,8 +220,12 @@ export default function Subscription({
         </div>
       </div>
       <div className="px-4 pb-4 shrink-0 w-full">
-        <button disabled={loading || getData.isError || !getData.data} className="bg-black rounded-lg items-center justify-center flex text-white w-full px-3 h-[40px] text-cs07 border border-black font-semibold transition-all duration-500 disabled:bg-white disabled:text-black" onClick={() => setDetailsDialogOpened(true)}>
-          جزییات استفاده کارت اشتراکی
+        <button
+          disabled={loading || getData.isError || !getData.data || !hasProgress}
+          className="bg-black rounded-lg items-center justify-center flex text-white w-full px-3 h-[40px] text-cs07 border border-black font-semibold transition-all duration-500 disabled:bg-white disabled:text-black/40 disabled:border-black/10"
+          onClick={() => setDetailsDialogOpened(true)}
+        >
+          {hasProgress ? 'جزییات استفاده کارت اشتراکی' : 'جزییات ارتقا (تکمیل شده)'}
         </button>
       </div>
     </div>

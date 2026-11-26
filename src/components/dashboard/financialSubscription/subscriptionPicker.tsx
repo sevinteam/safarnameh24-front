@@ -32,6 +32,29 @@ export default function SubscriptionPicker({
     },
   });
 
+  const rawPackages = getData.data as
+    | GETSubscriptionPackages[]
+    | { data?: GETSubscriptionPackages[]; results?: GETSubscriptionPackages[] }
+    | undefined;
+  const packages: GETSubscriptionPackages[] = Array.isArray(rawPackages)
+    ? rawPackages
+    : rawPackages &&
+        typeof rawPackages === 'object' &&
+        'data' in rawPackages &&
+        Array.isArray(rawPackages.data)
+      ? rawPackages.data
+      : rawPackages &&
+          typeof rawPackages === 'object' &&
+          'results' in rawPackages &&
+          Array.isArray(rawPackages.results)
+        ? rawPackages.results
+        : [];
+  const safeSlideIndex =
+    packages.length > 0
+      ? Math.min(Math.max(activeSwiperSlideIndex, 0), packages.length - 1)
+      : 0;
+  const activePackage = packages[safeSlideIndex];
+
   // Returning JSX
   return (
     <div
@@ -41,9 +64,9 @@ export default function SubscriptionPicker({
         className,
       )}
     >
-      {!getData.isLoading && !getData.isError && getData.data && (
+      {!getData.isLoading && !getData.isError && activePackage && (
         <BuySubscriptionDialog
-          id={getData.data[activeSwiperSlideIndex].id}
+          id={activePackage.id}
           open={modalOpened}
           onOpenChange={setModalOpened}
         />
@@ -71,9 +94,9 @@ export default function SubscriptionPicker({
         ) : (
           <button
             className="flex h-[38px] w-fit shrink-0 items-center justify-center truncate rounded-md border border-green-500 bg-green-500 px-3 text-cs75 text-xs font-medium text-white transition-all duration-500 hover:bg-green-600 disabled:border-black/10 disabled:bg-gray-50 disabled:text-black lg:h-[45px] lg:w-[125px] lg:px-6 lg:text-sm"
-            disabled={disabled || getData.isError || !getData.data}
+            disabled={disabled || getData.isError || !activePackage}
             tabIndex={disabled ? -1 : 0}
-            onClick={() => !disabled && setModalOpened(true)}
+            onClick={() => !disabled && activePackage && setModalOpened(true)}
           >
             خرید اشتراک
           </button>
@@ -83,8 +106,8 @@ export default function SubscriptionPicker({
         <div className="flex h-[190px] items-center justify-center overflow-hidden rounded-xl bg-gray-200 px-8 lg:col-span-4 lg:h-[230px]">
           {getData.isLoading ? (
             <Skeleton className="h-[175px] w-full bg-black/50" />
-          ) : disabled || (!disabled && getData.data?.length === 0) ? (
-            <div className="hidden h-[175px] w-full flex-col items-center justify-between gap-3 rounded-xl bg-gray-300 bg-gradient-to-bl from-transparent to-cs-red p-4 text-white">
+          ) : disabled || getData.isError || packages.length === 0 ? (
+            <div className="flex h-[175px] w-full flex-col items-center justify-between gap-3 rounded-xl bg-gray-300 bg-gradient-to-bl from-transparent to-cs-red p-4 text-white">
               <div className="w-full">
                 <span className="block flex-1 truncate text-left text-cs75 font-semibold text-white">
                   اشتراک زروان تریپ
@@ -92,7 +115,7 @@ export default function SubscriptionPicker({
               </div>
               <div className="w-full">
                 <span className="mb-1.5 block truncate text-left text-cs95 font-medium text-white">
-                  _
+                  {getData.isError ? 'خطا در دریافت بسته ها' : 'بسته ای یافت نشد'}
                 </span>
                 <span className="block truncate text-left text-cs85 font-semibold text-white">
                   _
@@ -100,44 +123,41 @@ export default function SubscriptionPicker({
               </div>
             </div>
           ) : (
-            !getData.isError &&
-            getData.data && (
-              <Swiper
-                className="h-[175px] w-full !overflow-visible"
-                spaceBetween={20}
-                enabled={!disabled}
-                onSlideChange={(swiper) => {
-                  const activeIndex = swiper.activeIndex;
-                  setActiveSwiperSlideIndex(activeIndex);
-                }}
-              >
-                {getData.data.map((item, index) => (
-                  <SwiperSlide key={index}>
-                    <div
-                      style={{
-                        background: item.color,
-                        backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0, 0.5) , ${item.color})`,
-                      }}
-                      className="flex h-full w-full flex-col items-center justify-between gap-3 rounded-xl bg-gray-300 bg-gradient-to-bl from-transparent p-4 text-white"
-                    >
-                      <div className="w-full">
-                        <span className="block flex-1 truncate text-left text-cs75 font-semibold text-white">
-                          اشتراک زروان تریپ
-                        </span>
-                      </div>
-                      <div className="w-full">
-                        <span className="mb-1.5 block truncate text-left text-cs95 font-medium text-white">
-                          {item.name}
-                        </span>
-                        <span className="block truncate text-left text-cs85 font-semibold text-white">
-                          {`${addCommas(Number(item.monthly_cost))} تومان`}
-                        </span>
-                      </div>
+            <Swiper
+              className="h-[175px] w-full !overflow-visible"
+              spaceBetween={20}
+              enabled={!disabled}
+              onSlideChange={(swiper) => {
+                const activeIndex = swiper.activeIndex;
+                setActiveSwiperSlideIndex(activeIndex);
+              }}
+            >
+              {packages.map((item, index) => (
+                <SwiperSlide key={item.id ?? index}>
+                  <div
+                    style={{
+                      background: item.color,
+                      backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0, 0.5) , ${item.color})`,
+                    }}
+                    className="flex h-full w-full flex-col items-center justify-between gap-3 rounded-xl bg-gray-300 bg-gradient-to-bl from-transparent p-4 text-white"
+                  >
+                    <div className="w-full">
+                      <span className="block flex-1 truncate text-left text-cs75 font-semibold text-white">
+                        اشتراک زروان تریپ
+                      </span>
                     </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            )
+                    <div className="w-full">
+                      <span className="mb-1.5 block truncate text-left text-cs95 font-medium text-white">
+                        {item.name}
+                      </span>
+                      <span className="block truncate text-left text-cs85 font-semibold text-white">
+                        {`${addCommas(Number(item.monthly_cost || 0))} تومان`}
+                      </span>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           )}
         </div>
         <div className="grid gap-4 lg:col-span-5 lg:grid-cols-2">
@@ -156,18 +176,12 @@ export default function SubscriptionPicker({
                 </span>
                 {getData.isLoading ? (
                   <Skeleton className="h-[18px] w-full" />
-                ) : getData.isError ? (
+                ) : (
                   <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    -
-                  </span>
-                ) : !getData.isLoading && !getData.isError && getData.data ? (
-                  <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    {activeSwiperSlideIndex !== undefined
-                      ? getData.data[activeSwiperSlideIndex].name
+                    {!getData.isError && activePackage?.name
+                      ? activePackage.name
                       : '-'}
                   </span>
-                ) : (
-                  false
                 )}
               </div>
             </div>
@@ -185,18 +199,12 @@ export default function SubscriptionPicker({
                 </span>
                 {getData.isLoading ? (
                   <Skeleton className="h-[18px] w-full" />
-                ) : getData.isError ? (
+                ) : (
                   <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    -
-                  </span>
-                ) : !getData.isLoading && !getData.isError && getData.data ? (
-                  <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    {activeSwiperSlideIndex !== undefined
-                      ? getData.data[activeSwiperSlideIndex].short_description
+                    {!getData.isError && activePackage?.short_description
+                      ? activePackage.short_description
                       : '-'}
                   </span>
-                ) : (
-                  false
                 )}
               </div>
             </div>
@@ -214,50 +222,57 @@ export default function SubscriptionPicker({
                 </span>
                 {getData.isLoading ? (
                   <Skeleton className="h-[18px] w-full" />
-                ) : getData.isError ? (
+                ) : (
                   <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    -
-                  </span>
-                ) : !getData.isLoading && !getData.isError && getData.data ? (
-                  <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    {activeSwiperSlideIndex !== undefined
-                      ? `${addCommas(Number(getData.data[activeSwiperSlideIndex].monthly_cost))} تومان`
+                    {!getData.isError && activePackage?.monthly_cost !== undefined
+                      ? `${addCommas(Number(activePackage.monthly_cost))} تومان`
                       : '-'}
                   </span>
-                ) : (
-                  false
                 )}
               </div>
             </div>
             <div className="flex items-center justify-start gap-3">
               <div className="flex h-[45px] w-[45px] shrink-0 items-center justify-center rounded-[10px] border border-black/10 text-black lg:rounded-md">
                 <IconsaxIcons
-                  name="ColorSwatch"
+                  name="Crown1"
                   className="h-[20px] w-[20px]"
                   color="currentColor"
                 />
               </div>
               <div className="w-full overflow-hidden">
                 <span className="mb-1 block truncate text-right text-[12px] font-semibold text-black lg:text-cs75">
-                  رنگ
+                  ارتقا به سطح کاربری
                 </span>
                 {getData.isLoading ? (
                   <Skeleton className="h-[18px] w-full" />
-                ) : getData.isError ? (
+                ) : (
                   <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    -
-                  </span>
-                ) : !getData.isLoading && !getData.isError && getData.data ? (
-                  <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
-                    {activeSwiperSlideIndex !== undefined
-                      ? getData.data[activeSwiperSlideIndex].upgrade_to_level
+                    {!getData.isError && activePackage?.upgrade_to_level
+                      ? activePackage.upgrade_to_level
                       : '-'}
                   </span>
-                ) : (
-                  false
                 )}
               </div>
             </div>
+            {activePackage?.period_fk && (
+              <div className="flex items-center justify-start gap-3">
+                <div className="flex h-[45px] w-[45px] shrink-0 items-center justify-center rounded-[10px] border border-black/10 text-black lg:rounded-md">
+                  <IconsaxIcons
+                    name="Calendar"
+                    className="h-[20px] w-[20px]"
+                    color="currentColor"
+                  />
+                </div>
+                <div className="w-full overflow-hidden">
+                  <span className="mb-1 block truncate text-right text-[12px] font-semibold text-black lg:text-cs75">
+                    دوره پرداخت
+                  </span>
+                  <span className="truncate text-right text-[10px] font-bold text-black/50 lg:text-cs75 lg:font-semibold">
+                    {activePackage.period_fk}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex flex-col items-center justify-between space-y-4 lg:h-[230px]">
             <div className="flex w-full items-center justify-start gap-3">
@@ -278,25 +293,21 @@ export default function SubscriptionPicker({
                   <Skeleton key={index} className="h-[18px] w-full" />
                 ))}
               </div>
-            ) : getData.isError ? (
-              false
-            ) : !getData.isLoading && !getData.isError && getData.data ? (
-              activeSwiperSlideIndex !== undefined && (
-                <ul className="custom-scrollbar w-full list-inside list-disc space-y-4 overflow-auto lg:h-full">
-                  {getData.data[activeSwiperSlideIndex].options.map(
-                    (item, index) => (
-                      <li
-                        className="truncate text-right text-[12px] font-bold text-black/75 lg:text-cs75 lg:font-semibold"
-                        key={index}
-                      >
-                        {item.name}
-                      </li>
-                    ),
-                  )}
-                </ul>
-              )
+            ) : !getData.isError && activePackage?.options?.length ? (
+              <ul className="custom-scrollbar w-full list-inside list-disc space-y-4 overflow-auto lg:h-full">
+                {activePackage.options.map((item, index) => (
+                  <li
+                    className="truncate text-right text-[12px] font-bold text-black/75 lg:text-cs75 lg:font-semibold"
+                    key={index}
+                  >
+                    {item.name}
+                  </li>
+                ))}
+              </ul>
             ) : (
-              false
+              <span className="w-full text-right text-[12px] font-medium text-black/50 lg:h-full">
+                -
+              </span>
             )}
           </div>
         </div>

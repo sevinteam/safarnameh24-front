@@ -28,14 +28,14 @@ export default function DHeaderStatics() {
   const subtitle = data?.data.header_sub_title;
 
   return (
-    <Link href={'/'} className="flex items-center gap-3.5">
-      <div className="flex-center size-16 p-1 overflow-hidden rounded-cs-10">
+    <Link href={'/'} className="flex items-center gap-3.5 hover:opacity-100 transition-none">
+      <div className="flex-center size-16 p-1 overflow-hidden rounded-cs-10 transition-none">
         <Image
           src={logo}
           alt="logo"
           width={100}
           height={100}
-          className="aspect-auto w-full"
+          className="aspect-auto w-full transition-none hover:scale-100"
         />
       </div>
 
@@ -45,9 +45,9 @@ export default function DHeaderStatics() {
           <Skeleton className="h-4 w-40" />
         </div>
       ) : (
-        <div className="max-w-48 space-y-0.5 text-cs08 text-zinc-800">
-          <span className="block truncate font-extrabold">{title}</span>
-          <span className="block truncate font-inter font-semibold capitalize">
+        <div className="max-w-48 space-y-0.5 text-cs08 text-zinc-800 transition-none">
+          <span className="block truncate font-extrabold text-zinc-800 hover:text-zinc-800 hover:opacity-100 transition-none">{title}</span>
+          <span className="block truncate font-inter font-semibold capitalize text-zinc-800 hover:text-zinc-800 hover:opacity-100 transition-none">
             {subtitle}
           </span>
         </div>

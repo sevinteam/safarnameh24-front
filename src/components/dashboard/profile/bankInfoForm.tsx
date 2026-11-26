@@ -109,19 +109,13 @@ export default function BankInfoForm({
     data.email && formData.append('email', data.email);
     data.postCode && formData.append('postal_code', data.postCode);
     data.address && formData.append('address', data.address);
-    !useUserImage && formData.append('image', file || '');
+    if (!useUserImage && file) {
+      formData.append('image', file);
+    }
     formData.append('national_code', data.meliCode);
-    formData.append('level', userInfo.level?.toString() || '0');
-
-    data.creditCard ||
-      (data.creditCard !== '' &&
-        formData.append(
-          'card_numbers',
-          JSON.stringify({
-            card_number: data.creditCard,
-            iban: data.shabaNumber,
-          }),
-        ));
+    if (userInfo.level) {
+      formData.append('level', userInfo.level.toString());
+    }
 
     await setPersonalInfoFetch.mutateAsync(formData);
   };

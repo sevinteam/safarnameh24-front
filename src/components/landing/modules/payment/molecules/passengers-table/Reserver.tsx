@@ -20,7 +20,7 @@ export function Reserver(props: Props) {
               readOnly
               type="text"
               key={item[0]}
-              value={item[1]}
+              value={item[1] ?? ''}
               className="bg-zinc-100/50 w-full h-10 text-zinc-600 text-[0.8rem] font-semibold px-4 border outline-none rounded-lg"
             />
           ))}

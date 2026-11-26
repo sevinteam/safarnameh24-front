@@ -20,6 +20,7 @@ export function HotelPicture() {
 
   const { data, status } = useQuery<ApiResponse>({
     queryKey: ['reservation-hotel-image'],
+    enabled: Boolean(trackingCode),
     queryFn: () =>
       axiosInstance(`/hotel/reservation/hotel-slug/${trackingCode}/`),
   });

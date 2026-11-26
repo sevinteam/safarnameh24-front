@@ -1,3 +1,6 @@
+'use client';
+
+import { useMemo } from 'react';
 import Countdown from 'react-countdown';
 
 type Props = {
@@ -9,25 +12,30 @@ type Props = {
 export function TimerDisplay(props: Props) {
   const { seconds } = props;
 
-  if (!seconds) return;
-  const endTime = Date.now() + seconds * 1000;
+  const endTime = useMemo(() => {
+    if (seconds === null || seconds === undefined || seconds < 0) return null;
+    return Date.now() + seconds * 1000;
+  }, [seconds]);
+
+  if (endTime === null) return null;
 
   return (
     <Countdown
+      key={endTime}
       date={endTime}
-      renderer={({ minutes, seconds }) => {
+      renderer={({ minutes, seconds: remainingSeconds }) => {
         return (
           <div className="flex-between items-center">
             <span>زمان باقی مانده :</span>
 
-            <div className="font-bold flex items-center h-9 gap-2">
-              <span className="border rounded-md h-full aspect-square flex-center">
-                {String(seconds).padStart(2, '0')}
+            <div className="flex h-9 items-center gap-2 font-bold">
+              <span className="flex-center aspect-square h-full rounded-md border">
+                {String(remainingSeconds).padStart(2, '0')}
               </span>
 
               <span>:</span>
 
-              <span className="border rounded-md h-full aspect-square flex-center">
+              <span className="flex-center aspect-square h-full rounded-md border">
                 {String(minutes).padStart(2, '0')}
               </span>
             </div>

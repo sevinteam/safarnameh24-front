@@ -54,11 +54,11 @@ export default function ReserveButton(props: Props) {
 
       if (trackingCode) {
         router.push(
-          `/payment/complete-passengers-information?${payment.reservationId}=${trackingCode}`,
+          `/payment/check-reservation-information?${payment.reservationId}=${trackingCode}`,
           { scroll: false },
         );
       } else {
-        router.push('/payment/complete-passengers-information', { scroll: false });
+        router.push('/payment/check-reservation-information', { scroll: false });
       }
     },
     onError: (error) => {

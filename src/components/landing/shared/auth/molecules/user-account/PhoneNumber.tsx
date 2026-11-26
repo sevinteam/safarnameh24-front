@@ -49,29 +49,42 @@ export default function PhoneNumber(props: Props) {
     mutationFn: (data: { phone: string }) => {
       return generalInstance.post('/auth/', data);
     },
-    onError: (error: AxiosError<{ detail?: string; message?: string }>) => {
-      if (error?.response?.status === 502 || error?.response?.status === 504) {
+    onError: (error: AxiosError<any>) => {
+      const status = error?.response?.status;
+      if (status === 502 || status === 504) {
         form.setError('phoneNumber', {
           message:
             'سرور بک‌اند در دسترس نیست (502 Bad Gateway). لطفاً سرویس Django/Gunicorn را در سرور بررسی فرمایید.',
         });
         return;
       }
+
+      const data = error?.response?.data;
       const serverError =
-        error?.response?.data?.detail ||
-        (error?.response?.data as any)?.message;
+        data?.detail ||
+        data?.message ||
+        data?.error ||
+        (Array.isArray(data?.phone) ? data.phone[0] : undefined) ||
+        (Array.isArray(data?.non_field_errors)
+          ? data.non_field_errors[0]
+          : undefined);
+
       if (
-        serverError &&
+        typeof serverError === 'string' &&
         (serverError.includes('قبلاً') || serverError.includes('وارد شده‌اید'))
       ) {
         setAuthCookies();
         window.location.reload();
         return;
       }
+
       form.setError('phoneNumber', {
-        message: serverError
-          ? serverError
-          : 'مشکلی در ارسال پیامک به وجود آمده است، لطفاً مجدداً تلاش نمایید.',
+        message:
+          typeof serverError === 'string' && serverError.trim()
+            ? serverError
+            : status === 403
+              ? 'درخواست ارسال پیامک توسط فایروال یا سرور مسدود شد (403).'
+              : 'مشکلی در ارسال پیامک به وجود آمده است، لطفاً مجدداً تلاش نمایید.',
       });
     },
     onSuccess: () => {

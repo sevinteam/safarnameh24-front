@@ -20,7 +20,7 @@ import { useUserAccountContext } from '@/context/UserAccountContext';
 
 export default function DesktopHeader() {
   const pathname = usePathname();
-  const { isAuthenticated } = useCheckAuth();
+  const { isAuthenticated, loading: authLoading } = useCheckAuth();
 
   const { toggle } = useUserAccountContext();
   const scrollPosition = useScrollPosition();
@@ -39,7 +39,8 @@ export default function DesktopHeader() {
     fetchStatus,
     data: personalData,
   } = useQuery<GETPersonalProfile>({
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !authLoading,
+    retry: false,
     queryKey: ['natural-profiles'],
     queryFn: () =>
       axiosInstance('/natural-profiles/').then((data) => data.data),
@@ -64,7 +65,7 @@ export default function DesktopHeader() {
             <UserFavorites />
 
             {/* 2. شرط‌بندی رندر اولیه برای جلوگیری از خطای Hydration */}
-            {!isMounted ? (
+            {!isMounted || authLoading ? (
               // در سمت سرور و رندر اولیه کلاینت، همیشه لودینگ را نشان می‌دهیم
               <button className="flex-center w-16 gap-2 rounded-lg bg-zinc-200/50 xl:w-28">
                 <span className="loader-dots-dark"></span>

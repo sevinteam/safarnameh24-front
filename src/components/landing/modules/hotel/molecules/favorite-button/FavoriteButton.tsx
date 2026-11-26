@@ -34,11 +34,12 @@ export function FavoriteButton(props: Props) {
   const callReactions = useCallReactions();
 
   // === Check-Auth
-  const { isAuthenticated } = useCheckAuth();
+  const { isAuthenticated, loading: authLoading } = useCheckAuth();
 
   // === Check Hotel-Collections Length
   const { data: hotelCollections, status } = useQuery({
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !authLoading,
+    retry: false,
     queryKey: ['hotel-favorite-collections'],
     queryFn: () => axiosInstance('/favorite/website/collections/'),
   });
@@ -54,7 +55,8 @@ export function FavoriteButton(props: Props) {
 
   // === Check Favorite-Status
   const { data: favoriteStatus } = useQuery({
-    enabled: Boolean(isAuthenticated && hotelId),
+    enabled: Boolean(isAuthenticated && !authLoading && hotelId),
+    retry: false,
     queryKey: ['hotel-favorite-status'],
     queryFn: () =>
       axiosInstance(`/favorite/favorites/${hotelId}/status/?type=hotel`),

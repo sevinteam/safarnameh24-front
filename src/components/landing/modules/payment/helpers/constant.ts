@@ -7,12 +7,12 @@ export const payment = {
   descriptionKey: 'reservation-description',
   reservationId: 'tracking-code',
   stepper: [
+    { icon: 'Buildings' as IconsName, step: 'اول', title: 'بررسی ظرفیت اتاق' },
     {
       icon: 'Profile2User' as IconsName,
-      step: 'اول',
+      step: 'دوم',
       title: 'تکمیل مشخصات مسافران',
     },
-    { icon: 'Buildings' as IconsName, step: 'دوم', title: 'بررسی ظرفیت اتاق' },
     { icon: 'EmptyWallet' as IconsName, step: 'سوم', title: 'پرداخت وجه' },
     { icon: 'Receipt21' as IconsName, step: 'چهارم', title: 'صدور واچر' },
   ],
@@ -24,6 +24,30 @@ export const payment = {
   },
   passengersNoteBook: [
     {
+      first_name: 'پرهام',
+      last_name: 'رحیمی',
+      phone_number: '09912346595',
+      national_code: '0024773662',
+    },
+    {
+      first_name: 'علیرضا',
+      last_name: 'آذرخش آلوچه',
+      phone_number: '09912346595',
+      national_code: '0024773662',
+    },
+    {
+      first_name: 'امیرحسین',
+      last_name: 'لامعی',
+      phone_number: '09912346595',
+      national_code: '0024773662',
+    },
+    {
+      first_name: 'سید حسین',
+      last_name: 'فتح اللهی',
+      phone_number: '09912346595',
+      national_code: '0024773662',
+    },
+    {
       first_name: 'متین',
       last_name: 'هدایت',
       phone_number: '09399862846',
@@ -34,12 +58,6 @@ export const payment = {
       last_name: 'آذرخش',
       phone_number: '09155525185',
       national_code: '0023467444',
-    },
-    {
-      first_name: 'پرهام',
-      last_name: 'رحیمی',
-      phone_number: '09135131340',
-      national_code: '1461337879',
     },
   ],
   rooms: [

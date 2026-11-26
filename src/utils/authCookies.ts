@@ -53,6 +53,7 @@ export function hasAuthHint(): boolean {
   try {
     return Boolean(
       getStoredAccessToken() ||
+        getStoredRefreshToken() ||
         Cookies.get('auth') === 'true' ||
         Cookies.get('AUTH') === 'true' ||
         localStorage.getItem('auth_hint') === 'true',
