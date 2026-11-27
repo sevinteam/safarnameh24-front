@@ -19,6 +19,27 @@ import IconsaxIcons from '@/components/icons/iconsaxIcons';
 import { numberSeparation } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import moment from 'jalali-moment';
+import EmptyTable from '@/components/dashboard/api/emptyTable';
+
+function getStatusMeta(status: string, statusDisplay?: string) {
+  const normalized = status?.toLowerCase();
+  if (normalized === 'successful' || normalized === 'successfull') {
+    return {
+      label: statusDisplay || 'موفقیت‌آمیز',
+      className: 'border-emerald-500/30 bg-emerald-50 text-emerald-700',
+    };
+  }
+  if (normalized === 'failed' || normalized === 'unsucessfull') {
+    return {
+      label: statusDisplay || 'ناموفق',
+      className: 'border-red-500/30 bg-red-50 text-red-600',
+    };
+  }
+  return {
+    label: statusDisplay || 'در حال بررسی',
+    className: 'border-amber-500/30 bg-amber-50 text-amber-700',
+  };
+}
 
 // Creating and exporting SubscriptionTable component as default
 export default function SubscriptionTable({
@@ -172,14 +193,19 @@ export default function SubscriptionTable({
         </div>
       </section>
     );
+  } else if (data.length === 0) {
+    return (
+      <EmptyTable
+        className={cn('lg:h-auto lg:py-12', className)}
+        title="هیچ فاکتور اشتراکی ندارید!"
+        description="مشتری گرامی هنوز هیچ فاکتور خرید یا تمدید اشتراکی برای شما ثبت نشده است."
+      />
+    );
   } else {
     return (
       <section
         className={cn(
           'lg:bg-white bg-transparent overflow-hidden lg:rounded-lg lg:border border-black/10',
-          data.length === 0
-            ? 'lg:h-[500px] h-[calc(100dvh-20dvh)] flex items-center justify-center lg:p-10 p-6'
-            : '',
           className,
         )}
       >
@@ -188,8 +214,9 @@ export default function SubscriptionTable({
             مشتری گرامی در این لیست شما دسترسی به تمام فاکتور ها دارید.
           </span>
           <CustomPagination
-            count={12}
-          // onChange={(index) => console.log(index)}
+            count={paginationCount ?? 0}
+            activeIndex={paginationActiveIndex}
+            setActiveIndex={setPaginationActiveIndex}
           />
         </div>
         <Table dir="rtl" className="border-none lg:table hidden">
@@ -214,145 +241,169 @@ export default function SubscriptionTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item, index) => (
-              <TableRow
-                key={index}
-                className={cn(
-                  'bg-white hover:bg-white',
-                  index + 1 !== data.length
-                    ? 'border-b border-b-black/10'
-                    : 'border-b-0',
-                )}
-              >
-                <TableCell className="p-3">
-                  <div className="rounded-[5px] bg-gray-100 flex items-center justify-center h-[40px] w-[30px]">
-                    <span className="font-normal text-[12px] text-black block text-num-en">
-                      {handleZeroBeforeNumber(index + 1)}
+            {data.map((item, index) => {
+              const statusMeta = getStatusMeta(item.status, item.statusDisplay);
+              const rowNumber = (paginationActiveIndex ?? 0) * 18 + index + 1;
+              return (
+                <TableRow
+                  key={item.id ?? index}
+                  className={cn(
+                    'bg-white hover:bg-white',
+                    index + 1 !== data.length
+                      ? 'border-b border-b-black/10'
+                      : 'border-b-0',
+                  )}
+                >
+                  <TableCell className="p-3">
+                    <div className="rounded-[5px] bg-gray-100 flex items-center justify-center h-[40px] w-[30px]">
+                      <span className="font-normal text-[12px] text-black block text-num-en">
+                        {handleZeroBeforeNumber(rowNumber)}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="p-3">
+                    <span className="text-xs font-medium text-gray-600 truncate block text-right">
+                      {item.name}
                     </span>
-                  </div>
-                </TableCell>
-                <TableCell className="p-3">
-                  <span className="text-xs font-medium text-gray-600 truncate block text-right">
-                    {item.name}
-                  </span>
-                </TableCell>
-                <TableCell className="p-3">
-                  <span className="text-xs font-medium text-gray-600 truncate block text-right">
-                    {item.expireDate ? moment(item.expireDate).format("jYYYY/jMM/jDD HH:MM") : "-"}
-                  </span>
-                </TableCell>
-                <TableCell className="p-3">
-                  <span className="text-xs font-medium text-gray-600 truncate block text-right">
-                    {item.createdAt ? moment(item.createdAt).format("jYYYY/jMM/jDD HH:MM") : "-"}
-                  </span>
-                </TableCell>
-                <TableCell className="p-3">
-                  <span className="text-xs font-medium text-gray-600 truncate block text-right">
-                    {`${numberSeparation(item.price)} تومان`}
-                  </span>
-                </TableCell>
-                <TableCell className="p-3 flex items-center justify-end gap-3">
-                  <div className="w-[150px] h-[40px] flex gap-2 items-center justify-center transition-all duration-500 bg-white border border-black/20 rounded-md text-black">
-                    <span className="text-xs text-current font-medium">
-                      {item.status === "successfull" ? "موفقیت امیز" : "ناموفق"}
+                  </TableCell>
+                  <TableCell className="p-3">
+                    <span className="text-xs font-medium text-gray-600 truncate block text-right">
+                      {item.expireDate
+                        ? moment(item.expireDate).format('jYYYY/jMM/jDD HH:mm')
+                        : '-'}
                     </span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell className="p-3">
+                    <span className="text-xs font-medium text-gray-600 truncate block text-right">
+                      {item.createdAt
+                        ? moment(item.createdAt).format('jYYYY/jMM/jDD HH:mm')
+                        : '-'}
+                    </span>
+                  </TableCell>
+                  <TableCell className="p-3">
+                    <span className="text-xs font-medium text-gray-600 truncate block text-right">
+                      {`${numberSeparation(item.price)} تومان`}
+                    </span>
+                  </TableCell>
+                  <TableCell className="p-3 flex items-center justify-end gap-3">
+                    <div
+                      className={cn(
+                        'w-[150px] h-[40px] flex gap-2 items-center justify-center transition-all duration-500 border rounded-md',
+                        statusMeta.className,
+                      )}
+                    >
+                      <span className="text-xs text-current font-medium">
+                        {statusMeta.label}
+                      </span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
         <div className="lg:hidden block mt-5">
           <div className="flex flex-col">
-            {data.map((item, index) => (
-              <div
-                key={index}
-                className={
-                  'bg-transparent hover:bg-transparent border-b-[1.5px] border-b-black/10 py-3 mb-3'
-                }
-              >
-                <div className="flex items-center justify-between gap-3 mb-[20px]">
-                  <div className="flex items-center justify-start gap-[10px]">
+            {data.map((item, index) => {
+              const statusMeta = getStatusMeta(item.status, item.statusDisplay);
+              return (
+                <div
+                  key={item.id ?? index}
+                  className={
+                    'bg-transparent hover:bg-transparent border-b-[1.5px] border-b-black/10 py-3 mb-3'
+                  }
+                >
+                  <div className="flex items-center justify-between gap-3 mb-[20px]">
+                    <div className="flex items-center justify-start gap-[10px]">
+                      <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
+                        <IconsaxIcons
+                          name="DocumentText"
+                          className="w-[20px] h-[20px] text-black"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
+                          نام :
+                        </span>
+                        <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
+                          {item.name}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-[10px]">
+                      <div
+                        className={cn(
+                          'h-[40px] flex items-center justify-center border rounded-[7px] px-[20px]',
+                          statusMeta.className,
+                        )}
+                      >
+                        <span className="text-[10px] text-current font-medium w-full text-right block truncate">
+                          {statusMeta.label}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-start gap-[10px] mb-[25px]">
                     <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
                       <IconsaxIcons
-                        name="DocumentText"
+                        name="CalendarRemove"
                         className="w-[20px] h-[20px] text-black"
                       />
                     </div>
                     <div>
                       <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
-                        نام :
+                        تاریخ انقضا
                       </span>
                       <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
-                        {item.name}
+                        {item.expireDate
+                          ? moment(item.expireDate).format('jYYYY/jMM/jDD HH:mm')
+                          : '-'}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between gap-[10px]">
-                    <div
-                      className={
-                        'h-[40px] flex items-center justify-center bg-white border border-black/20 rounded-[7px] text-black px-[20px]'
-                      }
-                    >
-                      <span className="text-[10px] text-current font-medium w-full text-right block truncate">
-                        {item.status === "successfull" ? "موفقیت امیز" : "ناموفق"}
+                  <div className="flex items-center justify-start gap-[10px] mb-[25px]">
+                    <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
+                      <IconsaxIcons
+                        name="CalendarTick"
+                        className="w-[20px] h-[20px] text-black"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
+                        تاریخ فعال سازی :
+                      </span>
+                      <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
+                        {item.createdAt
+                          ? moment(item.createdAt).format('jYYYY/jMM/jDD HH:mm')
+                          : '-'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-start gap-[10px] mb-[25px]">
+                    <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
+                      <IconsaxIcons
+                        name="Moneys"
+                        className="w-[20px] h-[20px] text-black"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
+                        مبلغ :
+                      </span>
+                      <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
+                        {`${numberSeparation(item.price)} تومان`}
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-start gap-[10px] mb-[25px]">
-                  <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
-                    <IconsaxIcons
-                      name="CalendarRemove"
-                      className="w-[20px] h-[20px] text-black"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
-                      تاریخ انقضا
-                    </span>
-                    <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
-                      {item.expireDate ? moment(item.expireDate).format("jYYYY/jMM/jDD HH:MM") : "-"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-start gap-[10px] mb-[25px]">
-                  <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
-                    <IconsaxIcons
-                      name="CalendarTick"
-                      className="w-[20px] h-[20px] text-black"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
-                      تاریخ فعال سازی :
-                    </span>
-                    <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
-                      {item.createdAt ? moment(item.createdAt).format("jYYYY/jMM/jDD HH:MM") : "-"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-start gap-[10px] mb-[25px]">
-                  <div className="h-[43px] w-[43px] rounded-[7px] bg-gray-100 flex items-center justify-center shrink-0">
-                    <IconsaxIcons
-                      name="Moneys"
-                      className="w-[20px] h-[20px] text-black"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[12px] font-bold text-black truncate block text-right mb-1">
-                      مبلغ :
-                    </span>
-                    <span className="text-[10px] font-medium text-gray-600 truncate block text-right">
-                      {`${numberSeparation(item.price)} تومان`}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <CustomPagination count={12} />
+          <CustomPagination
+            count={paginationCount ?? 0}
+            activeIndex={paginationActiveIndex}
+            setActiveIndex={setPaginationActiveIndex}
+          />
         </div>
       </section>
     );

@@ -978,11 +978,19 @@ export interface FinancialSubscriptionsDashboardTablePropsType {
   paginationActiveIndex?: number;
   setPaginationActiveIndex?: Dispatch<SetStateAction<number>>;
   data: {
+    id?: number;
     name: string;
     expireDate: string | null;
-    createdAt: string;
+    createdAt: string | null;
     price: number;
-    status: 'successfull' | 'unsucessfull';
+    status:
+      | 'successful'
+      | 'successfull'
+      | 'failed'
+      | 'unsucessfull'
+      | 'pending'
+      | string;
+    statusDisplay?: string;
   }[];
 }
 

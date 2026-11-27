@@ -373,6 +373,26 @@ export type GETSubscriptionChart = {
   total: number;
 }[];
 
+export interface GETSubscriptionInvoiceItem {
+  id: number;
+  name: string;
+  created_at: string | null;
+  expire_date: string | null;
+  price: number;
+  status:
+    | 'successful'
+    | 'successfull'
+    | 'failed'
+    | 'unsucessfull'
+    | 'pending'
+    | string;
+  status_display?: string;
+}
+
+export type GETSubscriptionInvoices = GETPaginationAPILayout<
+  GETSubscriptionInvoiceItem[]
+>;
+
 export type GETCustomerClubList = GETPaginationAPILayout<
   GETCustomerClubListItem[]
 >;

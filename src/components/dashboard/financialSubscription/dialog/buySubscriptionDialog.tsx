@@ -16,6 +16,7 @@ import { phoneNumberValidator } from '@persian-tools/persian-tools';
 import useUserInfo from '@/hooks/dashboard/useUserInfo';
 import toast from '../../ui/customSonner/toast';
 import useApiMutation from '@/hooks/dashboard/useApiMutation';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Defining form schema
 const formSchema = z.object({
@@ -57,6 +58,7 @@ export default function BuySubscriptionDialog({
   open, onOpenChange, id
 }: BuySubscriptionDialogPropsType): JSX.Element {
   // Defining hooks
+  const queryClient = useQueryClient();
   const userInfo = useUserInfo();
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
@@ -73,6 +75,9 @@ export default function BuySubscriptionDialog({
     isFormData: true,
     options: {
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["subscription-invoices"] });
+        queryClient.invalidateQueries({ queryKey: ["current-subscription"] });
+        queryClient.invalidateQueries({ queryKey: ["subscription-chart"] });
         toast({
           title: "خرید اشتراک موفقیت امیز بود!",
           description: "مشتری عزیز, پس از تایید ما اشتراک جدید شما فعال میشود.",

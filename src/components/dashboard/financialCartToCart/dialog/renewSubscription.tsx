@@ -116,6 +116,7 @@ export default function RenewSubscriptionDialog({
     isFormData: true,
     options: {
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["subscription-invoices"] });
         queryClient.invalidateQueries({ queryKey: ["current-subscription"] });
         queryClient.invalidateQueries({ queryKey: ["subscription-chart"] });
         toast({

@@ -2,7 +2,7 @@
 'use client';
 
 // Importing part
-import { ReactNode, use, useEffect } from 'react';
+import { ReactNode, use, useEffect, useRef } from 'react';
 import HotelAcceptSection from '@/components/dashboard/reservationFactor/hotelAcceptSection';
 import RoomsSection from '@/components/dashboard/reservationFactor/roomsSection';
 import RulesSection from '@/components/dashboard/reservationFactor/rulesSection';
@@ -17,10 +17,10 @@ import Loading from '@/components/dashboard/ui/loading';
 import ErrorTable from '@/components/dashboard/api/errorTable';
 import Image from 'next/image';
 import Link from 'next/link';
-import voucherStampImg from '../../../../../public/image/IMAGE 2026-11-27 16:26:06.jpg';
 
 const VOUCHER_LETTERHEAD_SRC =
   '/assets/aistudio/IMAGE_2026-11-27_15_56_11_2f17a96e.jpg';
+const VOUCHER_STAMP_SRC = '/image/voucher_stamp.png';
 
 // Creating and exporting ReservationFactor page as default
 export default function ReservationFactorPage({
@@ -30,6 +30,7 @@ export default function ReservationFactorPage({
 }): ReactNode {
   // Defining hooks
   const { id } = use(params);
+  const printContainerRef = useRef<HTMLDivElement>(null);
   const factorData = useApiQuery<GETReservationFactor>({
     url: `/hotel/reservation/invoices/${id}/`,
     queryKey: [`reservation-factor-${id}`],
@@ -50,7 +51,7 @@ export default function ReservationFactorPage({
   });
 
   useEffect(() => {
-    [VOUCHER_LETTERHEAD_SRC, voucherStampImg.src].forEach((src) => {
+    [VOUCHER_LETTERHEAD_SRC, VOUCHER_STAMP_SRC].forEach((src) => {
       const img = new window.Image();
       img.src = src;
     });
@@ -58,10 +59,19 @@ export default function ReservationFactorPage({
 
   const handleDownloadVoucher = async () => {
     try {
+      const domImages = Array.from(
+        printContainerRef.current?.querySelectorAll('img') ?? [],
+      );
       await Promise.allSettled(
-        [VOUCHER_LETTERHEAD_SRC, voucherStampImg.src].map(async (src) => {
-          const img = new window.Image();
-          img.src = src;
+        domImages.map(async (img) => {
+          if (!img.complete) {
+            await new Promise<void>((resolve) => {
+              const done = () => resolve();
+              img.addEventListener('load', done, { once: true });
+              img.addEventListener('error', done, { once: true });
+              setTimeout(done, 4000);
+            });
+          }
           if (typeof img.decode === 'function') {
             await img.decode();
           }
@@ -107,14 +117,18 @@ export default function ReservationFactorPage({
     // Returning JSX
     return (
       <>
-        <div className="relative hidden min-h-dvh w-dvw bg-white text-black print:block">
-          <div className="pointer-events-none fixed inset-0 z-0 h-dvh w-dvw select-none">
+        <div
+          ref={printContainerRef}
+          className="pointer-events-none fixed -left-[9999px] top-0 z-[-1] h-[297mm] w-[210mm] overflow-hidden bg-white text-black opacity-0 print:relative print:left-0 print:z-auto print:h-auto print:min-h-[297mm] print:w-[210mm] print:overflow-visible print:opacity-100"
+        >
+          <div className="pointer-events-none absolute inset-0 z-0 h-[297mm] w-[210mm] select-none print:fixed print:inset-0 print:h-[297mm] print:w-[210mm]">
             <Image
               alt="سربرگ واچر زروان تریپ"
               src={VOUCHER_LETTERHEAD_SRC}
               fill
               priority
-              sizes="100vw"
+              loading="eager"
+              sizes="210mm"
               referrerPolicy="no-referrer"
               className="object-fill"
             />
@@ -163,20 +177,21 @@ export default function ReservationFactorPage({
             />
           </div>
 
-          <div className="pointer-events-none fixed bottom-[25mm] left-[16mm] z-20 size-[34mm] -rotate-12 select-none opacity-90 mix-blend-multiply">
+          <div className="pointer-events-none absolute bottom-[26mm] left-[16mm] z-20 size-[34mm] -rotate-12 select-none opacity-95 print:fixed print:bottom-[26mm] print:left-[16mm]">
             <Image
               alt="مهر دپارتمان رزرواسیون - رزرو تأیید شد"
-              src={voucherStampImg}
+              src={VOUCHER_STAMP_SRC}
               fill
               priority
-              sizes="140px"
+              loading="eager"
+              sizes="160px"
               referrerPolicy="no-referrer"
-              className="object-contain mix-blend-multiply"
+              className="object-contain"
             />
           </div>
 
           <div
-            className="fixed bottom-[4mm] left-0 right-0 z-20 px-[22%]"
+            className="absolute bottom-[4mm] left-0 right-0 z-20 px-[22%] print:fixed print:bottom-[4mm]"
             dir="ltr"
           >
             <div className="mb-1 flex items-center justify-center gap-6">

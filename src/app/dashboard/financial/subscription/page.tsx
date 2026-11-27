@@ -8,12 +8,48 @@ import SubscriptionPicker from '@/components/dashboard/financialSubscription/sub
 import SubscriptionDetails from '@/components/dashboard/financialSubscription/subscriptionsDetails';
 import SubscriptionTable from '@/components/dashboard/financialSubscription/table';
 import SubscriptionType from '@/components/dashboard/profile/subscriptionType';
+import ErrorTable from '@/components/dashboard/api/errorTable';
+import { useApiQuery } from '@/hooks/dashboard/useApiQuery';
+import {
+  GETSubscriptionInvoiceItem,
+  GETSubscriptionInvoices,
+} from '@/types/dashboard/api/get';
 import { JSX, useState } from 'react';
 
 // Creating and exporting Subscription financial page as default
 export default function SubscriptionFinancialPage(): JSX.Element {
   // Defining hooks
   const [paginationNumber, setPaginationNumber] = useState<number>(0);
+
+  const invoicesQuery = useApiQuery<
+    GETSubscriptionInvoices | GETSubscriptionInvoiceItem[]
+  >({
+    url: `/subscription/invoices/?p=${paginationNumber + 1}`,
+    queryKey: ['subscription-invoices', String(paginationNumber + 1)],
+    options: {
+      staleTime: 0,
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: true,
+    },
+  });
+
+  const rawInvoices = invoicesQuery.data;
+  const invoiceResults = Array.isArray(rawInvoices)
+    ? rawInvoices
+    : (rawInvoices?.results ?? []);
+  const invoiceCount = Array.isArray(rawInvoices)
+    ? rawInvoices.length
+    : (rawInvoices?.count ?? invoiceResults.length);
+
+  const mappedInvoices = invoiceResults.map((item) => ({
+    id: item.id,
+    name: item.name,
+    createdAt: item.created_at,
+    expireDate: item.expire_date,
+    price: Number(item.price || 0),
+    status: item.status,
+    statusDisplay: item.status_display,
+  }));
 
   // Returning JSX
   return (
@@ -40,16 +76,22 @@ export default function SubscriptionFinancialPage(): JSX.Element {
         <SubscriptionDetails className='lg:col-span-2 lg:h-[344px]' />
       </div>
       <div className='lg:p-0 p-5 lg:bg-transparent bg-white lg:border-none border-t border-t-gray-300'>
-        <SubscriptionTable
-          data={[...new Array(10).fill({
-            createdAt: new Date().toISOString(),
-            expireDate: new Date().toISOString(),
-            name: "X",
-            price: 3123412312,
-            status: "successfull"
-          })]}
-          loading={false}
-        />
+        {invoicesQuery.isLoading ? (
+          <SubscriptionTable data={[]} loading />
+        ) : invoicesQuery.isError ? (
+          <ErrorTable
+            refetch={invoicesQuery.refetch}
+            className="lg:h-auto lg:py-12 bg-white lg:rounded-lg lg:border border-black/10"
+          />
+        ) : (
+          <SubscriptionTable
+            data={mappedInvoices}
+            loading={false}
+            paginationCount={invoiceCount}
+            paginationActiveIndex={paginationNumber}
+            setPaginationActiveIndex={setPaginationNumber}
+          />
+        )}
       </div>
     </main>
   );

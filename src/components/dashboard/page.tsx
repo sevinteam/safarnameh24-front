@@ -282,7 +282,7 @@ function InnerPage({
                 {!isTicketPage && <MobileNav />}
                 <div
                   className={cn(
-                    'overflow-hidden',
+                    'overflow-hidden print:overflow-visible',
                     isReservationSubPage
                       ? 'bg-white'
                       : irregularPages
@@ -292,7 +292,7 @@ function InnerPage({
                   )}
                 >
                   {isReservationSubPage ? (
-                    <div className="mx-auto max-w-screen-template bg-white">
+                    <div className="mx-auto max-w-screen-template bg-white print:mx-0 print:max-w-none print:p-0">
                       {children}
                     </div>
                   ) : irregularPages ? (
