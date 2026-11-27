@@ -33,8 +33,8 @@ export function Facilities(props: Props) {
     status !== 'pending' &&
     (!data ||
       !data?.data ||
-      !data?.data?.facilities?.length ||
-      !data?.data?.room_facilities?.length)
+      (!data?.data?.facilities?.length &&
+        !data?.data?.room_facilities?.length))
   )
     return null;
 

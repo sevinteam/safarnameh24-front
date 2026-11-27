@@ -29,8 +29,9 @@ export default function Subscription({
     url: "/subscription/subscription-info/",
     queryKey: ["current-subscription"],
     options: {
-      refetchInterval: Infinity,
-      staleTime: Infinity
+      staleTime: 0,
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: true,
     }
   });
 
@@ -99,38 +100,61 @@ export default function Subscription({
               کارت ویژه
             </span>
             <p className="text-right truncate text-black/50 lg:text-cs75 text-[10px] lg:font-semibold font-bold">
-کد تحفیف اختصاصی کارت اشتراکی
+              کد تخفیف اختصاصی کارت اشتراکی
             </p>
           </div>
-          <RenewSubscriptionDialog open={renewalDialogOpened} onOpenChange={setRenewalDialogOpened} />
-          <Tooltip content='تمدید اشتراک'>
-            <button onClick={() => setRenewalDialogOpened(true)} className="size-[45px] shrink-0 flex items-center justify-center rounded-md text-black  transition-all duration-500 bg-[#f2f2f2]">
-              <IconsaxIcons
-                name="Add"
-                className="w-[20px] h-[20px]"
-                color="currentColor"
-              />
-            </button>
-          </Tooltip>
-          {
-            loading
-              ? <Skeleton className='size-[45px] shrink-0 rounded-md' />
-              : getData.isError
-                ? false
-                : !loading && !getData.isError && getData.data
-                  ? getData.data.expiration_date && isNearISO(getData.data.expiration_date) && (
-                    <Tooltip content='تمدید اشتراک'>
-                      <button onClick={() => setRenewalDialogOpened(true)} className="size-[45px] shrink-0 flex items-center justify-center rounded-md text-white  transition-all duration-500 bg-black">
-                        <IconsaxIcons
-                          name="Repeat"
-                          className="w-[20px] h-[20px]"
-                          color="currentColor"
-                        />
-                      </button>
-                    </Tooltip>
-                  )
-                  : false
-          }
+          <RenewSubscriptionDialog
+            open={renewalDialogOpened}
+            onOpenChange={setRenewalDialogOpened}
+          />
+          {loading ? (
+            <Skeleton className="size-[45px] shrink-0 rounded-md" />
+          ) : (
+            <Tooltip
+              content={
+                getData.isError
+                  ? 'خطا در دریافت اطلاعات اشتراک'
+                  : hasActiveSubscription
+                    ? 'تمدید اشتراک'
+                    : 'خرید اشتراک جدید'
+              }
+            >
+              <button
+                type="button"
+                disabled={getData.isError}
+                aria-label={
+                  hasActiveSubscription ? 'تمدید اشتراک' : 'خرید اشتراک جدید'
+                }
+                onClick={() => {
+                  if (hasActiveSubscription) {
+                    setRenewalDialogOpened(true);
+                    return;
+                  }
+                  const picker = document.getElementById('subscription-picker');
+                  if (picker) {
+                    picker.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'center',
+                    });
+                  }
+                }}
+                className={cn(
+                  'size-[45px] shrink-0 flex items-center justify-center rounded-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed',
+                  hasActiveSubscription &&
+                    getData.data?.expiration_date &&
+                    isNearISO(getData.data.expiration_date)
+                    ? 'bg-black text-white hover:bg-black/85'
+                    : 'bg-[#f2f2f2] text-black hover:bg-black/10',
+                )}
+              >
+                <IconsaxIcons
+                  name={hasActiveSubscription ? 'Repeat' : 'Add'}
+                  className="w-[20px] h-[20px]"
+                  color="currentColor"
+                />
+              </button>
+            </Tooltip>
+          )}
         </div>
       </div>
       <div className="flex lg:flex-row flex-col items-center gap-3 w-full h-full lg:p-4 p-[14px] overflow-auto scrollbar-hide">

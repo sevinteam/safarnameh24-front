@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import DImageGallery from '../pictures-gallery/LSPicturesGallery';
@@ -13,6 +16,20 @@ type Props = {
 
 export default function LSPictures(props: Props) {
   const { pictures, isLoading, hotelSlug, hotelName } = props;
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
+
+  const handleOpenImage = (slideIndex: number) => {
+    setSelectedSlideIndex(slideIndex);
+    setGalleryOpen(true);
+  };
+
+  const handleGalleryOpenChange = (nextOpen: boolean) => {
+    setGalleryOpen(nextOpen);
+    if (!nextOpen) {
+      setSelectedSlideIndex(0);
+    }
+  };
 
   return (
     <div className="h-96 hidden grid-cols-2 gap-6 xl:grid">
@@ -46,7 +63,8 @@ export default function LSPictures(props: Props) {
                         ? `تصویر ${index + 2} ${hotelName}`
                         : `تصویر ${index + 2} هتل`
                     }
-                    className="object-cover"
+                    onClick={() => handleOpenImage(index + 1)}
+                    className="object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
                   />
                 )}
               </div>
@@ -65,7 +83,12 @@ export default function LSPictures(props: Props) {
               />
             )}
 
-            <DImageGallery hotelSlug={hotelSlug} />
+            <DImageGallery
+              hotelSlug={hotelSlug}
+              open={galleryOpen}
+              onOpenChange={handleGalleryOpenChange}
+              initialSlide={selectedSlideIndex}
+            />
           </div>
         </>
       )}

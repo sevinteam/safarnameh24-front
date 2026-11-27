@@ -55,7 +55,7 @@ export default function RoomsSection({
                   <TableHead className="text-right p-3 truncate text-xs font-semibold text-[#515a6a]">
                     نیم شارژ خروج
                   </TableHead>
-                  <TableHead className="p-3 w-[500px]" />
+                  {!noMq && <TableHead className="p-3 w-[500px]" />}
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -16,6 +16,7 @@ export default function SwitchCase(props: Props) {
   return (
     <div className="relative z-10 bg-zinc-200/60 w-full h-10 text-cs75 font-bold flex gap-2 overflow-hidden rounded-lg md:w-80">
       <button
+        type="button"
         className={`${sharedStyle} ${facilitiesType === 'hotel' ? 'text-white' : 'text-zinc-700'}`}
         onClick={() => setFacilitiesType('hotel')}
       >
@@ -23,6 +24,7 @@ export default function SwitchCase(props: Props) {
       </button>
 
       <button
+        type="button"
         className={`${sharedStyle} ${facilitiesType === 'room' ? 'text-white' : 'text-zinc-700'}`}
         onClick={() => setFacilitiesType('room')}
       >

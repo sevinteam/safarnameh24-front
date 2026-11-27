@@ -22,17 +22,25 @@ type Data = {
 
 type Props = { facilities?: Data };
 type FacilitiesType = 'hotel' | 'room';
-type Facility = { title: string; icon: { link: string } };
+type Facility = { title: string; icon: { link?: string; url?: string } | null };
 
 // ---------------------------------------
 
 export default function MFacilities(props: Props) {
   const { facilities } = props;
-  const [facilitiesType, setFacilitiesType] = useState<FacilitiesType>('hotel');
+  const hasHotelFacilities = Boolean(facilities?.facilities?.length);
+  const hasRoomFacilities = Boolean(facilities?.room_facilities?.length);
+  const [facilitiesType, setFacilitiesType] = useState<FacilitiesType>(
+    hasHotelFacilities || !hasRoomFacilities ? 'hotel' : 'room',
+  );
 
   const handleSetFacilitiesType = (type: FacilitiesType) => {
     setFacilitiesType(type);
   };
+
+  const previewList = hasHotelFacilities
+    ? facilities?.facilities ?? []
+    : facilities?.room_facilities ?? [];
 
   const finalList =
     facilitiesType === 'hotel'
@@ -46,19 +54,28 @@ export default function MFacilities(props: Props) {
     <div className="bg-white border-2 border-zinc-200 rounded-xl">
       {/* === First 5 items */}
       <div className="p-5 grid gap-4">
-        {facilities?.facilities.slice(0, 5).map((item, index) => (
-          <div key={index} className="flex items-center gap-2.5">
-            {item?.icon?.link ? (
-              <Image alt="icon" width={24} height={24} src={item?.icon?.link} />
-            ) : (
-              <TickSquare size={22} color="#444" />
-            )}
+        {previewList.slice(0, 5).map((item, index) => {
+          const iconSrc = item?.icon?.link || item?.icon?.url;
+          return (
+            <div key={index} className="flex items-center gap-2.5 min-w-0">
+              {iconSrc ? (
+                <Image
+                  alt={item.title || 'icon'}
+                  width={24}
+                  height={24}
+                  src={iconSrc}
+                  className="shrink-0 object-contain"
+                />
+              ) : (
+                <TickSquare size={22} color="#444" className="shrink-0" />
+              )}
 
-            <span className="text-zinc-700 text-cs85 font-bold">
-              {item.title}
-            </span>
-          </div>
-        ))}
+              <span className="text-zinc-700 text-cs85 font-bold truncate">
+                {item.title}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       <Sheet>
@@ -69,7 +86,7 @@ export default function MFacilities(props: Props) {
           <ArrowLeft size={20} color="#4B5BCE" />
         </SheetTrigger>
 
-        <SheetContent className="w-full p-0 grid grid-rows-[4rem_2.5rem_1fr] gap-6">
+        <SheetContent className="w-full p-0 grid grid-rows-[4rem_2.5rem_1fr] gap-6 overflow-hidden">
           <SheetHeader className="bg-white px-5 text-cs85 flex-row items-center gap-1 border-b shadow-[0_0_2rem_rgba(0,0,0,0.06)]">
             <SheetTitle className="hidden"></SheetTitle>
             <SheetDescription className="hidden"></SheetDescription>
@@ -88,28 +105,32 @@ export default function MFacilities(props: Props) {
             />
           </div>
 
-          <div className="px-5 pb-8 mt-2 columns-2 gap-4 space-y-4">
-            {finalList?.map((item, index) => (
-              <div
-                key={index}
-                className="break-inside-avoid h-fit flex items-center gap-3"
-              >
-                {item?.icon?.link ? (
-                  <Image
-                    alt="icon"
-                    width={24}
-                    height={24}
-                    src={item?.icon?.link}
-                  />
-                ) : (
-                  <TickSquare size={22} color="#444" />
-                )}
+          <div className="px-5 pb-8 mt-2 overflow-y-auto columns-2 gap-4 space-y-4">
+            {finalList?.map((item, index) => {
+              const iconSrc = item?.icon?.link || item?.icon?.url;
+              return (
+                <div
+                  key={index}
+                  className="break-inside-avoid h-fit flex items-center gap-3 min-w-0"
+                >
+                  {iconSrc ? (
+                    <Image
+                      alt={item.title || 'icon'}
+                      width={24}
+                      height={24}
+                      src={iconSrc}
+                      className="shrink-0 object-contain"
+                    />
+                  ) : (
+                    <TickSquare size={22} color="#444" className="shrink-0" />
+                  )}
 
-                <span className="text-zinc-700 text-cs08 font-bold">
-                  {item.title}
-                </span>
-              </div>
-            ))}
+                  <span className="text-zinc-700 text-cs08 font-bold">
+                    {item.title}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </SheetContent>
       </Sheet>

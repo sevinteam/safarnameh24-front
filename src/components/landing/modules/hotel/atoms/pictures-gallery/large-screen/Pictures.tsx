@@ -13,17 +13,19 @@ type Props = {
   pictures: string[];
   ref: React.RefObject<SwiperType | null>;
   setActiveIndex: (index: number) => void;
+  initialSlide?: number;
 };
 
 // --------------------------------
 
 export default function Pictures(props: Props) {
-  const { pictures, ref, setActiveIndex } = props;
+  const { pictures, ref, setActiveIndex, initialSlide = 0 } = props;
 
   return (
     <div className="full-size">
       <Swiper
         slidesPerView={1}
+        initialSlide={initialSlide}
         pagination={{
           enabled: true,
           clickable: true,
@@ -34,7 +36,12 @@ export default function Pictures(props: Props) {
         }}
         modules={[Pagination, Navigation]}
         className="swiper-pagination-dynamic-custom DHotelGallery-swiper"
-        onSwiper={(swiper) => (ref.current = swiper)}
+        onSwiper={(swiper) => {
+          ref.current = swiper;
+          if (initialSlide > 0 && swiper.activeIndex !== initialSlide) {
+            swiper.slideTo(initialSlide, 0);
+          }
+        }}
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
       >
         {pictures?.map(

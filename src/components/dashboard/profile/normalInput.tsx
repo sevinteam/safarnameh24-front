@@ -35,10 +35,9 @@ export default function NormalInput({
 
    useEffect(() => {
       if (lenghtValidation && type !== "file") {
-         if (props.value) {
-            const value = props.value ?? "";
-            setValueLenght(value.toLocaleString().length);
-         }
+         const value = props.value ?? "";
+         const removedWhiteSpace = value.toLocaleString().replace(/\s/g, "");
+         setValueLenght(removedWhiteSpace.length);
       }
    }, [props.value, lenghtValidation, type])
 
@@ -213,14 +212,16 @@ export default function NormalInput({
               }
             }}
             className={cn(
-              'px-4 py-4 h-[50px] w-full text-right bg-white placeholder:text-black/50 text-black focus:text-black border-[1.2px] border-black/10 lg:rounded-lg rounded-[8px] lg:text-[12px] text-[10px] lg:placeholder:text-cs75 placeholder:text-[10px] lg:font-medium font-semibold lg:placeholder:font-medium placeholder:font-semibold  transition-all duration-500 focus:border-black focus:placeholder:text-black data-[errored="true"]:border-cs-red data-[errored="true"]:focus:border-cs-red data-[errored="true"]:text-cs-red disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-start',
+              'px-4 py-4 h-[50px] w-full text-right bg-white placeholder:text-black/50 text-black focus:text-black border-[1.2px] border-black/10 lg:rounded-lg rounded-[8px] lg:text-[12px] text-[10px] lg:placeholder:text-cs75 placeholder:text-[10px] lg:font-medium font-semibold lg:placeholder:font-medium placeholder:font-semibold  transition-all duration-500 focus:border-black focus:placeholder:text-black data-[errored="true"]:border-cs-red data-[errored="true"]:focus:border-cs-red data-[errored="true"]:text-cs-red disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-start overflow-hidden',
               textLTR ? 'text-left' : 'text-right',
               className,
             )}
           >
-            {
-              file ? file.name : "برای انتخواب فایل کلیک کنید."
-            }
+            <span className="truncate block w-full">
+              {
+                file ? file.name : "برای انتخاب فایل کلیک کنید."
+              }
+            </span>
           </button>
           {error && !noErrorText && (
             <p className="text-cs07 font-medium text-cs-red block text-right mt-2">

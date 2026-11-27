@@ -169,15 +169,17 @@
 
 /* -------------------------- */
 
+.facilities-swiper {
+  height: 100%;
+}
+
 .facilities-swiper .swiper-pagination {
   right: auto !important;
-  left: 0.8rem !important;
+  left: 0.75rem !important;
   height: 50px !important;
-  /* background-color: rgba(255, 0, 0, 0.483); */
 }
 
 .facilities-swiper .swiper-pagination-bullet {
-  /* top: 10px !important; */
   margin-block: 3px !important;
   background-color: rgb(100, 100, 100);
 }

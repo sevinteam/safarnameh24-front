@@ -37,6 +37,7 @@ export default function HotelAcceptSection({
         </div>
         <div className="flex items-center justify-between gap-2 shrink-0">
           <button
+            type="button"
             onClick={printFn}
             className="lg:h-10 h-[40px] lg:px-3 px-[22px] border border-green-500 bg-[#e3ffed] rounded-[7px] transition-all duration-500 lg:hover:bg-green-200 text-[#178941] lg:text-cs75 text-[12px] font-semibold print:hidden"
           >
@@ -84,7 +85,7 @@ export default function HotelAcceptSection({
               <TableHead className="text-right p-3 truncate text-xs font-semibold text-[#515a6a]">
                 تاریخ ورود و خروج
               </TableHead>
-              <TableHead className="p-3 w-[500px]" />
+              {!noMq && <TableHead className="p-3 w-[500px]" />}
             </TableRow>
           </TableHeader>
           <TableBody>

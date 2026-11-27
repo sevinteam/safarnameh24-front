@@ -13,6 +13,7 @@ export default function Navigation(props: Props) {
   return (
     <div className="absolute left-5 inset-y-5 w-8 flex flex-col">
       <button
+        type="button"
         className="z-10 bg-zinc-100 w-8 h-8 flex-center rounded-md"
         onClick={slidePrev}
       >
@@ -20,6 +21,7 @@ export default function Navigation(props: Props) {
       </button>
 
       <button
+        type="button"
         className="z-10 bg-zinc-100 w-8 h-8 mt-auto flex-center rounded-md"
         onClick={slideNext}
       >

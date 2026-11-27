@@ -21,21 +21,48 @@ import Pictures from '../../atoms/pictures-gallery/large-screen/Pictures';
 import Categories from '../../atoms/pictures-gallery/large-screen/Categories';
 import { FaRegImages } from 'react-icons/fa6';
 
-type Props = THotelSlug;
+type Props = THotelSlug & {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialSlide?: number;
+};
 type TGalleryResponse = TGallery;
 type TPicturesResponse = string[];
 
 // ---------------------------------------
 
 export default function DImageGallery(props: Props) {
-  const { hotelSlug } = props;
+  const { hotelSlug, open, onOpenChange, initialSlide } = props;
 
-  const [isOpen, setOpen] = useState(false);
+  const isControlled = open !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = isControlled ? Boolean(open) : internalOpen;
+
   const swiperRef = useRef<SwiperType>(null);
 
+  const [userNavigated, setUserNavigated] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [categoryIndex, setCategoryIndex] = useState(0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  const displayedCategory = userNavigated ? categoryIndex : 0;
+  const displayedIndex = userNavigated
+    ? activeIndex
+    : (initialSlide ?? activeIndex);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setUserNavigated(false);
+      setActiveIndex(0);
+      setCategoryIndex(0);
+    }
+    if (onOpenChange) {
+      onOpenChange(nextOpen);
+    }
+    if (!isControlled) {
+      setInternalOpen(nextOpen);
+    }
+  };
 
   const { data: gallery } = useQuery<TGalleryResponse>({
     queryKey: ['hotel-gallery', hotelSlug],
@@ -58,18 +85,26 @@ export default function DImageGallery(props: Props) {
     ...(gallery ?? []),
   ];
 
-  const handleSetActiveIndex = (index: number) => setActiveIndex(index);
+  const handleSetActiveIndex = (index: number) => {
+    setUserNavigated(true);
+    setActiveIndex(index);
+  };
   const handleSetCategoryIndex = (index: number) => {
+    setUserNavigated(true);
     setCategoryIndex(index);
+    setActiveIndex(0);
     swiperRef.current?.slideTo(0);
   };
 
   useEffect(() => {
-    if (!isDesktop) setOpen(false);
-  }, [isDesktop]);
+    if (!isDesktop && isOpen) {
+      if (onOpenChange) onOpenChange(false);
+      if (!isControlled) setInternalOpen(false);
+    }
+  }, [isDesktop, isOpen, isControlled, onOpenChange]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       {/* === Small-Screen */}
       <DialogTrigger className="md:flex-center hidden gap-1 rounded-cs-10 bg-zinc-100 text-cs08 font-bold text-zinc-700 xl:hidden">
         تصاویر هتل
@@ -87,21 +122,22 @@ export default function DImageGallery(props: Props) {
 
         <div className="relative overflow-hidden rounded-2xl">
           <TopBar
-            activeIndex={activeIndex}
+            activeIndex={displayedIndex}
             categoryLength={
-              formattedGallery?.[categoryIndex].images.length ?? 1
+              formattedGallery?.[displayedCategory]?.images.length ?? 1
             }
           />
 
           <Pictures
             ref={swiperRef}
+            initialSlide={displayedIndex}
             setActiveIndex={handleSetActiveIndex}
-            pictures={formattedGallery?.[categoryIndex].images ?? []}
+            pictures={formattedGallery?.[displayedCategory]?.images ?? []}
           />
         </div>
 
         <Categories
-          categoryIndex={categoryIndex}
+          categoryIndex={displayedCategory}
           categories={formattedGallery ?? []}
           setCategoryIndex={handleSetCategoryIndex}
         />

@@ -94,8 +94,9 @@ function InnerPage({
     url: '/natural-profiles/',
     queryKey: ['personalProfile', 'persoanl', 'profile'],
     options: {
-      staleTime: Infinity,
-      refetchInterval: Infinity,
+      staleTime: 0,
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: true,
     },
   });
 

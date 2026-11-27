@@ -2,7 +2,7 @@
 'use client';
 
 // Importing part
-import { ReactNode, use } from 'react';
+import { ReactNode, use, useEffect } from 'react';
 import HotelAcceptSection from '@/components/dashboard/reservationFactor/hotelAcceptSection';
 import RoomsSection from '@/components/dashboard/reservationFactor/roomsSection';
 import RulesSection from '@/components/dashboard/reservationFactor/rulesSection';
@@ -16,29 +16,10 @@ import {
 import Loading from '@/components/dashboard/ui/loading';
 import ErrorTable from '@/components/dashboard/api/errorTable';
 import Image from 'next/image';
-import TraiangleIcon from '../../../../../public/image/dashboardReservationFactor/traiangles.svg';
-import LogoIcon from '../../../../../public/image/dashboardReservationFactor/logo.webp';
 import Link from 'next/link';
-import localFont from 'next/font/local';
-import { cn } from '@/utils/utils';
 
-// Defining fonts
-const aubrey = localFont({
-  preload: true,
-  src: [
-    {
-      path: '../../../../../public/font/aubrey/Aubrey-Regular.ttf',
-      weight: '400',
-    },
-  ],
-});
-
-const sepahboodFont = localFont({
-  src: '../../../../../public/font/Sepahbod.otf',
-  display: 'block',
-  weight: '500',
-  preload: true,
-});
+const VOUCHER_LETTERHEAD_SRC =
+  '/assets/aistudio/IMAGE_2026-11-27_15_56_11_2f17a96e.jpg';
 
 // Creating and exporting ReservationFactor page as default
 export default function ReservationFactorPage({
@@ -66,6 +47,24 @@ export default function ReservationFactorPage({
       staleTime: Infinity,
     },
   });
+
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = VOUCHER_LETTERHEAD_SRC;
+  }, []);
+
+  const handleDownloadVoucher = async () => {
+    try {
+      const img = new window.Image();
+      img.src = VOUCHER_LETTERHEAD_SRC;
+      if (typeof img.decode === 'function') {
+        await img.decode();
+      }
+    } catch {
+      // Continue to print dialog even if decode fails
+    }
+    window.print();
+  };
 
   // Conditional rendering
   if (
@@ -101,111 +100,34 @@ export default function ReservationFactorPage({
     // Returning JSX
     return (
       <>
-        <div className="hidden w-dvw bg-white p-5 text-black print:block">
-          <Image
-            alt="Traiangle Icon"
-            src={TraiangleIcon.src}
-            width={500}
-            height={500}
-            className="pointer-events-none fixed left-0 top-0 z-10 h-auto w-[25%] -translate-y-1/4 select-none"
-            priority
-            unoptimized
-          />
-          <Image
-            alt="Traiangle Icon"
-            src={TraiangleIcon.src}
-            width={500}
-            height={500}
-            className="pointer-events-none fixed bottom-0 right-0 z-10 h-auto w-[25%] translate-y-1/4 rotate-180 select-none"
-            priority
-            unoptimized
-          />
-          <div className="pointer-events-none absolute right-5 top-5 z-20 select-none">
+        <div className="relative hidden min-h-dvh w-dvw bg-white text-black print:block">
+          <div className="pointer-events-none fixed inset-0 z-0 h-dvh w-dvw select-none">
             <Image
-              alt="لوگو زروان تریپ"
+              alt="سربرگ واچر زروان تریپ"
+              src={VOUCHER_LETTERHEAD_SRC}
+              fill
               priority
-              unoptimized
-              src={LogoIcon.src}
-              width={500}
-              height={500}
-              className="pointer-events-none mx-auto block w-[65px] select-none"
+              sizes="100vw"
+              referrerPolicy="no-referrer"
+              className="object-fill"
             />
-            <span
-              className={cn(
-                'block text-center text-cs07 font-medium text-black',
-                aubrey.className,
-              )}
-            >
-              Zarvantrip
-            </span>
-            <span
-              className={cn(
-                'block text-center text-cs07 font-normal text-black',
-                sepahboodFont.className,
-              )}
-            >
-              زروان تریپ
-            </span>
-            <span
-              className={'block text-center text-cs06 font-normal text-black'}
-            >
-              شماره ثبت: 603443
-            </span>
           </div>
-          <Image
-            alt="لوگو زروان تریپ"
-            priority
-            unoptimized
-            src={LogoIcon.src}
-            width={500}
-            height={500}
-            className="pointer-events-none fixed left-1/2 top-1/2 z-0 w-[75%] -translate-x-1/2 -translate-y-1/2 select-none opacity-10 contrast-0"
-          />
-          <div className="absolute bottom-5 left-5 z-20 py-3" dir="ltr">
-            <div className="mb-3 h-px w-full bg-gradient-to-r from-transparent via-black to-transparent" />
-            <div className="mb-2 flex items-center justify-between gap-5">
-              <Link
-                href={`tel:${settings.contact_number_1}`}
-                className="flex w-fit items-center justify-start gap-2 text-cs-red"
-              >
-                <IconsaxIcons
-                  name="Call"
-                  color="currentColor"
-                  variant="Bold"
-                  className="size-5"
-                />
-                <span className="block flex-1 truncate text-left text-xs font-light text-black">
-                  {settings.contact_number_1}
-                </span>
-              </Link>
-              <Link
-                href={`tel:${settings.contact_number_2}`}
-                className="flex w-fit items-center justify-start gap-2 text-cs-red"
-              >
-                <IconsaxIcons
-                  name="Call"
-                  color="currentColor"
-                  variant="Bold"
-                  className="size-5"
-                />
-                <span className="block flex-1 truncate text-left text-xs font-light text-black">
-                  {settings.contact_number_2}
-                </span>
-              </Link>
+
+          <div className="relative z-10 w-full px-[12mm] pb-[32mm] pt-[46mm]">
+            <div className="mb-4 flex items-center justify-between border-b border-black/10 pb-3">
+              <div className="text-right">
+                <h1 className="text-sm font-bold text-[#1e2756]">
+                  واچر تاییدیه رزرواسیون هتل
+                </h1>
+                <p className="mt-1 text-[11px] font-medium text-black/60">
+                  {`هتل ${data.hotel.name} - ${data.hotel.address}`}
+                </p>
+              </div>
+              <div className="text-left text-[11px] font-semibold text-black/70">
+                <span>شماره ثبت: 603443</span>
+              </div>
             </div>
-            <div className="flex items-center justify-end gap-2 text-cs-red">
-              <span className="block flex-1 truncate text-right text-xs font-light text-black">
-                {settingsData.data.invoice_settings.postal_address}
-              </span>
-              <IconsaxIcons
-                name="Location"
-                color="currentColor"
-                className="size-5 shrink-0"
-              />
-            </div>
-            <div className="mt-3 h-px w-full bg-gradient-to-r from-transparent via-black to-transparent" />
-          </div>
-          <div className="absolute right-0 h-auto w-full p-5 pt-[120px]">
+
             <HotelAcceptSection
               className="relative z-10"
               hotelName={`${settings.title} - هتل ${data.hotel.name}`}
@@ -219,8 +141,9 @@ export default function ReservationFactorPage({
                 reserver: data.reserver_name,
               }}
             />
+
             <RoomsSection
-              className="relative z-10 mt-5 border-t border-t-black/50 pt-5"
+              className="relative z-10 mt-5 border-t border-t-black/20 pt-5"
               noMq
               data={data.rooms.map((item) => ({
                 info: {
@@ -237,11 +160,57 @@ export default function ReservationFactorPage({
               }))}
             />
           </div>
+
+          <div
+            className="fixed bottom-[4mm] left-0 right-0 z-20 px-[22%]"
+            dir="ltr"
+          >
+            <div className="mb-1 flex items-center justify-center gap-6">
+              <Link
+                href={`tel:${settings.contact_number_1}`}
+                className="flex items-center gap-1.5 text-[#1e2756]"
+              >
+                <IconsaxIcons
+                  name="Call"
+                  color="currentColor"
+                  variant="Bold"
+                  className="size-3.5"
+                />
+                <span className="text-[10px] font-medium text-black">
+                  {settings.contact_number_1}
+                </span>
+              </Link>
+              <Link
+                href={`tel:${settings.contact_number_2}`}
+                className="flex items-center gap-1.5 text-[#1e2756]"
+              >
+                <IconsaxIcons
+                  name="Call"
+                  color="currentColor"
+                  variant="Bold"
+                  className="size-3.5"
+                />
+                <span className="text-[10px] font-medium text-black">
+                  {settings.contact_number_2}
+                </span>
+              </Link>
+            </div>
+            <div className="flex items-center justify-center gap-1.5 text-[#1e2756]">
+              <span className="truncate text-center text-[10px] font-medium text-black">
+                {settings.postal_address}
+              </span>
+              <IconsaxIcons
+                name="Location"
+                color="currentColor"
+                className="size-3.5 shrink-0"
+              />
+            </div>
+          </div>
         </div>
         <main className="flex flex-col gap-[25px] bg-white p-[24px] pb-[100px] pt-[calc(28px+24px)] lg:gap-8 lg:p-5 lg:pb-5 lg:pt-5 print:hidden">
           <Header />
           <HotelAcceptSection
-            printFn={() => window.print()}
+            printFn={handleDownloadVoucher}
             hotelName={`${settings.title} - هتل ${data.hotel.name}`}
             data={{
               codePeigiri: data.tracking_code,

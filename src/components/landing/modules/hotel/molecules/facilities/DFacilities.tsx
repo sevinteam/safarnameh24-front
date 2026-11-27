@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { TickSquare } from 'iconsax-react';
 
+import { useMediaQuery } from '@/hooks';
 import SwitchCase from './molecules/SwitchCase';
 import Navigation from './molecules/Navigation';
 
@@ -21,7 +22,7 @@ type Data = {
 
 type Props = { facilities?: Data };
 type FacilitiesType = 'hotel' | 'room';
-type Facility = { title: string; icon: { link: string } };
+type Facility = { title: string; icon: { link?: string; url?: string } | null };
 type ChunkArrayProps = { array?: Facility[]; chunkSize?: number };
 
 // ------------------------------
@@ -30,7 +31,15 @@ export function DFacilities(props: Props) {
   const { facilities } = props;
 
   const swiperRef = useRef<SwiperType>(null);
-  const [facilitiesType, setFacilitiesType] = useState<FacilitiesType>('hotel');
+  const hasHotelFacilities = Boolean(facilities?.facilities?.length);
+  const hasRoomFacilities = Boolean(facilities?.room_facilities?.length);
+  const [facilitiesType, setFacilitiesType] = useState<FacilitiesType>(
+    hasHotelFacilities || !hasRoomFacilities ? 'hotel' : 'room',
+  );
+
+  const isXl = useMediaQuery('(min-width: 1280px)');
+  const isLg = useMediaQuery('(min-width: 1024px)');
+  const chunkSize = isXl ? 18 : isLg ? 15 : 12;
 
   const handleSetFacilitiesType = (type: FacilitiesType) => {
     setFacilitiesType(type);
@@ -39,7 +48,7 @@ export function DFacilities(props: Props) {
   // === Making chunked array, by custom-size
   function chunkArray(props: ChunkArrayProps) {
     const { array, chunkSize = 18 } = props;
-    if (!array) return;
+    if (!array) return [];
     const result = [];
 
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -49,8 +58,14 @@ export function DFacilities(props: Props) {
     return result;
   }
 
-  const facilitiesList = chunkArray({ array: facilities?.facilities });
-  const roomFacilitiesList = chunkArray({ array: facilities?.room_facilities });
+  const facilitiesList = chunkArray({
+    array: facilities?.facilities,
+    chunkSize,
+  });
+  const roomFacilitiesList = chunkArray({
+    array: facilities?.room_facilities,
+    chunkSize,
+  });
 
   const finalList =
     facilitiesType === 'hotel' ? facilitiesList : roomFacilitiesList;
@@ -66,46 +81,70 @@ export function DFacilities(props: Props) {
 
       <div className="relative bg-white h-56 p-5 flex border overflow-hidden rounded-2xl lg:h-48">
         {/* === Content */}
-        <Swiper
-          spaceBetween={15}
-          slidesPerView={1}
-          direction="vertical"
-          modules={[Pagination]}
-          pagination={{
-            enabled: true,
-            clickable: true,
-            dynamicBullets: true,
-          }}
-          className="facilities-swiper w-full"
-          onSwiper={(swiper) => (swiperRef.current = swiper)}
-        >
-          {finalList?.map((item, index) => (
-            <SwiperSlide key={index} className="overflow-hidden select-none">
-              <div className="w-[calc(100%-3rem)] h-full grid grid-cols-4 grid-rows-3 gap-4 lg:grid-cols-5 xl:grid-cols-6">
-                {item.map((item, index) => (
-                  <div key={index} className="flex items-center gap-2.5">
-                    {item?.icon?.link ? (
-                      <Image
-                        alt="icon"
-                        width={24}
-                        height={24}
-                        src={item?.icon?.link}
-                      />
-                    ) : (
-                      <TickSquare size={22} color="#444" />
-                    )}
+        {finalList.length === 0 ? (
+          <div className="w-full h-full flex-center text-zinc-500 text-cs08 font-semibold">
+            موردی برای نمایش وجود ندارد.
+          </div>
+        ) : (
+          <Swiper
+            key={`${facilitiesType}-${chunkSize}`}
+            spaceBetween={15}
+            slidesPerView={1}
+            direction="vertical"
+            modules={[Pagination]}
+            pagination={{
+              enabled: true,
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            className="facilities-swiper w-full h-full"
+            onSwiper={(swiper) => (swiperRef.current = swiper)}
+          >
+            {finalList.map((item, index) => (
+              <SwiperSlide
+                key={index}
+                className="h-full overflow-hidden select-none"
+              >
+                <div className="w-[calc(100%-3rem)] h-full grid grid-cols-4 grid-rows-3 gap-4 lg:grid-cols-5 xl:grid-cols-6">
+                  {item.map((facility, facilityIndex) => {
+                    const iconSrc = facility?.icon?.link || facility?.icon?.url;
+                    return (
+                      <div
+                        key={facilityIndex}
+                        className="flex items-center gap-2.5 min-w-0"
+                      >
+                        {iconSrc ? (
+                          <Image
+                            alt={facility.title || 'icon'}
+                            width={24}
+                            height={24}
+                            src={iconSrc}
+                            className="shrink-0 object-contain"
+                          />
+                        ) : (
+                          <TickSquare
+                            size={22}
+                            color="#444"
+                            className="shrink-0"
+                          />
+                        )}
 
-                    <span className="text-zinc-700 text-cs08 font-bold flex-1 truncate">
-                      {item.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+                        <span
+                          title={facility.title}
+                          className="text-zinc-700 text-cs08 font-bold flex-1 truncate"
+                        >
+                          {facility.title}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
 
-        {Number(finalList?.length) > 1 && (
+        {finalList.length > 1 && (
           <Navigation
             slidePrev={() => swiperRef.current?.slidePrev()}
             slideNext={() => swiperRef.current?.slideNext()}
