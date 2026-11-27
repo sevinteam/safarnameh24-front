@@ -17,6 +17,7 @@ import Loading from '@/components/dashboard/ui/loading';
 import ErrorTable from '@/components/dashboard/api/errorTable';
 import Image from 'next/image';
 import Link from 'next/link';
+import voucherStampImg from '../../../../../public/image/IMAGE 2026-11-27 16:26:06.jpg';
 
 const VOUCHER_LETTERHEAD_SRC =
   '/assets/aistudio/IMAGE_2026-11-27_15_56_11_2f17a96e.jpg';
@@ -49,17 +50,23 @@ export default function ReservationFactorPage({
   });
 
   useEffect(() => {
-    const img = new window.Image();
-    img.src = VOUCHER_LETTERHEAD_SRC;
+    [VOUCHER_LETTERHEAD_SRC, voucherStampImg.src].forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+    });
   }, []);
 
   const handleDownloadVoucher = async () => {
     try {
-      const img = new window.Image();
-      img.src = VOUCHER_LETTERHEAD_SRC;
-      if (typeof img.decode === 'function') {
-        await img.decode();
-      }
+      await Promise.allSettled(
+        [VOUCHER_LETTERHEAD_SRC, voucherStampImg.src].map(async (src) => {
+          const img = new window.Image();
+          img.src = src;
+          if (typeof img.decode === 'function') {
+            await img.decode();
+          }
+        }),
+      );
     } catch {
       // Continue to print dialog even if decode fails
     }
@@ -114,18 +121,13 @@ export default function ReservationFactorPage({
           </div>
 
           <div className="relative z-10 w-full px-[12mm] pb-[32mm] pt-[46mm]">
-            <div className="mb-4 flex items-center justify-between border-b border-black/10 pb-3">
-              <div className="text-right">
-                <h1 className="text-sm font-bold text-[#1e2756]">
-                  واچر تاییدیه رزرواسیون هتل
-                </h1>
-                <p className="mt-1 text-[11px] font-medium text-black/60">
-                  {`هتل ${data.hotel.name} - ${data.hotel.address}`}
-                </p>
-              </div>
-              <div className="text-left text-[11px] font-semibold text-black/70">
-                <span>شماره ثبت: 603443</span>
-              </div>
+            <div className="mb-4 border-b border-black/10 pb-3 text-right">
+              <h1 className="text-sm font-bold text-[#1e2756]">
+                واچر تاییدیه رزرواسیون هتل
+              </h1>
+              <p className="mt-1 text-[11px] font-medium text-black/60">
+                {`هتل ${data.hotel.name} - ${data.hotel.address}`}
+              </p>
             </div>
 
             <HotelAcceptSection
@@ -158,6 +160,18 @@ export default function ReservationFactorPage({
                   .filter((passenger) => passenger.name !== data.reserver_name)
                   .map((passenger) => passenger.name),
               }))}
+            />
+          </div>
+
+          <div className="pointer-events-none fixed bottom-[25mm] left-[16mm] z-20 size-[34mm] -rotate-12 select-none opacity-90 mix-blend-multiply">
+            <Image
+              alt="مهر دپارتمان رزرواسیون - رزرو تأیید شد"
+              src={voucherStampImg}
+              fill
+              priority
+              sizes="140px"
+              referrerPolicy="no-referrer"
+              className="object-contain mix-blend-multiply"
             />
           </div>
 
